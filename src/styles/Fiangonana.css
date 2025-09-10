@@ -1,0 +1,521 @@
+
+
+/* ===== BASE STYLES ===== */
+.church-management {
+    margin-left: var(--sidebar-width);
+    background-color: var(--bg-color);
+    min-height: 100vh;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container {
+    
+    margin: 0 auto;
+}
+
+/* ===== HEADER ===== */
+header {
+    padding: 25px;
+    border-radius: var(--border-radius);
+    margin-bottom: 30px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    background-color: var(--card-bg);
+    position: relative;
+}
+
+header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    border-bottom-right-radius: var(--border-radius);
+    border-bottom-left-radius: var(--border-radius);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-content p {
+    font-size: 1.2rem;
+    margin: 0;
+    font-weight: 500;
+    color: var(--primary-color);
+}
+
+.add-btn {
+    background-color: var(--card-bg);
+    color: var(--primary-color);
+    border: none;
+    padding: 14px 24px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.add-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    background-color: var(--hover-color);
+}
+
+/* ===== SEARCH ===== */
+.search-bar {
+    display: flex;
+    margin-bottom: 25px;
+    gap: 15px;
+}
+
+.search-bar input {
+    flex: 1;
+    padding: 14px 20px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s;
+}
+
+.search-bar input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(78, 115, 223, 0.2);
+}
+
+.filter-btn {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 17px 20px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+}
+
+.filter-btn:hover {
+    background-color: var(--hover-color);
+    border-color: var(--primary-color);
+}
+
+/* ===== CHURCH LIST ===== */
+.church-list {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-color);
+}
+
+.no-result-card {
+    display: flex;
+    padding: 25px;
+    width: 100%;
+    margin: 0 auto;
+    border-bottom: 1px solid var(--border-color);
+    transition: all 0.3s;
+    background-color: var(--card-bg);
+    gap: 20px;
+    text-align: center;
+    justify-content: center;
+}
+
+.church-item {
+    display: flex;
+    padding: 25px;
+    margin: 0 auto;
+    border-bottom: 1px solid var(--border-color);
+    transition: all 0.3s;
+    background-color: var(--card-bg);
+    gap: 20px;
+}
+
+.church-item::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+}
+
+.church-item:hover {
+    background-color: var(--hover-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.church-item:last-child {
+    border-bottom: none;
+}
+
+.church-image {
+    width: 150px;
+    height: 120px;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    margin-right: 20px;
+    flex-shrink: 0;
+}
+
+.church-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.church-info {
+    flex: 1;
+}
+
+.church-info h3 {
+    color: var(--primary-color);
+    margin-bottom: 12px;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.church-info p {
+    color: var(--text-color);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95rem;
+}
+
+.church-info i {
+    color: var(--secondary-color);
+    width: 16px;
+}
+
+.church-type {
+    margin-top: 15px;
+}
+
+.type-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: white;
+}
+
+.type-badge.catholic {
+    background-color: #3498db;
+}
+
+.type-badge.protestant {
+    background-color: #2ecc71;
+}
+
+.type-badge.orthodox {
+    background-color: #9b59b6;
+}
+
+.type-badge.other {
+    background-color: #e67e22;
+}
+
+.church-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    justify-content: center;
+    padding-left: 20px;
+}
+
+.action-btn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.edit-btn {
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
+
+.edit-btn:hover {
+    background-color: rgba(78, 115, 223, 0.1);
+    transform: scale(1.1);
+}
+
+.delete-btn {
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
+}
+
+.delete-btn:hover {
+    background-color: rgba(231, 76, 60, 0.1);
+    transform: scale(1.1);
+}
+
+/* ===== MODAL ===== */
+.modalFiangonana {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modalFiangonana-content {
+    background-color: var(--card-bg);
+    width: 100%;
+    max-width: 600px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    max-height: 90vh;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+}
+
+.modalFiangonana-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+    color: white;
+    padding: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.modalFiangonana-header h2 {
+    font-weight: 600;
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.8rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.close-btn:hover {
+    transform: rotate(90deg);
+}
+
+.modalFiangonana-body {
+    padding: 25px;
+}
+
+.formFiangonana-group {
+    margin-bottom: 20px;
+}
+
+.formFiangonana-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.formFiangonana-group input,
+.formFiangonana-group textarea,
+.formFiangonana-group select {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    transition: all 0.3s;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.formFiangonana-group input:focus,
+.formFiangonana-group textarea:focus,
+.formFiangonana-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(78, 115, 223, 0.2);
+}
+
+.formFiangonana-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.modalFiangonana-footer {
+    padding: 20px 25px;
+    background-color: var(--hover-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    position: sticky;
+    bottom: 0;
+    border-top: 1px solid var(--border-color);
+}
+
+.cancel-btn {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.cancel-btn:hover {
+    background-color: var(--text-color);
+    transform: translateY(-2px);
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(78, 115, 223, 0.3);
+}
+
+/* ===== RESPONSIVE STYLES ===== */
+@media (max-width: 992px) {
+    .church-management{
+        margin-left: 0;
+            /* tsy mila misintona satria miafina sidebar */
+            padding: 1rem;
+    }
+    .church-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .church-image {
+        width: 100%;
+        height: 200px;
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+
+    .church-actions {
+        flex-direction: row;
+        width: 100%;
+        justify-content: flex-end;
+        padding-left: 0;
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        gap: 20px;
+        align-items: flex-start;
+    }
+
+    .search-bar {
+        flex-direction: column;
+    }
+
+    .church-info h3 {
+        font-size: 1.2rem;
+    }
+
+    .church-info p {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .modalFiangonana-content {
+        max-height: 95vh;
+    }
+
+    .modalFiangonana-body {
+        padding: 20px;
+    }
+
+    .modalFiangonana-footer {
+        flex-direction: column;
+    }
+
+    .cancel-btn,
+    .submit-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .church-management {
+        padding: 15px;
+    }
+
+    header {
+        padding: 20px;
+    }
+
+    .add-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .church-item {
+        padding: 20px;
+    }
+
+    .modalFiangonana {
+        padding: 10px;
+    }
+
+    .modalFiangonana-header {
+        padding: 20px;
+    }
+
+    .modalFiangonana-body {
+        padding: 15px;
+    }
+
+    .modalFiangonana-footer {
+        padding: 15px 20px;
+    }
+}

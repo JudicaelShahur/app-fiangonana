@@ -5,12 +5,12 @@ import {
     FaQuestionCircle, FaUserCircle, FaHome, FaMapMarkedAlt, FaPrayingHands, FaCross,
     FaCoins, FaUsersCog, FaSitemap, FaChartBar,
 } from "react-icons/fa";
+import useProfile from "../hooks/useProfile";
 import "./../styles/Sidebar.css";
 
 const Sidebar = () => {
-   
+    const { user, loading } = useProfile();
     const [sidebarActive, setSidebarActive] = useState(window.innerWidth >= 992);
-
     // Listener ho an'ny resize
     useEffect(() => {
         const handleResize = () => {
@@ -40,8 +40,8 @@ const Sidebar = () => {
         <div className="sidebar-header">
           <div className="sidebar-user">
             <div className="user-avatar"><FaUserCircle /></div>
-            <div className="user-name">{ "Utilisateur"}</div>
-            <div className="user-role">{ "Role"}</div>
+              <div className="user-name">{loading ? "Chargement..." : user?.nom_user || "Utilisateur"}</div>
+              <div className="user-role">{user?.role || "Role"}</div>
           </div>
         </div>
             

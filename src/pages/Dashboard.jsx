@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaUsers, FaChurch, FaCoins, FaCalendarAlt } from "react-icons/fa";
 import "./../styles/Dashboard.css";
+
 const Dashboard = () => {
+    const [activePeriod, setActivePeriod] = useState('week');
+    const [viewMode, setViewMode] = useState('charts');
+
     const stats = [
         { id: 1, title: "Nombre de membres", value: 120, icon: <FaUsers className="dashboard-card-icon" /> },
         { id: 2, title: "Églises", value: 8, icon: <FaChurch className="dashboard-card-icon" /> },
@@ -9,7 +13,6 @@ const Dashboard = () => {
         { id: 4, title: "Évènements à venir", value: 3, icon: <FaCalendarAlt className="dashboard-card-icon" /> },
     ];
 
-    // ✅ Mamorona recentActivities dummy data
     const recentActivities = [
         { id: 1, user: "Jean", action: "a rejoint l'église", date: "2025-09-10 10:15" },
         { id: 2, user: "Marie", action: "a fait un don de 50 €", date: "2025-09-09 18:30" },
@@ -19,7 +22,30 @@ const Dashboard = () => {
     return (
         <div className="dashboard-container">
             <h1>Tableau de bord</h1>
-            <p>Bienvenue sur le tableau de bord.</p>
+            <div className="dashboard-controls">
+                <div className="dashboard-period-selector">
+                    <span>Période :</span>
+                    <button
+                        className={`dashboard-period-btn ${activePeriod === 'week' ? 'active' : ''}`}
+                        onClick={() => setActivePeriod('week')}
+                    >
+                        Semaine
+                    </button>
+                    <button
+                        className={`dashboard-period-btn ${activePeriod === 'month' ? 'active' : ''}`}
+                        onClick={() => setActivePeriod('month')}
+                    >
+                        Mois
+                    </button>
+                    <button
+                        className={`dashboard-period-btn ${activePeriod === 'year' ? 'active' : ''}`}
+                        onClick={() => setActivePeriod('year')}
+                    >
+                        Année
+                    </button>
+                </div>
+
+            </div>
 
             <div className="dashboard-grid">
                 {stats.map((stat) => (
@@ -48,4 +74,5 @@ const Dashboard = () => {
         </div>
     );
 };
+
 export default Dashboard;
