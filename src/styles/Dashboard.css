@@ -1,0 +1,111 @@
+/* Dashboard.css */
+
+/* Container principal */
+.dashboard-container {
+    padding: 2rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    transition: all 0.3s ease;
+    /* Raha ampiasaina ao anatiny layout flex */
+}
+
+/* Titre et paragraphe */
+.dashboard-container h1 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+.dashboard-container p {
+    margin: 0;
+    color: var(--text-color);
+}
+
+/* Grid pour les cartes */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Carte individuelle */
+.dashboard-card {
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    padding: 1rem;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Titre et valeur de la carte */
+.dashboard-card-title {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.dashboard-card-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* Icône */
+.dashboard-card-icon {
+    font-size: 1.8rem;
+    margin-top: auto;
+    align-self: flex-end;
+}
+
+/* Recent activities */
+.recent-activities {
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    padding: 1rem;
+    border-radius: 12px;
+    max-height: 300px;
+    overflow-y: auto;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Liste d’activités */
+.activity-item {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-date {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Responsive - mobile */
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 1rem;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        /* Une colonne */
+        gap: 1rem;
+    }
+
+    .recent-activities {
+        max-height: none;
+    }
+}

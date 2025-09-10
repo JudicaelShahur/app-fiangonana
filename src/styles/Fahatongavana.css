@@ -1,0 +1,24 @@
+.fahatongavana {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: var(--bg-color);
+    color: var(--text-color);
+    min-height: calc(100vh - 60px);
+    box-sizing: border-box;
+    text-align: center;
+    background-color: aquamarine;
+
+}
+
+.fahatongavana h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.fahatongavana p {
+    font-size: 1.2rem;
+}

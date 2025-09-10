@@ -1,0 +1,143 @@
+/* ===== VARIABLES ===== */
+:root {
+    --sidebar-width: 250px;
+    --sidebar-bg: #1e1e2f;
+    --sidebar-text: #ffffff;
+    --sidebar-hover: #343454;
+    --sidebar-active: #4e73df;
+    --sidebar-header-bg: #2a2a40;
+    --transition-speed: 0.3s;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    display: flex;
+    flex-direction: column;
+    transition: all var(--transition-speed) ease;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+/* ===== SIDEBAR HEADER ===== */
+.sidebar-header {
+    padding: 20px;
+    background-color: var(--sidebar-header-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.sidebar-user .user-avatar {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+.sidebar-user .user-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.sidebar-user .user-role {
+    font-size: 0.9rem;
+    color: #ccc;
+}
+
+/* ===== MENU ===== */
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex: 1;
+}
+
+.menu-title {
+    padding: 15px 20px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #aaa;
+    letter-spacing: 1px;
+}
+
+.menu-item {
+    display: block;
+}
+
+.menu-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: background-color var(--transition-speed);
+}
+
+.menu-link svg {
+    margin-right: 10px;
+}
+
+.menu-link:hover {
+    background-color: var(--sidebar-hover);
+    border-left: 4px solid var(--sidebar-active);
+}
+
+.menu-link.active {
+    background-color: var(--sidebar-active);
+    border-left: 4px solid var(--sidebar-active);
+}
+
+/* ===== SCROLLBAR ===== */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 992px) {
+    .sidebar {
+        position: absolute;
+        left: -100%;
+        transition: left var(--transition-speed) ease;
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+}
+
+/* ===== MOBILE TOGGLE BUTTON (Optional) ===== */
+.sidebar-toggle {
+    position: fixed;
+    width: 10%;
+    height: 6%;
+    border-radius: 10px;
+    margin-top: 600px;
+    left: 15px;
+    font-size: 1.5rem;
+    color: var(--sidebar-text);
+    background-color: var(--sidebar-bg);
+    border: none;
+    cursor: pointer;
+    z-index: 1100;
+    display: none;
+    /* default miafina */
+}
+/* Desktop toggle (optional) */
+@media (min-width: 992px) {
+    .sidebar-toggle {
+        display: none;
+        /* raha tianao miseho foana */
+    }
+}
