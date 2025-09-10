@@ -113,7 +113,7 @@ const Fiangonana = () => {
                 <header>
                     <div className="header-content">
                         <div>
-                            <p>Liste complète des églises enregistrées</p>
+                            <h1>Liste complète des églises enregistrées</h1>
                         </div>
                         <button className="add-btn" onClick={handleOpenModal}>
                             <i className="fas fa-plus"></i> Ajouter une église

@@ -25,10 +25,8 @@
     /* default */
 }
 
-/* rehefa misokatra ny sidebar, azo atao class .sidebar-active amin'ny body na navbar */
 body.sidebar-active .navbar-brand {
     margin-left: 240px;
-    /* mitovy amin'ny --sidebar-width */
 }
 
 .navbar-brand img {
@@ -177,14 +175,14 @@ body.sidebar-active .navbar-brand {
 @media (max-width: 768px) {
 .navbar-menu {
         position: fixed;
-        top: var(--navbar-height);
+        top: 74px;
         right: 0;
         height: auto;
         width: 200px;
         background-color: var(--card-bg);
         flex-direction: column;
         align-items: flex-start;
-        padding: 20px;
+        padding: 10px;
         box-shadow: -3px 3px 15px rgba(0, 0, 0, 0.1);
         border-left: 1px solid var(--border-color);
         border-bottom: 1px solid var(--border-color);

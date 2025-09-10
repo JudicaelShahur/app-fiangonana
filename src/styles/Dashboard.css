@@ -14,10 +14,10 @@
 /* Titre et paragraphe */
 .dashboard-container h1 {
     color: var(--primary-color);
-    margin-bottom: 5px;
     font-size: 1.8rem;
-    font-weight: 700;
-    padding-bottom: 5px;
+    margin: 0;
+    font-weight: 500;
+    padding-bottom: 25px;
     border-bottom: 2px solid var(--border-color);
 }
 
@@ -137,13 +137,13 @@
     margin-bottom: 15px;
     text-transform: uppercase;
     letter-spacing: 1px;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 .dashboard-card-value {
     bottom: 20px;
     right: 20px;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     color: var(--accent-color);
 }
 

@@ -13,11 +13,10 @@
 /* Titre */
 .statistics-container h1 {
     color: var(--primary-color);
-    margin-bottom: 5px;
-    font-size: 1.8rem;
-    /* toy ny dashboard */
-    font-weight: 700;
-    padding-bottom: 5px;
+    font-size: 2rem;
+    margin: 0;
+    font-weight: 500;
+    padding-bottom: 20px;
     border-bottom: 2px solid var(--border-color);
 }
 
@@ -115,13 +114,20 @@
 /* Stat content */
 .stat-content h3 {
     font-size: 0.9rem;
-    font-weight: 600;
+    font-weight: 500;
     color: var(--text-color);
     margin-bottom: 10px;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
-
+.chart-container h3{
+    font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--text-color);
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+}
 .stat-value {
     font-size: 1.8rem;
     /* toy ny dashboard */
@@ -179,12 +185,12 @@
     padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
+    color: var(--text-color);
 }
 
 .data-table th {
-    background-color: #f8f9fc;
     color: var(--text-color);
-    font-weight: 600;
+    font-weight: 500;
     text-transform: uppercase;
     font-size: 0.85rem;
     letter-spacing: 0.5px;
@@ -193,7 +199,11 @@
 .data-table tr:hover {
     background-color: #f8f9fc;
 }
-
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
 /* ===== RESPONSIVE ===== */
 
 /* Tablet & mobile like dashboard */
@@ -248,5 +258,13 @@
     .data-table {
         display: block;
         overflow-x: auto;
+    }
+}
+@media (max-width: 600px) {
+    .data-table th,
+    .data-table td {
+        white-space: nowrap; /* Tsy tapaka amin’ny andalana vaovao */
+        padding: 2px;
+        font-size: 0.85rem;
     }
 }
