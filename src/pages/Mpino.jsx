@@ -308,15 +308,15 @@ const Mpino = () => {
 
     return (
         <div className="mpino-management">
-            <div className="page-header">
+            <div className="pageMpino-header">
                 <h1>Gestion des Mpino</h1>
                 <button className="btnMpino btn-primary" onClick={openAddModal}>
                     <FaPlus /> Nouveau Mpino
                 </button>
             </div>
 
-            <div className="search-bar">
-                <div className="search-input">
+            <div className="searchMpino-bar">
+                <div className="searchMpino-input">
                     <FaSearch />
                     <input
                         type="text"
@@ -325,7 +325,7 @@ const Mpino = () => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <div className="search-stats">
+                <div className="searchMpino-stats">
                     {filteredMpino.length} mpino(s) trouvé(s)
                 </div>
             </div>
@@ -333,43 +333,43 @@ const Mpino = () => {
             <div className="mpino-grid">
                 {filteredMpino.map(mpino => (
                     <div key={mpino.id} className="mpino-card">
-                        <div className="card-header">
+                        <div className="cardMpino-header">
                             <img src={mpino.photo} alt={`${mpino.prenom} ${mpino.nom}`} />
                             <div className="mpino-info">
                                 <h3>{mpino.prenom} {mpino.nom}</h3>
                                 <p>{mpino.numero}</p>
-                                <span className={`status ${mpino.is_sync ? 'synced' : 'not-synced'}`}>
+                                <span className={`statusMpino ${mpino.is_sync ? 'synced' : 'not-synced'}`}>
                                     <FaSync /> {mpino.is_sync ? 'Synchronisé' : 'Non synchronisé'}
                                 </span>
                             </div>
                         </div>
 
-                        <div className="card-details">
-                            <div className="detail-item">
+                        <div className="cardMpino-details">
+                            <div className="detailMpino-item">
                                 <strong>Sexe:</strong> {mpino.sexe}
                             </div>
-                            <div className="detail-item">
+                            <div className="detailMpino-item">
                                 <strong>Talenta:</strong> {mpino.talenta}
                             </div>
-                            <div className="detail-item">
+                            <div className="detailMpino-item">
                                 <strong>Kartie:</strong> {mpino.kartie}
                             </div>
-                            <div className="detail-item">
+                            <div className="detailMpino-item">
                                 <strong>Fiangonana:</strong> {mpino.finagonana}
                             </div>
                         </div>
 
-                        <div className="card-actions">
-                            <button className="btn-icon" onClick={() => showQrCode(mpino)} title="Voir QR Code">
+                        <div className="cardMpino-actions">
+                            <button className="btnMpino-icon" onClick={() => showQrCode(mpino)} title="Voir QR Code">
                                 <FaQrcode />
                             </button>
-                            <button className="btn-icon" onClick={() => downloadFiche(mpino)} title="Télécharger fiche">
+                            <button className="btnMpino-icon" onClick={() => downloadFiche(mpino)} title="Télécharger fiche">
                                 <FaDownload />
                             </button>
-                            <button className="btn-icon" onClick={() => openEditModal(mpino)} title="Modifier">
+                            <button className="btnMpino-icon" onClick={() => openEditModal(mpino)} title="Modifier">
                                 <FaEdit />
                             </button>
-                            <button className="btn-icon btn-danger" onClick={() => openDeleteModal(mpino)} title="Supprimer">
+                            <button className="btnMpino-icon btn-danger" onClick={() => openDeleteModal(mpino)} title="Supprimer">
                                 <FaTrash />
                             </button>
                         </div>
@@ -387,8 +387,8 @@ const Mpino = () => {
                         </div>
 
                         <form onSubmit={handleSubmit} className="modalMpino-form">
-                            <div className="form-grid">
-                                <div className="form-group">
+                            <div className="formMpino-grid">
+                                <div className="formMpino-group">
                                     <label>Nom *</label>
                                     <input
                                         type="text"
@@ -399,7 +399,7 @@ const Mpino = () => {
                                     />
                                 </div>
 
-                                <div className="form-group">
+                                <div className="formMpino-group">
                                     <label>Prénom *</label>
                                     <input
                                         type="text"
@@ -410,7 +410,7 @@ const Mpino = () => {
                                     />
                                 </div>
 
-                                <div className="form-group">
+                                <div className="formMpino-group">
                                     <label>Date de naissance</label>
                                     <input
                                         type="date"
@@ -420,7 +420,7 @@ const Mpino = () => {
                                     />
                                 </div>
 
-                                <div className="form-group">
+                                <div className="formMpino-group">
                                     <label>Numéro de téléphone *</label>
                                     <input
                                         type="tel"
@@ -431,7 +431,7 @@ const Mpino = () => {
                                     />
                                 </div>
 
-                                <div className="form-group">
+                                <div className="formMpino-group">
                                     <label>Sexe *</label>
                                     <select
                                         name="sexe_mpin"
@@ -445,7 +445,7 @@ const Mpino = () => {
                                     </select>
                                 </div>
 
-                                <div className="form-group">
+                                <div className="formMpino-group">
                                     <label>Talenta</label>
                                     <input
                                         type="text"
@@ -455,7 +455,7 @@ const Mpino = () => {
                                     />
                                 </div>
 
-                                <div className="form-group">
+                                <div className="formMpino-group">
                                     <label>Adresse</label>
                                     <input
                                         type="text"
@@ -466,7 +466,7 @@ const Mpino = () => {
                                     />
                                 </div>
 
-                                <div className="form-group">
+                                <div className="formMpino-group">
                                     <label>Kartie</label>
                                     <input
                                         type="text"
@@ -476,7 +476,7 @@ const Mpino = () => {
                                     />
                                 </div>
 
-                                <div className="form-group full-width">
+                                <div className="formMpino-group full-width">
                                     <label className="checkbox-label">
                                         <input
                                             type="checkbox"
@@ -489,7 +489,7 @@ const Mpino = () => {
                                 </div>
 
                                 {formData.is_vitaBatisa && (
-                                    <div className="form-group">
+                                    <div className="formMpino-group">
                                         <label>Date de batisa</label>
                                         <input
                                             type="date"
@@ -500,7 +500,7 @@ const Mpino = () => {
                                     </div>
                                 )}
 
-                                <div className="form-group">
+                                <div className="formMpino-group">
                                     <label className="checkbox-label">
                                         <input
                                             type="checkbox"
@@ -512,7 +512,7 @@ const Mpino = () => {
                                     </label>
                                 </div>
 
-                                <div className="form-group">
+                                <div className="formMpino-group">
                                     <label className="checkbox-label">
                                         <input
                                             type="checkbox"
@@ -524,7 +524,7 @@ const Mpino = () => {
                                     </label>
                                 </div>
 
-                                <div className="form-group">
+                                <div className="formMpino-group">
                                     <label className="checkbox-label">
                                         <input
                                             type="checkbox"
@@ -536,7 +536,7 @@ const Mpino = () => {
                                     </label>
                                 </div>
 
-                                <div className="form-group">
+                                <div className="formMpino-group">
                                     <label className="checkbox-label">
                                         <input
                                             type="checkbox"
@@ -548,7 +548,7 @@ const Mpino = () => {
                                     </label>
                                 </div>
 
-                                <div className="form-group">
+                                <div className="formMpino-group">
                                     <label className="checkbox-label">
                                         <input
                                             type="checkbox"

@@ -186,16 +186,15 @@ const Fahatongavana = () => {
 
     return (
         <div className="fahatongavana-management">
-            <div className="page-header">
+            <div className="pageFahatongavana-header">
                 <h1>Gestion des Fahatongavana</h1>
                 <button className="btnMpino btn-primary" onClick={openAddModal}>
                     <FaPlus /> Nouvelle Présence
                 </button>
             </div>
 
-            <div className="controls-row">
-                <div className="searchFahatongava-bar">
-                    <div className="searchFahatongava-input">
+                <div className="searchFahatongavana-bar">
+                    <div className="searchFahatongavana-input">
                         <FaSearch />
                         <input
                             type="text"
@@ -203,9 +202,7 @@ const Fahatongavana = () => {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                    </div>
-                </div>
-
+                    </div>     
                 <div className="date-filter">
                     <label>
                         <FaCalendarAlt /> Date:
@@ -217,6 +214,7 @@ const Fahatongavana = () => {
                     />
                 </div>
             </div>
+            
 
             <div className="stats-cards">
                 <div className="stat-card">

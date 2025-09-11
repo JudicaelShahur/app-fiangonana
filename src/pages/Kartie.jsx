@@ -1,120 +1,295 @@
-import React, { useState } from 'react';
-import "./../styles/Fiangonana.css"; // afaka mampiasa style mitovy
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import React, { useState } from "react";
+import "./../styles/Kartie.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faTrash, faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FaSearch } from "react-icons/fa";
 
-const Karite = () => {
-    const [quartiers, setQuartiers] = useState([
-        { id: 1, name: "Quartier A", chef: "Jean" },
-        { id: 2, name: "Quartier B", chef: "Marie" }
-    ]);
+const Kartie = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [currentKartie, setCurrentKartie] = useState(null);
+  const [formData, setFormData] = useState({
+    nom_kar: "",
+    desc_kar: "",
+    fiangonana: ""
+  });
 
-    const [searchTerm, setSearchTerm] = useState('');
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [newQuartier, setNewQuartier] = useState({ name: '', chef: '' });
+  // Données des kartie
+  const [kartie, setKartie] = useState([
+    {
+      id: 1,
+      nom_kar: "Jean Rakoto",
+      desc_kar: "+261 34 12 345 67",
+      fiangonana: "Synchronisé",
+    },
+    {
+      id: 2,
+      nom_kar: "Sahalava Masoakely",
+      desc_kar: "fokotany mpino",
+      fiangonana: "FLM Mahamanina",
+    },
+    {
+      id: 3,
+      nom_kar: "Mahamanina",
+      desc_kar: "fokotany tsara",
+      fiangonana: "FLM Mahamanina",
+    },
+    {
+      id: 4,
+      nom_kar: "Ivory Antsimo",
+      desc_kar: "foibe fokotany",
+      fiangonana: "FLM Ivory",
+    }
+  ]);
 
-    const handleOpenModal = () => setIsModalOpen(true);
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-        setNewQuartier({ name: '', chef: '' });
+  // Filtrer les kartie selon le terme de recherche
+  const filteredKartie = kartie.filter(kartie =>
+    kartie.nom_kar.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    kartie.desc_kar.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    kartie.fiangonana.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Gérer l'ouverture de la modal d'ajout
+  const handleOpenModal = () => {
+    setFormData({
+      nom_kar: "",
+      desc_kar: "",
+      fiangonana: ""
+    });
+    setIsModalOpen(true);
+  };
+
+  // Gérer l'ouverture de la modal d'édition
+  const handleOpenEditModal = (kartie) => {
+    setCurrentKartie(kartie);
+    setFormData({
+      nom_kar: kartie.nom_kar,
+      desc_kar: kartie.desc_kar,
+      fiangonana: kartie.fiangonana
+    });
+    setIsEditModalOpen(true);
+  };
+
+  // Gérer la fermeture des modales
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setIsEditModalOpen(false);
+  };
+
+  // Gérer les changements dans le formulaire
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+
+  // Ajouter un nouveau kartie
+  const handleAddKartie = () => {
+    const newKartie = {
+      id: kartie.length + 1,
+      ...formData
     };
+    setKartie([...kartie, newKartie]);
+    handleCloseModal();
+  };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setNewQuartier({ ...newQuartier, [name]: value });
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const newItem = { ...newQuartier, id: quartiers.length + 1 };
-        setQuartiers([...quartiers, newItem]);
-        handleCloseModal();
-        alert("Quartier ajouté avec succès !");
-    };
-
-    const filteredQuartiers = quartiers.filter(q =>
-        q.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        q.chef.toLowerCase().includes(searchTerm.toLowerCase())
+  // Modifier un kartie existant
+  const handleEditKartie = () => {
+    const updatedKartie = kartie.map(item => 
+      item.id === currentKartie.id ? { ...item, ...formData } : item
     );
+    setKartie(updatedKartie);
+    handleCloseModal();
+  };
 
-    return (
-        <div className="container">
-            <header className="header-content">
-                <h1>Liste des quartiers</h1>
-                <button className="add-btn" onClick={handleOpenModal}><i className="fas fa-plus"></i>Ajouter un quartier</button>
-            </header>
+  // Supprimer un kartie
+  const handleDeleteKartie = (id) => {
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce kartie?")) {
+      const updatedKartie = kartie.filter(item => item.id !== id);
+      setKartie(updatedKartie);
+    }
+  };
 
-            <div className="search-bar">
-                <input
-                    type="text"
-                    placeholder="Rechercher..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <button className="filter-btn">
-                    <i className="fas fa-filter"></i> Filtrer
-                </button>
+  return (
+    <div className="kartie-container">
+      <div className="containerKartie">
+        <header>
+          <div className="header-contentKartie">
+            <div>
+              <h1>Liste complète des Quartie</h1>
             </div>
-
-            <div className="church-list">
-                {filteredQuartiers.length > 0 ? (
-                    filteredQuartiers.map(q => (
-                        <div key={q.id} className="church-item">
-                            <div className="church-info">
-                                <h3>{q.name}</h3>
-                                <p>Chef: {q.chef}</p>
-                            </div>
-                            <div className="church-actions">
-                                <button className="action-btn edit-btn"><FontAwesomeIcon icon={faEdit} /></button>
-                                <button className="action-btn delete-btn"><FontAwesomeIcon icon={faTrash} /></button>
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    <p>Aucun quartier trouvé</p>
-                )}
-            </div>
-
-            {isModalOpen && (
-                <div className="modalFiangonana">
-                    <div className="modalFiangonana-content">
-                        <div className="modalFiangonana-header">
-                            <h2>Ajouter un quartier</h2>
-                            <button className="close-btn" onClick={handleCloseModal}>&times;</button>
-                        </div>
-                        <div className="modalFiangonana-body">
-                            <form>
-                                <div className="formFiangonana-group">
-                                    <label>Nom du quartier *</label>
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        value={newQuartier.name}
-                                        onChange={handleInputChange}
-                                        required
-                                    />
-                                </div>
-                                <div className="formFiangonana-group">
-                                    <label>Chef du quartier *</label>
-                                    <input
-                                        type="text"
-                                        name="chef"
-                                        value={newQuartier.chef}
-                                        onChange={handleInputChange}
-                                        required
-                                    />
-                                </div>
-                            </form>
-                        </div>
-                        <div className="modalFiangonana-footer">
-                            <button className="cancel-btn" onClick={handleCloseModal}>Annuler</button>
-                            <button className="submit-btn" onClick={handleSubmit}>Enregistrer</button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <button className="add-btnKartie" onClick={handleOpenModal}>
+              <FontAwesomeIcon icon={faPlus} /> Ajouter une église
+            </button>
+          </div>
+        </header>
+        
+        <div className="searchKartie-bar">
+        <div className="searchKartie-input">
+           <FaSearch className="searchKartie-icon" /> 
+          <input
+            type="text"
+            placeholder="Rechercher par kartie..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
-    );
+        <button className="filterKartie-btn">
+        <i className="fas fa-filter"></i> Filtrer
+        </button>
+        </div>
+        
+        <div className="tableKartie-container">
+          <table className="kartie-table">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Description</th>
+                <th>Fiangonana</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+            {filteredKartie.map(kartie => (
+                <tr key={kartie.id}>
+                <td className="nomKartie-cell" data-label="Nom">{kartie.nom_kar}</td>
+                <td data-label="Description">{kartie.desc_kar}</td>
+                <td data-label="Fiangonana">
+                    <span className="status-badgeKartie synchronise">{kartie.fiangonana}</span>
+                </td>
+                    <td className="action-btnKartie" data-label="Action">
+                    <button className=" btnKartie" onClick={() => handleOpenEditModal(kartie)}>
+                    <FontAwesomeIcon icon={faEdit} />
+                    </button>
+                        <button className="btnKartie btn-danger" onClick={() => handleDeleteKartie(kartie.id)}>
+                    <FontAwesomeIcon icon={faTrash} />
+                    </button>
+                </td>
+                </tr>
+            ))}
+            </tbody>
+          </table>
+          
+          {filteredKartie.length === 0 && (
+            <div className="no-resultsKartie">
+              Aucun résultat trouvé pour "{searchTerm}"
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Modal d'ajout */}
+      {isModalOpen && (
+        <div className="modalKartie-overlay">
+          <div className="modalKartie-content">
+            <div className="modalKartie-header">
+              <h2>Ajouter un Kartie</h2>
+              <button className="close-btnKartie" onClick={handleCloseModal}>
+                <FontAwesomeIcon icon={faTimes} />
+              </button>
+            </div>
+            <div className="modalKartie-body">
+              <div className="formKartie-group">
+                <label>Nom</label>
+                <input
+                  type="text"
+                  name="nom_kar"
+                  value={formData.nom_kar}
+                  onChange={handleInputChange}
+                  placeholder="Entrez le nom"
+                />
+              </div>
+              <div className="formKartie-group">
+                <label>Description</label>
+                <input
+                  type="text"
+                  name="desc_kar"
+                  value={formData.desc_kar}
+                  onChange={handleInputChange}
+                  placeholder="Entrez la description"
+                />
+              </div>
+              <div className="formKartie-group">
+                <label>Fiangonana</label>
+                <input
+                  type="text"
+                  name="fiangonana"
+                  value={formData.fiangonana}
+                  onChange={handleInputChange}
+                  placeholder="Entrez le nom de l'église"
+                />
+              </div>
+            </div>
+            <div className="modalKartie-footer">
+              <button className="cancelKartie-btn" onClick={handleCloseModal}>
+                Annuler
+              </button>
+              <button className="saveKartie-btn" onClick={handleAddKartie}>
+                Ajouter
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal d'édition */}
+      {isEditModalOpen && (
+        <div className="modalKartie-overlay">
+          <div className="modalKartie-content">
+            <div className="modalKartie-header">
+              <h2>Modifier le Kartie</h2>
+              <button className="close-btnKartie" onClick={handleCloseModal}>
+                <FontAwesomeIcon icon={faTimes} />
+              </button>
+            </div>
+            <div className="modalKartie-body">
+              <div className="formKartie-group">
+                <label>Nom</label>
+                <input
+                  type="text"
+                  name="nom_kar"
+                  value={formData.nom_kar}
+                  onChange={handleInputChange}
+                  placeholder="Entrez le nom"
+                />
+              </div>
+              <div className="formKartie-group">
+                <label>Description</label>
+                <input
+                  type="text"
+                  name="desc_kar"
+                  value={formData.desc_kar}
+                  onChange={handleInputChange}
+                  placeholder="Entrez la description"
+                />
+              </div>
+              <div className="formKartie-group">
+                <label>Fiangonana</label>
+                <input
+                  type="text"
+                  name="fiangonana"
+                  value={formData.fiangonana}
+                  onChange={handleInputChange}
+                  placeholder="Entrez le nom de l'église"
+                />
+              </div>
+            </div>
+            <div className="modalKartie-footer">
+              <button className="cancelKartie-btn" onClick={handleCloseModal}>
+                Annuler
+              </button>
+              <button className="saveKartie-btn" onClick={handleEditKartie}>
+                Enregistrer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
-export default Karite;
+export default Kartie;

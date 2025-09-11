@@ -13,7 +13,7 @@
 }
 
 /* Page Header */
-.page-header {
+.pageMpino-header {
     padding: 25px;
     border-radius: var(--border-radius);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
@@ -23,11 +23,10 @@
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    /* mitovy amin'ny dashboard-controls */
     gap: 15px;
 }
 
-.page-header::after {
+.pageMpino-header::after {
     content: '';
     position: absolute;
     top: 0;
@@ -39,7 +38,7 @@
     border-top-right-radius: var(--border-radius);
 }
 
-.page-header h1 {
+.pageMpino-header h1 {
     color: var(--primary-color);
     font-size: 1.5rem;
     margin: 0;
@@ -69,7 +68,7 @@
 }
 
 
-.search-bar {
+.searchMpino-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -82,12 +81,12 @@
     gap: 15px;
 }
 
-.search-input {
+.searchMpino-input {
     position: relative;
     flex-grow: 1;
 }
 
-.search-input svg {
+.searchMpino-input svg {
     position: absolute;
     right: 15px;
     top: 50%;
@@ -95,18 +94,16 @@
     color: var(--secondary-color);
 }
 
-.search-input input {
+.searchMpino-input input {
     width: 100%;
     padding: 12px 15px 12px 45px;
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
-    background-color: var(--card-bg);
-    color: var(--text-color);
     font-size: 1rem;
     box-sizing: border-box;
 }
 
-.search-stats {
+.searchMpino-stats {
     color: var(--secondary-color);
     font-size: 0.9rem;
 }
@@ -151,7 +148,7 @@
 }
 
 /* Card header */
-.card-header {
+.cardMpino-header {
     display: flex;
     align-items: center;
     margin-bottom: 15px;
@@ -159,7 +156,7 @@
     border-bottom: 1px solid var(--border-color);
 }
 
-.card-header img {
+.cardMpino-header img {
     width: 60px;
     height: 60px;
     border-radius: 50%;
@@ -179,8 +176,8 @@
     color: var(--secondary-color);
 }
 
-/* Status badge */
-.status {
+/* StatusMpino badge */
+.statusMpino {
     display: inline-flex;
     align-items: center;
     gap: 5px;
@@ -190,40 +187,40 @@
     font-weight: 600;
 }
 
-.status.synced {
+.statusMpino.synced {
     background-color: rgba(28, 200, 138, 0.12);
     color: #1cc88a;
 }
 
-.status.not-synced {
+.statusMpino.not-synced {
     background-color: rgba(231, 74, 59, 0.12);
     color: #e74a3b;
 }
 
 /* Details */
-.card-details {
+.cardMpino-details {
     margin-bottom: 15px;
 }
 
-.detail-item {
+.detailMpino-item {
     display: flex;
     justify-content: space-between;
     margin-bottom: 8px;
     font-size: 0.9rem;
 }
 
-.detail-item strong {
+.detailMpino-item strong {
     color: var(--secondary-color);
 }
 
 /* Actions */
-.card-actions {
+.cardMpino-actions {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
 }
 
-.btn-icon {
+.btnMpino-icon {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -237,13 +234,13 @@
     transition: background-color var(--transition-speed), transform var(--transition-speed);
 }
 
-.btn-icon:hover {
+.btnMpino-icon:hover {
     background-color: var(--primary-color);
     color: #fff;
     transform: scale(1.05);
 }
 
-.btn-icon.btn-danger:hover {
+.btnMpino-icon.btn-danger:hover {
     background-color: #e74a3b;
 }
 
@@ -297,23 +294,23 @@
     padding: 20px;
 }
 
-.form-grid {
+.formMpino-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 15px;
     margin-bottom: 20px;
 }
 
-.form-group {
+.formMpino-group {
     display: flex;
     flex-direction: column;
 }
 
-.form-group.full-width {
+.formMpino-group.full-width {
     grid-column: 1 / -1;
 }
 
-.form-group label {
+.formMpino-group label {
     margin-bottom: 8px;
     font-weight: 600;
     color: var(--text-color);
@@ -327,9 +324,9 @@
     cursor: pointer;
 }
 
-.form-group input,
-.form-group select,
-.form-group textarea {
+.formMpino-group input,
+.formMpino-group select,
+.formMpino-group textarea {
     padding: 10px;
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
@@ -338,7 +335,7 @@
     font-size: 1rem;
 }
 
-.form-group input[type="checkbox"] {
+.formMpino-group input[type="checkbox"] {
     width: auto;
     margin: 0;
 }
@@ -403,19 +400,18 @@
         gap: 1rem;
     }
 
-    .page-header {
+    .pageMpino-header {
         flex-direction: column;
         align-items: flex-start;
     }
 
-    .search-bar {
+    .searchMpino-bar {
         flex-direction: column;
         align-items: stretch;
     }
 
     .btnMpino {
         width: 100%;
-        /* full width amin'ny mobile */
         justify-content: center;
     }
 }

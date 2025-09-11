@@ -2,93 +2,154 @@ import React, { useState } from 'react';
 import "./../styles/Fiangonana.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
-
-// Import des composants
-import Quartier from '../pages/Kartie';
-import ChefQuartier from '../pages/ChefKartie';
-// On peut isoler le modal dans un fichier séparé
-
+import { FaSearch } from 'react-icons/fa';
 const Fiangonana = () => {
-    const [activeTab, setActiveTab] = useState("eglises");
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [churches, setChurches] = useState([
-        { id: 1, name: "Église Saint-Pierre", address: "123 Rue de l'Église, Paris", phone: "01 23 45 67 89", email: "stpierre@eglise.fr", admin: "Père Jean Dupont", photo: "https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?auto=format&fit=crop&w=600&q=80", type: "catholic" },
-        { id: 2, name: "Église Notre-Dame", address: "456 Avenue des Martyrs, Lyon", phone: "04 56 78 90 12", email: "notredame@eglise.fr", admin: "Père Michel Martin", photo: "https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?auto=format&fit=crop&w=600&q=80", type: "catholic" }
+    const [fiangonanas, setFiangonanas] = useState([
+        {
+            id: 1,
+            name: "Église Saint-Pierre",
+            address: "123 Rue de l'Église, Paris",
+            phone: "01 23 45 67 89",
+            email: "stpierre@eglise.fr",
+            admin: "Père Jean Dupont",
+            photo: "https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+            type: "catholic"
+        },
+        {
+            id: 2,
+            name: "Église Notre-Dame",
+            address: "456 Avenue des Martyrs, Lyon",
+            phone: "04 56 78 90 12",
+            email: "notredame@eglise.fr",
+            admin: "Père Michel Martin",
+            photo: "https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+            type: "catholic"
+        },
+        {
+            id: 3,
+            name: "Église Sainte-Anne",
+            address: "789 Boulevard de la Liberté, Marseille",
+            phone: "04 91 23 45 67",
+            email: "sainteanne@eglise.fr",
+            admin: "Pasteur Robert Leroy",
+            photo: "https://images.unsplash.com/photo-1603386329225-868f9b1c5c19?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+            type: "protestant"
+        },
+        {
+            id: 4,
+            name: "Église Saint-Paul",
+            address: "101 Rue de la Paix, Toulouse",
+            phone: "05 34 56 78 90",
+            email: "stpaul@eglise.fr",
+            admin: "Père Pierre Moreau",
+            photo: "https://images.unsplash.com/photo-1619983193852-cc0006a15de6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+            type: "orthodox"
+        }
     ]);
+    const [fiangonanaTerm, setFiangonanaTerm] = useState('');
+    const [newFiangonana, setNewFiangonana] = useState({
+        name: '',
+        address: '',
+        phone: '',
+        email: '',
+        admin: '',
+        description: '',
+        type: 'catholic',
+        photo: ''
+    });
 
-    const [newChurch, setNewChurch] = useState({ name: '', address: '', phone: '', email: '', admin: '', description: '', type: 'catholic', photo: '' });
+    const handleOpenModal = () => {
+        setIsModalOpen(true);
+    };
 
-    const handleOpenModal = () => setIsModalOpen(true);
     const handleCloseModal = () => {
         setIsModalOpen(false);
-        setNewChurch({ name: '', address: '', phone: '', email: '', admin: '', description: '', type: 'catholic', photo: '' });
+        // Reset form
+        setNewFiangonana({
+            name: '',
+            address: '',
+            phone: '',
+            email: '',
+            admin: '',
+            description: '',
+            type: 'catholic',
+            photo: ''
+        });
     };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setNewChurch({ ...newChurch, [name]: value });
+        setNewFiangonana({
+            ...newFiangonana,
+            [name]: value
+        });
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const newItem = { ...newChurch, id: churches.length + 1 };
-        setChurches([...churches, newItem]);
+        // Ajouter la nouvelle église à la liste
+        const newFiangonanaWithId = {
+            ...newFiangonana,
+            id: fiangonanas.length + 1
+        };
+        setFiangonanas([...fiangonanas, newFiangonanaWithId]);
         handleCloseModal();
-        alert("Église ajoutée avec succès !");
+        alert('Église ajoutée avec succès!');
     };
 
-    const handleSearch = (e) => setSearchTerm(e.target.value);
+    const handleSearch = (e) => {
+        setFiangonanaTerm(e.target.value);
+    };
 
-    const filteredChurches = churches.filter(c =>
-        c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        c.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        c.admin.toLowerCase().includes(searchTerm.toLowerCase())
+    const filtereFiangonana = fiangonanas.filter(fiangonana =>
+        fiangonana.name.toLowerCase().includes(fiangonanaTerm.toLowerCase()) ||
+        fiangonana.address.toLowerCase().includes(fiangonanaTerm.toLowerCase()) ||
+        fiangonana.admin.toLowerCase().includes(fiangonanaTerm.toLowerCase())
     );
 
     return (
-        <div className="church-management">
-
-            {/* Mini menu navigation */}
-            <nav className="mini-nav">
-                <button className={activeTab === "eglises" ? "active" : ""} onClick={() => setActiveTab("eglises")}>Églises</button>
-                <button className={activeTab === "quartiers" ? "active" : ""} onClick={() => setActiveTab("quartiers")}>Quartiers</button>
-                <button className={activeTab === "chefs" ? "active" : ""} onClick={() => setActiveTab("chefs")}>Chefs de quartier</button>
-            </nav>
-
-            {/* Contenu selon onglet */}
-            {activeTab === "eglises" && (
-                <div className="container">
-                    <header className="header-content">
-                        <h1>Liste complète des églises</h1>
-                        <button className="add-btn" onClick={handleOpenModal}><i className="fas fa-plus"></i> Ajouter une église</button>
-                    </header>
-
-                    <div className="search-bar">
-                        <input type="text" placeholder="Rechercher..." value={searchTerm} onChange={handleSearch} />
-                        <button className="filter-btn">
-                            <i className="fas fa-filter"></i> Filtrer
+        <div className="fiangonana-management">
+                    <div className="headerFiangonana-content">
+                        <div>
+                            <h1>Liste complète des églises enregistrées</h1>
+                        </div>
+                        <button className="addFiangonana-btn" onClick={handleOpenModal}>
+                            <i className="fas fa-plus"></i> Ajouter une église
                         </button>
                     </div>
-
-                    <div className="church-list">
-                        {filteredChurches.length > 0 ? (
-                            filteredChurches.map(c => (
-                                <ChurchItem key={c.id} church={c} />
-                            ))
-                        ) : (
-                            <p>Aucune église trouvée</p>
-                        )}
+              
+                <div className="searchFiangonana-bar">
+                    <div className="searchFiangonana-input">
+                        <FaSearch className="searchFiangonana-icon" />
+                        <input
+                            type="text"
+                            placeholder="Rechercher une église, une adresse ou un administrateur..."
+                            value={fiangonanaTerm}
+                            onChange={handleSearch}
+                        />
                     </div>
+                    <button className="filterFiangonana-btn">
+                        <i className="fas fa-filter"></i> Filtrer
+                    </button>
                 </div>
-            )}
 
-            {activeTab === "quartiers" && <Quartier />}
-            {activeTab === "chefs" && <ChefQuartier />}
+                <div className="fiangonana-list ">
+                    {filtereFiangonana.length > 0 ? (
+                        filtereFiangonana.map((fiangonana) => (
+                            <FiangonanaItem key={fiangonana.id} fiangonana={fiangonana} />
+                        ))
+                    ) : (
+                        <div className="no-result-card">
+                            <p>Aucune église trouvée</p>
+                        </div>
+                    )}
+                </div>
+            
 
             {isModalOpen && (
-                <AddChurchModal
-                    newChurch={newChurch}
+                <AddFiangonanaModal
+                    newFiangonana={newFiangonana}
                     handleInputChange={handleInputChange}
                     handleSubmit={handleSubmit}
                     handleCloseModal={handleCloseModal}
@@ -98,21 +159,149 @@ const Fiangonana = () => {
     );
 };
 
-const ChurchItem = ({ church }) => (
-    <div className="church-item">
-        <div className="church-image"><img src={church.photo} alt={church.name} /></div>
-        <div className="church-info">
-            <h3>{church.name}</h3>
-            <p><i className="fas fa-map-marker-alt"></i> {church.address}</p>
-            <p><i className="fas fa-phone"></i> {church.phone}</p>
-            <p><i className="fas fa-envelope"></i> {church.email}</p>
-            <p><i className="fas fa-user"></i> Admin: {church.admin}</p>
+const FiangonanaItem = ({ fiangonana }) => {
+    return (
+        <div className="fiangonana-item">
+            <div className="fiangonana-image">
+                <img src={fiangonana.photo} alt={fiangonana.name} />
+            </div>
+            <div className="fiangonana-info">
+                <h3>{fiangonana.name}</h3>
+                <p><i className="fas fa-map-marker-alt"></i> {fiangonana.address}</p>
+                <p><i className="fas fa-phone"></i> {fiangonana.phone}</p>
+                <p><i className="fas fa-envelope"></i> {fiangonana.email}</p>
+                <p><i className="fas fa-user"></i> Admin: {fiangonana.admin}</p>
+                <div className="fiangonana-type">
+                    <span className={`type-badge ${fiangonana.type}`}>
+                        {fiangonana.type === 'catholic' && 'Catholique'}
+                        {fiangonana.type === 'protestant' && 'Protestante'}
+                        {fiangonana.type === 'orthodox' && 'Orthodoxe'}
+                        {fiangonana.type === 'other' && 'Autre'}
+                    </span>
+                </div>
+            </div>
+            <div className="fiangonana-actions">
+                <button className="actionFiangonana-btn editFiangonana-btn">
+                    <FontAwesomeIcon icon={faEdit} />
+                </button>
+                <button className="actionFiangonana-btn deleteFiangonana-btn">
+                    <FontAwesomeIcon icon={faTrash} />
+                </button>
+            </div>
         </div>
-        <div className="church-actions">
-            <button className="action-btn edit-btn"><FontAwesomeIcon icon={faEdit} /></button>
-            <button className="action-btn delete-btn"><FontAwesomeIcon icon={faTrash} /></button>
+    );
+};
+
+const AddFiangonanaModal = ({ newFiangonana, handleInputChange, handleSubmit, handleCloseModal }) => {
+    return (
+        <div className="modalFiangonana">
+            <div className="modalFiangonana-content">
+                <div className="modalFiangonana-header">
+                    <h2>Ajouter une église</h2>
+                    <button className="close-btn" onClick={handleCloseModal}>&times;</button>
+                </div>
+                <div className="modalFiangonana-body">
+                    <form id="fiangonanaForm">
+                        <div className="formFiangonana-group">
+                            <label htmlFor="fiangonanaName">Nom de l'église *</label>
+                            <input
+                                type="text"
+                                id="fiangonanaName"
+                                name="name"
+                                value={newFiangonana.name}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </div>
+                        <div className="formFiangonana-group">
+                            <label htmlFor="fiangonanaAddress">Adresse *</label>
+                            <input
+                                type="text"
+                                id="fiangonanaAddress"
+                                name="address"
+                                value={newFiangonana.address}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </div>
+                        <div className="formFiangonana-group">
+                            <label htmlFor="fiangonanaPhone">Téléphone *</label>
+                            <input
+                                type="tel"
+                                id="fiangonanaPhone"
+                                name="phone"
+                                value={newFiangonana.phone}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </div>
+                        <div className="formFiangonana-group">
+                            <label htmlFor="fiangonanaEmail">Email *</label>
+                            <input
+                                type="email"
+                                id="fiangonanaEmail"
+                                name="email"
+                                value={newFiangonana.email}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </div>
+                        <div className="formFiangonana-group">
+                            <label htmlFor="fiangonanaAdmin">Nom de l'administrateur *</label>
+                            <input
+                                type="text"
+                                id="fiangonanaAdmin"
+                                name="admin"
+                                value={newFiangonana.admin}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </div>
+                        <div className="formFiangonana-group">
+                            <label htmlFor="fiangonanaPhoto">URL de la photo</label>
+                            <input
+                                type="url"
+                                id="fiangonanaPhoto"
+                                name="photo"
+                                value={newFiangonana.photo}
+                                onChange={handleInputChange}
+                                placeholder="https://..."
+                            />
+                        </div>
+                        <div className="formFiangonana-group">
+                            <label htmlFor="fiangonanaDescription">Description</label>
+                            <textarea
+                                id="fiangonanaDescription"
+                                name="description"
+                                value={newFiangonana.description}
+                                onChange={handleInputChange}
+                                rows="3"
+                            ></textarea>
+                        </div>
+                        <div className="formFiangonana-group">
+                            <label htmlFor="fiangonanaType">Type d'église *</label>
+                            <select
+                                id="fiangonanaType"
+                                name="type"
+                                value={newFiangonana.type}
+                                onChange={handleInputChange}
+                                required
+                            >
+                                <option value="catholic">Catholique</option>
+                                <option value="protestant">Protestante</option>
+                                <option value="orthodox">Orthodoxe</option>
+                                <option value="other">Autre</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div className="modalFiangonana-footer">
+                    <button className="cancel-btn" onClick={handleCloseModal}>Annuler</button>
+                    <button className="submit-btn" onClick={handleSubmit}>Enregistrer</button>
+                </div>
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 export default Fiangonana;
