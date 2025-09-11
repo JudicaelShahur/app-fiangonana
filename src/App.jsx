@@ -12,11 +12,16 @@ import Vola from "./pages/Vola";
 import Komitie from "./pages/Komitie";
 import Sampana from "./pages/Sampana";
 import Fiangonana from "./pages/Fiangonana";
+import PrivateRoute from "./routes/PrivateRoute";
+import Login from "./pages/Auth/Login";
+import Register from "./pages/Auth/Register";
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Layout />}>
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
         <Route index element={<Dashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/Statistique" element={<Statistique />} />

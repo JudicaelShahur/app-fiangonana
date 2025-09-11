@@ -177,7 +177,8 @@ const Statistique = () => {
         { id: 2, karite: 'Karite B', isaMpino: 90, mpitandrina: 'Marie Lambert', daty: '22/06/2023' },
         { id: 3, karite: 'Karite C', isaMpino: 60, mpitandrina: 'Thomas Martin', daty: '30/07/2023' },
         { id: 4, karite: 'Karite D', isaMpino: 45, mpitandrina: 'Sophie Leroux', daty: '10/08/2023' },
-        { id: 5, karite: 'Karite E', isaMpino: 85, mpitandrina: 'Pauline Bernard', daty: '05/07/2023' }
+        { id: 5, karite: 'Karite E', isaMpino: 85, mpitandrina: 'Pauline Bernard', daty: '05/07/2023' },
+        { id: 6, karite: 'Karite F', isaMpino: 24, mpitandrina: 'Razafindraibe Safidiniaina Judicael Ravololona Jeanne Esther', daty: '05/08/2023' }
     ];
 
     if (isLoading) {

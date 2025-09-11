@@ -2,7 +2,6 @@
 .statistics-container {
     margin-left: var(--sidebar-width);
     padding: 1.1rem;
-    /* mitovy amin'ny dashboard */
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -18,6 +17,63 @@
     font-weight: 500;
     padding-bottom: 20px;
     border-bottom: 2px solid var(--border-color);
+}
+
+/* Grille de stats */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Carte stat */
+.stat-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.stat-title {
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--accent-color);
+}
+
+/* Charts grid */
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.chart-wrapper {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 15px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+    height: 320px;
 }
 
 /* Controls */
@@ -38,198 +94,65 @@
 .view-toggle {
     display: flex;
     gap: 10px;
-    align-items: center;
     flex-wrap: wrap;
-}
-
-.period-selector span {
-    font-weight: 600;
-    color: var(--text-color);
 }
 
 .period-btn,
 .view-btn {
-    padding: 8px 15px;
+    padding: 8px 12px;
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
-    color: var(--text-color);
     cursor: pointer;
     transition: all var(--transition-speed);
     font-weight: 500;
-}
-
-.period-btn:hover,
-.view-btn:hover {
-    background-color: #f0f3ff;
+    color: var(--text-color);
 }
 
 .period-btn.active,
 .view-btn.active {
     background-color: var(--primary-color);
-    color: white;
+    color: #fff;
     border-color: var(--primary-color);
 }
 
-/* Grid cards */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    /* toy ny dashboard */
-    gap: 1.5rem;
-}
-
-/* Individual card */
-.stat-card {
-    background: var(--card-bg);
-    border-radius: 12px;
-    padding: 10px 20px;
-    /* toy ny dashboard */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    position: relative;
-    transition: all 0.3s ease;
-    overflow: hidden;
-    min-height: 140px;
-    /* toy ny dashboard */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.stat-card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 5px;
-    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-}
-
-.stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
-
-/* Stat content */
-.stat-content h3 {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--text-color);
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-.chart-container h3{
-    font-size: 0.9rem;
-        font-weight: 500;
-        color: var(--text-color);
-        margin-bottom: 10px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-}
-.stat-value {
-    font-size: 1.8rem;
-    /* toy ny dashboard */
-    font-weight: 700;
-    color: var(--accent-color);
-    margin-bottom: 10px;
-}
-
-/* Icon */
-.stat-icon {
-    font-size: 1.8rem;
-    /* toy ny dashboard */
-    align-self: flex-end;
-    color: var(--accent-color);
-    margin-top: auto;
-    opacity: 0.2;
-}
-
-/* Charts container */
-.chart-container {
-    background: var(--card-bg);
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    border: 1px solid var(--border-color);
-    position: relative;
-    overflow: hidden;
-}
-
-.chart-container::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 5px;
-    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-}
-
-.chart-wrapper {
-    height: 300px;
-    width: 100%;
-    /* responsive toy ny dashboard */
-}
-
-/* Tables */
+/* Table */
 .data-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
+    margin-top: 20px;
+    background: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
 }
 
 .data-table th,
 .data-table td {
-    padding: 12px 15px;
+    padding: 12px;
+    border: 1px solid var(--border-color);
     text-align: left;
-    border-bottom: 1px solid var(--border-color);
     color: var(--text-color);
 }
 
 .data-table th {
-    color: var(--text-color);
-    font-weight: 500;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 0.5px;
+    background: var(--bg-color);
+    font-weight: 600;
 }
 
-.data-table tr:hover {
-    background-color: #f8f9fc;
-}
-.table-responsive {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
 /* ===== RESPONSIVE ===== */
 
-/* Tablet & mobile like dashboard */
+/* Tablette */
 @media (max-width: 992px) {
-    .stats-grid {
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    }
-
-    .charts-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .stats-controls {
-        flex-direction: column;
-        align-items: flex-start;
-    }
     .statistics-container {
         margin-left: 0;
         padding: 1rem;
     }
 }
 
+/* Mobile */
 @media (max-width: 768px) {
-    .stats-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
+    .statistics-container h1 {
+        font-size: 1.6rem;
     }
 
     .stats-controls {
@@ -237,22 +160,8 @@
         align-items: flex-start;
     }
 
-    .period-selector,
-    .view-toggle {
-        flex-direction: column;
-        width: 100%;
-        align-items: flex-start;
-    }
-
-    .period-btn,
-    .view-btn {
-        width: 100%;
-        text-align: center;
-    }
-
-    .statistics-container h1 {
-        font-size: 1.8rem;
-        /* toy ny dashboard */
+    .chart-wrapper {
+        height: 250px;
     }
 
     .data-table {
@@ -260,11 +169,28 @@
         overflow-x: auto;
     }
 }
-@media (max-width: 600px) {
+
+/* Petit mobile */
+@media (max-width: 480px) {
+    .statistics-container {
+        padding: 0.6rem;
+    }
+
+    .statistics-container h1 {
+        font-size: 1.4rem;
+    }
+
+    .stat-value {
+        font-size: 1.2rem;
+    }
+
+    .chart-wrapper {
+        height: 200px;
+    }
+
     .data-table th,
     .data-table td {
-        white-space: nowrap; /* Tsy tapaka amin’ny andalana vaovao */
-        padding: 2px;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
+        padding: 6px;
     }
 }

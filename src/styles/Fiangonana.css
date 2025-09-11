@@ -10,10 +10,29 @@
 }
 
 .container {
-    
     margin: 0 auto;
 }
+/* menu  */
+.mini-nav {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
 
+.mini-nav button {
+    padding: 8px 15px;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: 0.3s;
+}
+
+.mini-nav button.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
 /* ===== HEADER ===== */
 header {
     padding: 25px;

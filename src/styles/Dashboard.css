@@ -1,4 +1,3 @@
-
 /* Container principal */
 .dashboard-container {
     margin-left: var(--sidebar-width);
@@ -8,7 +7,6 @@
     flex-direction: column;
     gap: 2rem;
     transition: all 0.3s ease;
-    /* Raha ampiasaina ao anatiny layout flex */
 }
 
 /* Titre et paragraphe */
