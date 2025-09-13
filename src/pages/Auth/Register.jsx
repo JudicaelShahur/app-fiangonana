@@ -1,10 +1,11 @@
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import ChurchLogo from "../Shared/ChurchLogo";
-import "/src/styles/Auth.css";
+import "/src/styles/Register.css";
 import useRegisterForm from "../../hooks/useRegisterForm";
 import FormulaireInscriptionAdmin from "./AdminRegisterForm";
 import FormulaireInscriptionUtilisateur from "./UserRegisterForm";
-import flmlogo from '../../assets/flmLogo.png'
+import flmlogo from '../../assets/flmLogo.png';
+import { Link } from "react-router-dom";
+
 const Register = () => {
   const {
     rôleActif,
@@ -26,70 +27,66 @@ const Register = () => {
   } = useRegisterForm();
 
   return (
-    <div className="fullscreen-container">
-      {/* panneau gauche */}
-      <div className="left-panel">
-        <div className="welcome-text">
-          <h1>Bienvenue</h1>
-          <h2>Rejoignez-nous</h2>
-          <div className="divider"></div>
-          <p>
-            Inscrivez-vous selon votre rôle pour accéder aux services de
-            l'église. Les administrateurs et les utilisateurs réguliers ont
-            différents niveaux d'accès.
-          </p>
-          <p>En cliquant sur "S'inscrire", vous acceptez les conditions.</p>
-        </div>
-        <div className="terms">
-          <p>
-            En vous inscrivant, vous acceptez nos{" "}
-            <a href="#">Conditions d'utilisation</a> et notre{" "}
-            <a href="#">Politique de confidentialité</a>.
-          </p>
-        </div>
+    <div className="containerResiger right-panel-active">
+      {/* panneau droit */}
+      <div className="formLogin-container sign-up-container">
+        {/* FORMULAIRE PRINCIPAL */}
+        <form onSubmit={gérerSoumission}>
+          <h1>Créer un compte</h1>
+
+          <div className="btn-switch">
+            <button
+              type="button"
+              className={rôleActif === "admin" ? "active" : ""}
+              onClick={() => gérerChangementRôle("admin")}
+            >
+              Admin Fiangonana
+            </button>
+            <button
+              type="button"
+              className={rôleActif === "user" ? "active" : ""}
+              onClick={() => gérerChangementRôle("user")}
+            >
+              Utilisateur Fiangonana
+            </button>
+          </div>
+
+          {/* SOUS-FORMULAIRE */}
+          {rôleActif === "admin" ? (
+            <FormulaireInscriptionAdmin
+              formulaireAdmin={formulaireAdmin}
+              afficherMotDePasseAdmin={afficherMotDePasseAdmin}
+              afficherConfirmationMotDePasseAdmin={afficherConfirmationMotDePasseAdmin}
+              setAfficherMotDePasseAdmin={setAfficherMotDePasseAdmin}
+              setAfficherConfirmationMotDePasseAdmin={setAfficherConfirmationMotDePasseAdmin}
+              gérerChangementAdmin={gérerChangementAdmin}
+              vérifierSoliditéMotDePasse={vérifierSoliditéMotDePasse}
+            />
+          ) : (
+            <FormulaireInscriptionUtilisateur
+              formulaireUtilisateur={formulaireUtilisateur}
+              afficherMotDePasseUtilisateur={afficherMotDePasseUtilisateur}
+              afficherConfirmationMotDePasseUtilisateur={afficherConfirmationMotDePasseUtilisateur}
+              setAfficherMotDePasseUtilisateur={setAfficherMotDePasseUtilisateur}
+              setAfficherConfirmationMotDePasseUtilisateur={setAfficherConfirmationMotDePasseUtilisateur}
+              gérerChangementUtilisateur={gérerChangementUtilisateur}
+              vérifierSoliditéMotDePasse={vérifierSoliditéMotDePasse}
+            />
+          )}
+        </form>
       </div>
 
-      {/* panneau droit */}
-      <div className="right-panel">
-        <img src={flmlogo} alt="" />
-        <div className="role-selector">
-          <button
-            className={`role-btn ${rôleActif === "admin" ? "active" : ""}`}
-            onClick={() => gérerChangementRôle("admin")}
-          >
-            Admin Fiangonana
-          </button>
-          <button
-            className={`role-btn ${rôleActif === "user" ? "active" : ""}`}
-            onClick={() => gérerChangementRôle("user")}
-          >
-            Utilisateur Fiangonana
-          </button>
+      {/* Overlay */}
+      <div className="overlayRegister-container">
+        <div className="overlayRegister">
+          <div className="overlayRegister-panel overlayRegister-rigth">
+            <h1>Content de vous revoir !</h1>
+            <p>Pour rester connecté avec nous, veuillez vous connecter avec vos informations personnelles</p>
+            <button className="ghost">
+              <Link to="/login">Connectez-vous ici</Link>
+            </button>
+          </div>
         </div>
-
-        {rôleActif === "admin" ? (
-          <FormulaireInscriptionAdmin
-            formulaireAdmin={formulaireAdmin}
-            afficherMotDePasseAdmin={afficherMotDePasseAdmin}
-            afficherConfirmationMotDePasseAdmin={afficherConfirmationMotDePasseAdmin}
-            setAfficherMotDePasseAdmin={setAfficherMotDePasseAdmin}
-            setAfficherConfirmationMotDePasseAdmin={setAfficherConfirmationMotDePasseAdmin}
-            gérerChangementAdmin={gérerChangementAdmin}
-            vérifierSoliditéMotDePasse={vérifierSoliditéMotDePasse}
-            gérerSoumission={gérerSoumission}
-          />
-        ) : (
-          <FormulaireInscriptionUtilisateur
-            formulaireUtilisateur={formulaireUtilisateur}
-            afficherMotDePasseUtilisateur={afficherMotDePasseUtilisateur}
-            afficherConfirmationMotDePasseUtilisateur={afficherConfirmationMotDePasseUtilisateur}
-            setAfficherMotDePasseUtilisateur={setAfficherMotDePasseUtilisateur}
-            setAfficherConfirmationMotDePasseUtilisateur={setAfficherConfirmationMotDePasseUtilisateur}
-            gérerChangementUtilisateur={gérerChangementUtilisateur}
-            vérifierSoliditéMotDePasse={vérifierSoliditéMotDePasse}
-            gérerSoumission={gérerSoumission}
-          />
-        )}
       </div>
     </div>
   );

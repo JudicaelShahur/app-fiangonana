@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Utilisateurs</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --info: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(120deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        h1 i {
+            margin-right: 15px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        th {
+            background-color: var(--light);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background-color: rgba(76, 201, 240, 0.2);
+            color: #1686a0;
+        }
+
+        .badge-danger {
+            background-color: rgba(247, 37, 133, 0.2);
+            color: #c1126b;
+        }
+
+        .badge-primary {
+            background-color: rgba(67, 97, 238, 0.2);
+            color: var(--primary);
+        }
+
+        .badge-warning {
+            background-color: rgba(248, 150, 30, 0.2);
+            color: #c56f0c;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            width: 500px;
+            max-width: 90%;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .close {
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--light-gray);
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .role-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .role-badge {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .role-badge:hover {
+            transform: translateY(-2px);
+        }
+
+        .role-badge.selected {
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
+        .active {
+            display: flex;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            th,
+            td {
+                padding: 10px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="container">
+            <header>
+                <h1><i class="fas fa-users-cog"></i> Gestion des Utilisateurs</h1>
+                <p>Interface d'administration pour gérer les utilisateurs et leurs permissions</p>
+            </header>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Liste des Utilisateurs</div>
+                    <button class="btn btn-primary" id="addUserBtn">
+                        <i class="fas fa-plus"></i> Ajouter un utilisateur
+                    </button>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Rôle</th>
+                            <th>Email</th>
+                            <th>État</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTable">
+                        <!-- Les utilisateurs seront ajoutés ici dynamiquement -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Gestion des Rôles et Permissions</div>
+                </div>
+
+                <div class="role-badges">
+                    <div class="role-badge badge-primary selected">Admin</div>
+                    <div class="role-badge badge-success">Mpitondra</div>
+                    <div class="role-badge badge-warning">Secrétaire</div>
+                    <div class="role-badge badge-danger">Utilisateur</div>
+                </div>
+
+                <div class="form-group" style="margin-top: 20px;">
+                    <label>Permissions du rôle sélectionné:</label>
+                    <div>
+                        <input type="checkbox" id="perm1" checked> <label for="perm1" style="display: inline;">Gestion
+                            des utilisateurs</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="perm2" checked> <label for="perm2"
+                            style="display: inline;">Modification du contenu</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="perm3"> <label for="perm3" style="display: inline;">Accès aux
+                            rapports</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="perm4" checked> <label for="perm4" style="display: inline;">Création
+                            de contenu</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal pour ajouter/modifier un utilisateur -->
+        <div class="modal" id="userModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title" id="modalTitle">Ajouter un Utilisateur</div>
+                    <span class="close">&times;</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="userName">Nom complet</label>
+                    <input type="text" id="userName" placeholder="Entrez le nom complet">
+                </div>
+
+                <div class="form-group">
+                    <label for="userEmail">Email</label>
+                    <input type="email" id="userEmail" placeholder="Entrez l'adresse email">
+                </div>
+
+                <div class="form-group">
+                    <label for="userRole">Rôle</label>
+                    <select id="userRole">
+                        <option value="admin">Administrateur</option>
+                        <option value="mpitondra">Mpitondra</option>
+                        <option value="secretaire">Secrétaire</option>
+                        <option value="user">Utilisateur standard</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="userStatus">Statut</label>
+                    <select id="userStatus">
+                        <option value="active">Actif</option>
+                        <option value="inactive">Inactif</option>
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn" id="cancelBtn">Annuler</button>
+                    <button class="btn btn-primary" id="saveUserBtn">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Données des utilisateurs (simulées)
+        const users = [
+            { id: 1, name: "Jean Dupont", role: "admin", email: "jean.dupont@example.com", status: "active" },
+            { id: 2, name: "Marie Lambert", role: "secretaire", email: "marie.lambert@example.com", status: "active" },
+            { id: 3, name: "Paul Martin", role: "mpitondra", email: "paul.martin@example.com", status: "active" },
+            { id: 4, name: "Sophie Leroy", role: "user", email: "sophie.leroy@example.com", status: "inactive" }
+        ];
+
+        // Éléments DOM
+        const usersTable = document.getElementById('usersTable');
+        const userModal = document.getElementById('userModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const userNameInput = document.getElementById('userName');
+        const userEmailInput = document.getElementById('userEmail');
+        const userRoleSelect = document.getElementById('userRole');
+        const userStatusSelect = document.getElementById('userStatus');
+        const addUserBtn = document.getElementById('addUserBtn');
+        const saveUserBtn = document.getElementById('saveUserBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const closeBtn = document.querySelector('.close');
+        const roleBadges = document.querySelectorAll('.role-badge');
+
+        // Variables d'état
+        let currentUser = null;
+        let isEditMode = false;
+
+        // Afficher les utilisateurs dans le tableau
+        function renderUsers() {
+            usersTable.innerHTML = '';
+
+            users.forEach(user => {
+                const row = document.createElement('tr');
+
+                // Déterminer les classes de badge en fonction du rôle et du statut
+                let roleBadgeClass = 'badge-primary';
+                if (user.role === 'mpitondra') roleBadgeClass = 'badge-success';
+                else if (user.role === 'secretaire') roleBadgeClass = 'badge-warning';
+                else if (user.role === 'user') roleBadgeClass = 'badge-danger';
+
+                const statusBadgeClass = user.status === 'active' ? 'badge-success' : 'badge-danger';
+                const statusText = user.status === 'active' ? 'Actif' : 'Inactif';
+
+                row.innerHTML = `
+                    <td>${user.name}</td>
+                    <td><span class="badge ${roleBadgeClass}">${user.role}</span></td>
+                    <td>${user.email}</td>
+                    <td><span class="badge ${statusBadgeClass}">${statusText}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn btn-warning" onclick="editUser(${user.id})">
+                                <i class="fas fa-edit"></i> Modifier
+                            </button>
+                            <button class="action-btn btn-danger" onclick="deleteUser(${user.id})">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </button>
+                        </div>
+                    </td>
+                `;
+
+                usersTable.appendChild(row);
+            });
+        }
+
+        // Ouvrir le modal pour ajouter un utilisateur
+        addUserBtn.addEventListener('click', () => {
+            isEditMode = false;
+            modalTitle.textContent = 'Ajouter un Utilisateur';
+            resetForm();
+            userModal.classList.add('active');
+        });
+
+        // Fermer le modal
+        function closeModal() {
+            userModal.classList.remove('active');
+        }
+
+        closeBtn.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+
+        // Réinitialiser le formulaire
+        function resetForm() {
+            userNameInput.value = '';
+            userEmailInput.value = '';
+            userRoleSelect.value = 'admin';
+            userStatusSelect.value = 'active';
+            currentUser = null;
+        }
+
+        // Enregistrer un utilisateur (ajout ou modification)
+        saveUserBtn.addEventListener('click', () => {
+            const name = userNameInput.value;
+            const email = userEmailInput.value;
+            const role = userRoleSelect.value;
+            const status = userStatusSelect.value;
+
+            if (!name || !email) {
+                alert('Veuillez remplir tous les champs obligatoires.');
+                return;
+            }
+
+            if (isEditMode && currentUser) {
+                // Modification
+                const userIndex = users.findIndex(u => u.id === currentUser.id);
+                if (userIndex !== -1) {
+                    users[userIndex] = {
+                        ...users[userIndex],
+                        name,
+                        email,
+                        role,
+                        status
+                    };
+                }
+            } else {
+                // Ajout
+                const newUser = {
+                    id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
+                    name,
+                    email,
+                    role,
+                    status
+                };
+                users.push(newUser);
+            }
+
+            renderUsers();
+            closeModal();
+        });
+
+        // Modifier un utilisateur
+        window.editUser = function (id) {
+            const user = users.find(u => u.id === id);
+            if (user) {
+                isEditMode = true;
+                currentUser = user;
+                modalTitle.textContent = 'Modifier l\'Utilisateur';
+                userNameInput.value = user.name;
+                userEmailInput.value = user.email;
+                userRoleSelect.value = user.role;
+                userStatusSelect.value = user.status;
+                userModal.classList.add('active');
+            }
+        };
+
+        // Supprimer un utilisateur
+        window.deleteUser = function (id) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
+                const userIndex = users.findIndex(u => u.id === id);
+                if (userIndex !== -1) {
+                    users.splice(userIndex, 1);
+                    renderUsers();
+                }
+            }
+        };
+
+        // Gestion de la sélection des rôles
+        roleBadges.forEach(badge => {
+            badge.addEventListener('click', () => {
+                roleBadges.forEach(b => b.classList.remove('selected'));
+                badge.classList.add('selected');
+            });
+        });
+
+        // Initialiser l'application
+        renderUsers();
+    </script>
+</body>
+
+</html>

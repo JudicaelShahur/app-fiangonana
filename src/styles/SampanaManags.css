@@ -1,5 +1,5 @@
-/* ===== Komitie CSS ===== */
-.komitie-container {
+/* ===== Sampan Manags CSS ===== */
+.sampan-manags-container {
     margin-left: var(--sidebar-width);
     padding: 20px;
     min-height: 100vh;
@@ -8,11 +8,11 @@
     transition: all 0.3s ease;
 }
 
-.komitie-content {
+.sampan-manags-content {
     margin: 0 auto;
 }
 
-.komitie-header {
+.sampan-manags-header {
     padding: 25px;
     border-radius: var(--border-radius);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
@@ -26,7 +26,7 @@
     margin-bottom: 25px;
 }
 
-.komitie-header::after {
+.sampan-manags-header::after {
     content: '';
     position: absolute;
     top: 0;
@@ -38,14 +38,14 @@
     border-top-left-radius: var(--border-radius);
 }
 
-.komitie-header h1 {
+.sampan-manags-header h1 {
     font-size: 1.5rem;
     margin: 0;
     font-weight: 600;
     color: var(--primary-color, #2c3e50);
 }
 
-.add-btn-komitie {
+.add-btn-sampan-manags {
     background-color: var(--card-bg);
     color: var(--primary-color);
     border: none;
@@ -60,12 +60,12 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.add-btn-komitie:hover {
+.add-btn-sampan-manags:hover {
     transform: translateY(-3px);
     box-shadow: 0 6px 12px rgba(52, 152, 219, 0.4);
 }
 
-.search-komitie-bar {
+.search-sampan-manags-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -78,12 +78,12 @@
     gap: 15px;
 }
 
-.search-komitie-input {
+.search-sampan-manags-input {
     position: relative;
     flex: 1;
 }
 
-.search-komitie-input .search-komitie-icon {
+.search-sampan-manags-input .search-sampan-manags-icon {
     position: absolute;
     top: 50%;
     right: 15px;
@@ -93,7 +93,7 @@
     pointer-events: none;
 }
 
-.search-komitie-input input {
+.search-sampan-manags-input input {
     width: 100%;
     padding: 14px 0px 15px 0px;
     border: 1px solid var(--border-color);
@@ -105,13 +105,13 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
-.search-komitie-input:focus {
+.search-sampan-manags-input:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 4px 10px rgba(52, 152, 219, 0.15);
 }
 
-.filter-komitie-btn {
+.filter-sampan-manags-btn {
     background-color: var(--card-bg);
     color: var(--text-color);
     border: 1px solid var(--border-color);
@@ -125,18 +125,18 @@
     transition: all 0.3s ease;
 }
 
-.filter-komitie-btn:hover {
+.filter-sampan-manags-btn:hover {
     background-color: var(--hover-color);
     transform: translateY(-2px);
 }
 
-/* Table Komitie */
-.table-komitie-container {
+/* Table */
+.table-sampan-manags-container {
     width: 100%;
     overflow-x: auto;
 }
 
-.komitie-table {
+.sampan-manags-table {
     width: 100%;
     border-collapse: collapse;
     background-color: var(--card-bg, #fff);
@@ -145,8 +145,8 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-.komitie-table th,
-.komitie-table td {
+.sampan-manags-table th,
+.sampan-manags-table td {
     padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid #e9ecef;
@@ -154,22 +154,22 @@
     color: var(--text-color, #333);
 }
 
-.komitie-table th {
+.sampan-manags-table th {
     background-color: var(--bg-color, #f8f9fa);
     font-weight: 600;
 }
 
-.komitie-table tr:hover {
+.sampan-manags-table tr:hover {
     background-color: rgba(0, 0, 0, 0.03);
 }
 
 /* Action Buttons */
-.action-btn-komitie {
+.action-btn-sampan-manags {
     display: flex;
     gap: 8px;
 }
 
-.btn-komitie {
+.btn-sampan-manags {
     align-items: center;
     justify-content: center;
     width: 36px;
@@ -182,24 +182,24 @@
     transition: background-color var(--transition-speed);
 }
 
-.btn-komitie:hover {
+.btn-sampan-manags:hover {
     background-color: var(--primary-color);
     color: white;
 }
 
-.btn-komitie.btn-danger:hover {
+.btn-sampan-manags.btn-danger:hover {
     background-color: #e74a3b;
 }
 
-.no-results-komitie {
+.no-results-sampan-manags {
     padding: 30px;
     text-align: center;
     color: #6c757d;
     font-style: italic;
 }
 
-/* ===== Modal Komitie ===== */
-.modal-komitie-overlay {
+/* Modal */
+.modal-sampan-manags-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -213,7 +213,7 @@
     padding: 20px;
 }
 
-.modal-komitie-content {
+.modal-sampan-manags-content {
     background-color: #fff;
     border-radius: 8px;
     width: 100%;
@@ -222,7 +222,7 @@
     overflow: hidden;
 }
 
-.modal-komitie-header {
+.modal-sampan-manags-header {
     padding: 20px;
     border-bottom: 1px solid #e9ecef;
     display: flex;
@@ -230,13 +230,13 @@
     align-items: center;
 }
 
-.modal-komitie-header h2 {
+.modal-sampan-manags-header h2 {
     margin: 0;
     color: #2c3e50;
     font-size: 20px;
 }
 
-.close-btn-komitie {
+.close-btn-sampan-manags {
     background: none;
     border: none;
     font-size: 24px;
@@ -244,26 +244,26 @@
     color: #6c757d;
 }
 
-.close-btn-komitie:hover {
+.close-btn-sampan-manags:hover {
     color: #2c3e50;
 }
 
-.modal-komitie-body {
+.modal-sampan-manags-body {
     padding: 20px;
 }
 
-.form-komitie-group {
+.form-sampan-manags-group {
     margin-bottom: 15px;
 }
 
-.form-komitie-group label {
+.form-sampan-manags-group label {
     display: block;
     margin-bottom: 5px;
     font-weight: 500;
     color: #2c3e50;
 }
 
-.form-komitie-group input {
+.form-sampan-manags-group input {
     width: 100%;
     padding: 10px;
     border: 1px solid #ddd;
@@ -272,13 +272,13 @@
     box-sizing: border-box;
 }
 
-.form-komitie-group input:focus {
+.form-sampan-manags-group input:focus {
     outline: none;
     border-color: #3498db;
     box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 }
 
-.modal-komitie-footer {
+.modal-sampan-manags-footer {
     padding: 15px 20px;
     border-top: 1px solid #e9ecef;
     display: flex;
@@ -287,8 +287,8 @@
     flex-wrap: wrap;
 }
 
-.cancel-komitie-btn,
-.save-komitie-btn {
+.cancel-sampan-manags-btn,
+.save-sampan-manags-btn {
     border: none;
     padding: 10px 15px;
     border-radius: 4px;
@@ -296,70 +296,70 @@
     font-weight: 500;
 }
 
-.cancel-komitie-btn {
+.cancel-sampan-manags-btn {
     background-color: #95a5a6;
     color: #fff;
 }
 
-.cancel-komitie-btn:hover {
+.cancel-sampan-manags-btn:hover {
     background-color: #7f8c8d;
 }
 
-.save-komitie-btn {
+.save-sampan-manags-btn {
     background-color: #3498db;
     color: #fff;
 }
 
-.save-komitie-btn:hover {
+.save-sampan-manags-btn:hover {
     background-color: #2980b9;
 }
 
-/* ===== Responsive ===== */
+/* Responsive */
 
 /* Tablet */
 @media (max-width: 992px) {
-    .komitie-container {
+    .sampan-manags-container {
         margin-left: 0;
         padding: 1rem;
     }
 
-    .table-komitie-container {
+    .table-sampan-manags-container {
         overflow-x: auto;
     }
 }
 
 /* Mobile */
 @media (max-width: 768px) {
-    .komitie-header {
+    .sampan-manags-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
     }
 
-    .komitie-table th,
-    .komitie-table td {
+    .sampan-manags-table th,
+    .sampan-manags-table td {
         font-size: 0.85rem;
         padding: 10px;
     }
 
-    .add-btn-komitie {
+    .add-btn-sampan-manags {
         width: 100%;
         justify-content: center;
     }
 
-    .modal-komitie-footer {
+    .modal-sampan-manags-footer {
         flex-direction: column;
     }
 
-    .cancel-komitie-btn,
-    .save-komitie-btn {
+    .cancel-sampan-manags-btn,
+    .save-sampan-manags-btn {
         width: 100%;
     }
 }
 
 /* Very Small Mobile – Transform table to cards */
 @media (max-width: 480px) {
-    .komitie-table tr {
+    .sampan-manags-table tr {
         display: block;
         margin-bottom: 15px;
         padding: 12px;
@@ -369,7 +369,7 @@
         border: 1px solid #e9ecef;
     }
 
-    .komitie-table td {
+    .sampan-manags-table td {
         display: flex;
         flex-direction: column;
         text-align: left;
@@ -378,7 +378,7 @@
         position: relative;
     }
 
-    .komitie-table td::before {
+    .sampan-manags-table td::before {
         content: attr(data-label);
         font-weight: 600;
         margin-bottom: 4px;
@@ -386,11 +386,11 @@
         color: var(--secondary-color, #555);
     }
 
-    .komitie-table th {
+    .sampan-manags-table th {
         display: none;
     }
 
-    .action-btn-komitie td {
+    .action-btn-sampan-manags td {
         margin-top: 5px;
     }
 }

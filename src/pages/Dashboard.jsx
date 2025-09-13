@@ -57,14 +57,14 @@ const Dashboard = () => {
                 ))}
             </div>
 
-            <div className="recent-activities">
+            <div className="dashboard-recent-activities">
                 <h2>Activités récentes</h2>
                 {recentActivities.length === 0 ? (
                     <p>Aucune activité récente</p>
                 ) : (
                     <ul>
                         {recentActivities.map((activity) => (
-                            <li key={activity.id} className="activity-item">
+                            <li key={activity.id} className="dashboard-activity-item">
                                 <strong>{activity.user}</strong> {activity.action} <span className="activity-date">{activity.date}</span>
                             </li>
                         ))}

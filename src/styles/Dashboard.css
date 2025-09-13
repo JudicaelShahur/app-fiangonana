@@ -154,7 +154,7 @@
 }
 
 /* Recent activities */
-.recent-activities {
+.dashboard-recent-activities {
     background: var(--card-bg);
     border-radius: 12px;
     padding: 30px;
@@ -165,7 +165,7 @@
 
 
 /* Liste d’activités */
-.activity-item {
+.dashboard-activity-item {
     padding: 0.5rem 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
@@ -173,7 +173,7 @@
     color: var(--secondary-color);
 }
 
-.activity-item:last-child {
+.dashboard-activity-item:last-child {
     border-bottom: none;
 }
 
@@ -201,7 +201,7 @@
         gap: 1rem;
     }
 
-    .recent-activities {
+    .dashboard-recent-activities {
         max-height: none;
     }
 }

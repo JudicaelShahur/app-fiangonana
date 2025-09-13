@@ -1,0 +1,473 @@
+/* Container global */
+.containerResiger {
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.15),
+        0 10px 10px rgba(0, 0, 0, 0.10);
+    position: relative;
+    overflow: hidden;
+    width: 900px;
+    max-width: 90%;
+    min-height: 550px;
+    display: flex;
+    margin: 100px auto;
+}
+
+/* Formulaire d'inscription */
+.formLogin-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+}
+
+.formLogin-container form {
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    height: 100%;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+}
+
+.formLogin-container h1 {
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 2rem;
+}
+
+/* Boutons de sélection de rôle */
+.btn-switch {
+    display: flex;
+    width: 100%;
+    max-width: 350px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #4a6fa5;
+}
+
+.btn-switch button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background: #f8f9fa;
+    color: #4a6fa5;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-switch button.active {
+    background: #4a6fa5;
+    color: white;
+}
+
+.btn-switch button:not(.active):hover {
+    background: #e9ecef;
+}
+
+/* Overlay à gauche */
+.overlayRegister-container {
+    flex: 1;
+    background: linear-gradient(to right, #4a6fa5, #6d9dc5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    padding: 40px;
+    order: -1;
+    /* Place l'overlay à gauche */
+}
+
+.overlayRegister-panel {
+    text-align: center;
+    max-width: 300px;
+}
+
+.overlayRegister-panel h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.overlayRegister-panel p {
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+/* CORRECTION DES ICÔNES - STRUCTURE MODIFIÉE */
+
+/* Conteneur parent pour les groupes de formulaire */
+.formAdmin-group,
+.formUser-group {
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 350px;
+}
+
+.formAdmin-group label,
+.formUser-group label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: #444;
+    text-align: left;
+}
+
+/* Conteneur pour les inputs avec icônes */
+.input-icon-container {
+    position: relative;
+    width: 100%;
+}
+
+.formAdmin-group input,
+.formUser-group input,
+.formUser-group select {
+    width: 100%;
+    padding: 12px 40px 12px 40px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s;
+    box-sizing: border-box;
+}
+
+.formAdmin-group input:focus,
+.formUser-group input:focus,
+.formUser-group select:focus {
+    border-color: #4a6fa5;
+}
+
+/* Icônes à gauche */
+.inputAdmin-icon,
+.inputUser-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    font-size: 14px;
+    pointer-events: none;
+    /* Empêche l'icône d'interférer avec les clics */
+}
+
+/* Icônes à droite (pour les mots de passe) */
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #666;
+    z-index: 2;
+}
+
+/* Pour les champs qui n'ont pas d'icône à droite */
+.input-icon-container:not(.has-right-icon) input {
+    padding: 12px 12px 12px 40px;
+}
+
+/* Conteneurs de ligne pour les champs côte à côte */
+.formAdmin-row,
+.formUser-row {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+    max-width: 350px;
+}
+
+.formAdmin-row>div,
+.formUser-row>div {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Styles spécifiques pour les mots de passe */
+.passwordAdmin-strength,
+.passwordUser-strength {
+    height: 5px;
+    background: #eee;
+    border-radius: 3px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.passwordAdmin-strength-bar,
+.passwordUser-strength-bar {
+    height: 100%;
+    transition: all 0.3s;
+}
+
+/* Boutons de soumission */
+.btnAdmin,
+.btnUser {
+    border-radius: 20px;
+    border: 1px solid #4a6fa5;
+    background-color: #4a6fa5;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 12px 40px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: transform 0.2s ease-in;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+    max-width: 350px;
+}
+
+.btnAdmin:hover,
+.btnUser:hover {
+    background-color: #3a5a80;
+    border-color: #3a5a80;
+    transform: scale(1.02);
+}
+
+/* Bouton ghost */
+.ghost {
+    background: transparent;
+    color: #fff;
+    border-radius: 20px;
+    border: 1px solid #fff;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 12px 40px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.2s ease-in;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.ghost:hover {
+    background-color: #fff;
+    color: #4a6fa5;
+    transform: scale(1.02);
+}
+
+.ghost a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* Menu déroulant pour la recherche d'église */
+.select-wrapper {
+    position: relative;
+}
+
+.select-wrapper ul {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    z-index: 10;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.select-wrapper li {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    transition: background 0.2s;
+}
+
+.select-wrapper li:hover {
+    background: #f5f5f5;
+}
+
+.select-wrapper li:last-child {
+    border-bottom: none;
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+
+/* Écrans très larges (2K, 4K, etc.) */
+@media (min-width: 2000px) {
+    .containerResiger {
+        width: 1200px;
+        min-height: 700px;
+        margin: 150px auto;
+    }
+
+    .formLogin-container h1 {
+        font-size: 2.5rem;
+    }
+
+    .formAdmin-group label,
+    .formUser-group label,
+    .formAdmin-group input,
+    .formUser-group input,
+    .formUser-group select,
+    .btn-switch button {
+        font-size: 18px;
+    }
+
+    .formAdmin-group input,
+    .formUser-group input,
+    .formUser-group select {
+        padding: 16px 45px 16px 45px;
+    }
+
+    .inputAdmin-icon,
+    .inputUser-icon {
+        font-size: 18px;
+        left: 15px;
+    }
+
+    .overlayRegister-panel h1 {
+        font-size: 32px;
+    }
+
+    .overlayRegister-panel p {
+        font-size: 18px;
+    }
+
+    .btnAdmin,
+    .btnUser,
+    .ghost {
+        padding: 16px 45px;
+        font-size: 18px;
+    }
+}
+
+/* Tablettes et petits écrans d'ordinateur */
+@media (max-width: 992px) {
+    .containerResiger {
+        flex-direction: column;
+        width: 90%;
+        min-height: auto;
+        margin: 40px auto;
+        max-width: 500px;
+    }
+
+    .overlayRegister-container {
+        order: 0;
+        padding: 30px;
+        min-height: 200px;
+    }
+
+    .formLogin-container {
+        padding: 30px;
+    }
+}
+
+/* Grands téléphones */
+@media (max-width: 768px) {
+    .containerResiger {
+        width: 95%;
+        margin: 20px auto;
+    }
+
+    .formLogin-container,
+    .overlayRegister-container {
+        padding: 20px;
+    }
+
+    .formAdmin-row,
+    .formUser-row {
+        flex-direction: column;
+        gap: 0;
+    }
+}
+
+/* Petits téléphones */
+@media (max-width: 480px) {
+    .containerResiger {
+        border-radius: 10px;
+        width: 100%;
+        margin: 10px auto;
+        box-shadow: none;
+    }
+
+    .formLogin-container,
+    .overlayRegister-container {
+        padding: 15px;
+    }
+
+    .formLogin-container h1 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+
+    .btn-switch {
+        flex-direction: column;
+    }
+
+    .formAdmin-group input,
+    .formUser-group input,
+    .formUser-group select {
+        padding: 10px 35px 10px 35px;
+    }
+
+    .inputAdmin-icon,
+    .inputUser-icon {
+        left: 10px;
+    }
+
+    .password-toggle {
+        right: 10px;
+    }
+
+    .btnAdmin,
+    .btnUser,
+    .ghost {
+        padding: 10px 30px;
+    }
+
+    .overlayRegister-panel h1 {
+        font-size: 20px;
+    }
+
+    .overlayRegister-panel p {
+        font-size: 12px;
+    }
+}
+
+/* Mode paysage sur mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+    .containerResiger {
+        min-height: 300px;
+        margin: 20px auto;
+    }
+
+    .formLogin-container {
+        padding: 15px;
+    }
+
+    .formAdmin-group,
+    .formUser-group {
+        margin-bottom: 10px;
+    }
+}
+
+/* Écrans avec réduction de mouvement (accessibilité) */
+@media (prefers-reduced-motion: reduce) {
+
+    .btnAdmin,
+    .btnUser,
+    .ghost {
+        transition: none;
+    }
+
+    .btnAdmin:hover,
+    .btnUser:hover,
+    .ghost:hover {
+        transform: none;
+    }
+}

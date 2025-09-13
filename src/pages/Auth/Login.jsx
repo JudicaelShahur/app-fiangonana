@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import ChurchLogo from "../../pages/Shared/ChurchLogo";
-import "/src/styles/Auth.css";
+import "/src/styles/Login.css";
 import useLoginForm from "../../hooks/useLoginForm";
 
 const Login = () => {
@@ -16,37 +15,17 @@ const Login = () => {
   } = useLoginForm();
 
   return (
-    <div className="fullscreen-container">
-      <div className="left-panel">
-        <div className="welcome-text">
-          <h1>Content de vous revoir</h1>
-          <h2>Connectez-vous</h2>
-          <div className="divider"></div>
-          <p>
-            Accédez à votre espace personnel pour gérer les activités de votre
-            église et rester connecté avec votre communauté.
-          </p>
-          <p>
-            Si vous n'avez pas encore de compte, inscrivez-vous pour profiter de
-            tous nos services.
-          </p>
-        </div>
-        <div className="terms">
-          <p>
-            En vous connectant, vous acceptez nos{" "}
-            <a href="#">Conditions d'utilisation</a> et notre{" "}
-            <a href="#">Politique de confidentialité</a>.
-          </p>
-        </div>
-      </div>
+    <div className="containerLogin left-panel-active">
+      <div className="formLogin-container sign-in-container">
+        <form className="formLogin" onSubmit={gererSoumission(onLogin)}>
+          <h1>Se connecter</h1>
+          <div className="logoLogin">
+            <img src="src/assets/flmLogo.png" alt="Logo FLM" />
+          </div>
 
-      <div className="right-panel">
-        <ChurchLogo title="Connexion Fiangonana" />
-
-        <div className="login-form active">
-          <form onSubmit={gererSoumission(onLogin)}>
-            <div className="formUser-group">
-              <label htmlFor="nomUtilisateur">Nom d'utilisateur</label>
+          <div className="formLogin-group">
+            <label htmlFor="nomUtilisateur">Nom d'utilisateur</label>
+            <div className="input-with-icon">
               <input
                 type="text"
                 id="nomUtilisateur"
@@ -59,60 +38,63 @@ const Login = () => {
               />
               <i className="fas fa-user input-icon"></i>
             </div>
+          </div>
 
-            <div className="formUser-group">
-              <label htmlFor="motDePasse">Mot de passe</label>
-              <div className="password-input-container">
-                <input
-                  type={afficherMotDePasse ? "text" : "password"}
-                  id="motDePasse"
-                  name="motDePasse"
-                  placeholder="Entrez votre mot de passe"
-                  value={donneesFormulaire.motDePasse}
-                  onChange={gererChangement}
-                  required
-                  autoComplete="current-password"
-                />
-                <i className="fas fa-lock input-icon"></i>
-                <span
-                  className="password-toggle"
-                  onClick={basculerVisibiliteMotDePasse}
-                >
-                  <i
-                    className={`fas ${afficherMotDePasse ? "fa-eye-slash" : "fa-eye"
-                      }`}
-                  ></i>
-                </span>
-              </div>
+          <div className="formLogin-group">
+            <label htmlFor="motDePasse">Mot de passe</label>
+            <div className="input-with-icon password-container">
+              <input
+                type={afficherMotDePasse ? "text" : "password"}
+                id="motDePasse"
+                name="motDePasse"
+                placeholder="Entrez votre mot de passe"
+                value={donneesFormulaire.motDePasse}
+                onChange={gererChangement}
+                required
+                autoComplete="current-password"
+              />
+              <i className="fas fa-lock input-icon"></i>
+              <span
+                className="password-toggle"
+                onClick={basculerVisibiliteMotDePasse}
+              >
+                <i
+                  className={`fas ${afficherMotDePasse ? "fa-eye-slash" : "fa-eye"}`}
+                ></i>
+              </span>
             </div>
+          </div>
 
-            {error && <p className="error-message">{error}</p>}
+          {error && <p className="error-message">{error}</p>}
 
-            <div className="remember-forgot">
-              <div className="remember">
-                <input
-                  type="checkbox"
-                  id="seSouvenir"
-                  name="seSouvenir"
-                  onChange={gererChangement}
-                />
-                <label htmlFor="seSouvenir">Se souvenir de moi</label>
-              </div>
-              <a href="#" className="forgot-password">
-                Mot de passe oublié?
-              </a>
+          <div className="remember-forgot">
+            <div className="remember">
+              <input
+                type="checkbox"
+                id="seSouvenir"
+                name="seSouvenir"
+                onChange={gererChangement}
+              />
+              <label htmlFor="seSouvenir">Se souvenir de moi</label>
             </div>
+            <a href="#" className="forgot-password">
+              Mot de passe oublié?
+            </a>
+          </div>
 
-            <button type="submit" className="btn">
-              Se connecter
-            </button>
+          <button type="submit" className="btnLogin">
+            Se connecter
+          </button>
+        </form>
+      </div>
 
-            <div className="register-link">
-              <p>
-                Pas encore de compte? <Link to="/register">S'inscrire</Link>
-              </p>
-            </div>
-          </form>
+      <div className="overlay-container">
+        <div className="overlay">
+          <div className="overlay-panel overlay-right">
+            <h1>Bonjour, cher ami !</h1>
+            <p>Entrez vos données personnelles et commencez votre voyage avec nous</p>
+            <button className="ghost"><Link to="/register">S'inscrire</Link></button>
+          </div>
         </div>
       </div>
     </div>

@@ -1,0 +1,87 @@
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 10px;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 400px;
+    max-width: 100%;
+}
+
+.modal-content h2 {
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.modal-content p {
+    margin-bottom: 20px;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-cancel {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    background: #ccc;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-cancel:hover {
+    background: #999;
+}
+
+.btn-delete {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    background: #e53e3e;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-delete:hover {
+    background: #c53030;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .modal-content {
+        width: 90%;
+        padding: 15px 20px;
+    }
+
+    .modal-buttons {
+        flex-direction: column;
+    }
+
+    .btn-cancel,
+    .btn-delete {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}

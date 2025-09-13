@@ -1,187 +1,62 @@
 import React, { useState, useEffect } from 'react';
 import { FaEdit, FaTrash, FaPlus, FaSearch, FaSync, FaQrcode, FaDownload } from 'react-icons/fa';
 import "./../styles/Mpino.css";
+import useModal from "../hooks/useModal";
+import ConfirmDeleteModal from "../utils/ConfirmDeleteModal";
 
 const Mpino = () => {
     const [mpinoList, setMpinoList] = useState([]);
-    const [filteredMpino, setFilteredMpino] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [currentMpino, setCurrentMpino] = useState(null);
-    const [isEditing, setIsEditing] = useState(false);
-    const [formData, setFormData] = useState({
-        unique_id: '',
-        nom_mpin: '',
-        prenom_mpin: '',
-        naiss_mpin: '',
-        is_vitaBatisa: false,
-        date_batisa: '',
-        num_mpin: '',
-        photo_mpin: '',
-        sexe_mpin: '',
-        talenta_mpin: '',
-        is_mpandray: false,
-        is_mpiandry: false,
-        is_manambady: false,
-        is_vitaSoratra: false,
-        is_vitaMariazy: false,
-        adress_mpin: '',
-        id_kartie: '',
-        qr_code: '',
-        pdf_fiche: ''
-    });
+    const [formData, setFormData] = useState({});
+    const { modal, openModal, closeModal, isOpen } = useModal();
 
-    // Charger les données factices
     useEffect(() => {
-        const loadMpinoData = () => {
-            const mockData = [
-                {
-                    id: 1,
-                    nom: 'Rakoto',
-                    prenom: 'Jean',
-                    numero: '+261 34 12 345 67',
-                    photo: 'https://via.placeholder.com/100',
-                    sexe: 'Homme',
-                    talenta: 'Chant',
-                    qrcode: 'QR12345',
-                    kartie: 'Karite A',
-                    finagonana: 'FJKM Antanimena',
-                    unique_id: 'MP001',
-                    naiss_mpin: '1990-05-15',
-                    is_vitaBatisa: true,
-                    date_batisa: '2005-06-20',
-                    is_mpandray: true,
-                    is_mpiandry: false,
-                    is_manambady: true,
-                    is_vitaSoratra: true,
-                    is_vitaMariazy: true,
-                    is_sync: true,
-                    adress_mpin: 'Lot 123 Antanimena',
-                    pdf_fiche: '/fiches/mp001.pdf'
-                },
-                {
-                    id: 2,
-                    nom: 'Rasoa',
-                    prenom: 'Marie',
-                    numero: '+261 33 12 345 67',
-                    photo: 'https://via.placeholder.com/100',
-                    sexe: 'Femme',
-                    talenta: 'Accueil',
-                    qrcode: 'QR12346',
-                    kartie: 'Karite B',
-                    finagonana: 'FJKM Analakely',
-                    unique_id: 'MP002',
-                    naiss_mpin: '1985-08-22',
-                    is_vitaBatisa: true,
-                    date_batisa: '2000-03-10',
-                    is_mpandray: false,
-                    is_mpiandry: true,
-                    is_manambady: true,
-                    is_vitaSoratra: true,
-                    is_vitaMariazy: true,
-                    is_sync: true,
-                    adress_mpin: 'Lot 456 Analakely',
-                    pdf_fiche: '/fiches/mp002.pdf'
-                }, {
-                    id: 3,
-                    nom: 'Razafindraibe',
-                    prenom: 'Safidiniaina Judicael',
-                    numero: '+261 32 12 345 67',
-                    photo: 'https://via.placeholder.com/100',
-                    sexe: 'Homme',
-                    talenta: 'Mihira',
-                    qrcode: 'QR123467',
-                    kartie: 'Karite B',
-                    finagonana: 'FLM Analakely',
-                    unique_id: 'MP003',
-                    naiss_mpin: '200-08-22',
-                    is_vitaBatisa: true,
-                    date_batisa: '2002-03-10',
-                    is_mpandray: false,
-                    is_mpiandry: true,
-                    is_manambady: true,
-                    is_vitaSoratra: true,
-                    is_vitaMariazy: true,
-                    is_sync: true,
-                    adress_mpin: 'Lot 456 Analakely',
-                    pdf_fiche: '/fiches/mp003.pdf'
-                },
-                {
-                    id: 4,
-                    nom: 'Ralahady ',
-                    prenom: 'Shayne Phoenix',
-                    numero: '+261 37 12 345 67',
-                    photo: 'https://via.placeholder.com/100',
-                    sexe: 'Homme',
-                    talenta: 'Mihira',
-                    qrcode: 'QR1234679',
-                    kartie: 'Karite B',
-                    finagonana: 'FLM Analakely',
-                    unique_id: 'MP004',
-                    naiss_mpin: '200-08-22',
-                    is_vitaBatisa: true,
-                    date_batisa: '2002-03-10',
-                    is_mpandray: false,
-                    is_mpiandry: true,
-                    is_manambady: true,
-                    is_vitaSoratra: true,
-                    is_vitaMariazy: true,
-                    is_sync: true,
-                    adress_mpin: 'Lot 456 Analakely',
-                    pdf_fiche: '/fiches/mp003.pdf'
-                }
-            ];
-            setMpinoList(mockData);
-            setFilteredMpino(mockData);
-        };
-
-        loadMpinoData();
+        const mockData = [
+            {
+                id: 1, nom: 'Rakoto', prenom: 'Jean', numero: '+261 34 12 345 67', photo: 'src/assets/flmlogo.png',
+                sexe: 'Homme', talenta: 'Chant', qrcode: 'QR12345', kartie: 'Karite A', finagonana: 'FJKM Antanimena',
+                unique_id: 'MP001', naiss_mpin: '1990-05-15', is_vitaBatisa: true, date_batisa: '2005-06-20',
+                is_mpandray: true, is_mpiandry: false, is_manambady: true, is_vitaSoratra: true, is_vitaMariazy: true,
+                is_sync: true, adress_mpin: 'Lot 123 Antanimena', pdf_fiche: '/fiches/mp001.pdf'
+            },
+            {
+                id: 2, nom: 'Rasoa', prenom: 'Marie', numero: '+261 33 12 345 67', photo: 'src/assets/flmlogo.png',
+                sexe: 'Femme', talenta: 'Accueil', qrcode: 'QR12346', kartie: 'Karite B', finagonana: 'FJKM Analakely',
+                unique_id: 'MP002', naiss_mpin: '1985-08-22', is_vitaBatisa: true, date_batisa: '2000-03-10',
+                is_mpandray: false, is_mpiandry: true, is_manambady: true, is_vitaSoratra: true, is_vitaMariazy: true,
+                is_sync: true, adress_mpin: 'Lot 456 Analakely', pdf_fiche: '/fiches/mp002.pdf'
+            }
+            ,
+            {
+                id: 3, nom: 'Razafindraibe', prenom: 'Safidiniaina Judicael', numero: '+261 34 12 345 67', photo: 'src/assets/judicael.JPG',
+                sexe: 'Homme', talenta: 'Mihira', qrcode: 'QR12347', kartie: 'Karite C', finagonana: 'FJKM Ivory',
+                unique_id: 'MP002', naiss_mpin: '2000-08-22', is_vitaBatisa: true, date_batisa: '2000-03-10',
+                is_mpandray: false, is_mpiandry: true, is_manambady: false, is_vitaSoratra: true, is_vitaMariazy: true,
+                is_sync: true, adress_mpin: 'Lot 456 Analakely', pdf_fiche: '/fiches/mp002.pdf'
+            }
+        ];
+        setMpinoList(mockData);
     }, []);
 
-    // Filtrer les mpino selon la recherche
-    useEffect(() => {
-        const filtered = mpinoList.filter(mpino =>
-            mpino.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            mpino.prenom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            mpino.numero.includes(searchTerm) ||
-            mpino.kartie.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        setFilteredMpino(filtered);
-    }, [searchTerm, mpinoList]);
+    const filteredMpino = mpinoList.filter(mpino =>
+        mpino.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        mpino.prenom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        mpino.numero.includes(searchTerm) ||
+        mpino.kartie.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
-    // Ouvrir le modal pour ajouter un nouveau mpino
-    const openAddModal = () => {
-        setIsEditing(false);
-        setCurrentMpino(null);
-        setFormData({
-            unique_id: '',
-            nom_mpin: '',
-            prenom_mpin: '',
-            naiss_mpin: '',
-            is_vitaBatisa: false,
-            date_batisa: '',
-            num_mpin: '',
-            photo_mpin: '',
-            sexe_mpin: '',
-            talenta_mpin: '',
-            is_mpandray: false,
-            is_mpiandry: false,
-            is_manambady: false,
-            is_vitaSoratra: false,
-            is_vitaMariazy: false,
-            adress_mpin: '',
-            id_kartie: '',
-            qr_code: '',
-            pdf_fiche: ''
-        });
-        setIsModalOpen(true);
+    // Gestion form
+    const handleInputChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
     };
 
-    // Ouvrir le modal pour modifier un mpino
-    const openEditModal = (mpino) => {
-        setIsEditing(true);
-        setCurrentMpino(mpino);
+    const openAdd = () => {
+        setFormData({});
+        openModal("add");
+    };
+
+    const openEdit = (mpino) => {
         setFormData({
             unique_id: mpino.unique_id,
             nom_mpin: mpino.nom,
@@ -203,41 +78,47 @@ const Mpino = () => {
             qr_code: mpino.qrcode,
             pdf_fiche: mpino.pdf_fiche
         });
-        setIsModalOpen(true);
+        openModal("edit", mpino);
     };
 
-    // Ouvrir le modal de confirmation de suppression
-    const openDeleteModal = (mpino) => {
-        setCurrentMpino(mpino);
-        setIsDeleteModalOpen(true);
+    const openDelete = (mpino) => openModal("delete", mpino);
+
+    const handleAddMpino = () => {
+        const newMpino = {
+            id: mpinoList.length + 1,
+            nom: formData.nom_mpin,
+            prenom: formData.prenom_mpin,
+            numero: formData.num_mpin,
+            photo: formData.photo_mpin || flmlogo,
+            sexe: formData.sexe_mpin,
+            talenta: formData.talenta_mpin,
+            qrcode: `QR${Math.floor(10000 + Math.random() * 90000)}`,
+            kartie: formData.id_kartie,
+            finagonana: 'FJKM Antanimena',
+            unique_id: `MP${Math.floor(100 + Math.random() * 900)}`,
+            naiss_mpin: formData.naiss_mpin,
+            is_vitaBatisa: formData.is_vitaBatisa || false,
+            date_batisa: formData.date_batisa || '',
+            is_mpandray: formData.is_mpandray || false,
+            is_mpiandry: formData.is_mpiandry || false,
+            is_manambady: formData.is_manambady || false,
+            is_vitaSoratra: formData.is_vitaSoratra || false,
+            is_vitaMariazy: formData.is_vitaMariazy || false,
+            is_sync: false,
+            adress_mpin: formData.adress_mpin || '',
+            pdf_fiche: ''
+        };
+        setMpinoList(prev => [...prev, newMpino]);
+        closeModal();
     };
 
-    // Fermer tous les modals
-    const closeModals = () => {
-        setIsModalOpen(false);
-        setIsDeleteModalOpen(false);
-        setCurrentMpino(null);
-    };
-
-    // Gérer les changements dans le formulaire
-    const handleInputChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value
-        }));
-    };
-
-    // Soumettre le formulaire (ajout ou modification)
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        if (isEditing) {
-            // Modifier le mpino existant
-            setMpinoList(prev => prev.map(mpino =>
-                mpino.id === currentMpino.id
+    const handleEditMpino = () => {
+        setMpinoList(prev =>
+            prev.map(mpino =>
+                mpino.id === modal.data.id
                     ? {
                         ...mpino,
+                        photo: formData.photo_mpin || flmlogo,
                         nom: formData.nom_mpin,
                         prenom: formData.prenom_mpin,
                         numero: formData.num_mpin,
@@ -255,62 +136,51 @@ const Mpino = () => {
                         adress_mpin: formData.adress_mpin
                     }
                     : mpino
-            ));
-        } else {
-            // Ajouter un nouveau mpino
-            const newMpino = {
-                id: mpinoList.length + 1,
-                nom: formData.nom_mpin,
-                prenom: formData.prenom_mpin,
-                numero: formData.num_mpin,
-                photo: formData.photo_mpin || 'https://via.placeholder.com/100',
-                sexe: formData.sexe_mpin,
-                talenta: formData.talenta_mpin,
-                qrcode: `QR${Math.floor(10000 + Math.random() * 90000)}`,
-                kartie: formData.id_kartie,
-                finagonana: 'FJKM Antanimena',
-                unique_id: `MP${Math.floor(100 + Math.random() * 900)}`,
-                naiss_mpin: formData.naiss_mpin,
-                is_vitaBatisa: formData.is_vitaBatisa,
-                date_batisa: formData.date_batisa,
-                is_mpandray: formData.is_mpandray,
-                is_mpiandry: formData.is_mpiandry,
-                is_manambady: formData.is_manambady,
-                is_vitaSoratra: formData.is_vitaSoratra,
-                is_vitaMariazy: formData.is_vitaMariazy,
-                is_sync: false,
-                adress_mpin: formData.adress_mpin,
-                pdf_fiche: ''
+            )
+        );
+        closeModal();
+    };
+
+    const handleDeleteMpino = () => {
+        setMpinoList(prev => prev.filter(mpino => mpino.id !== modal.data.id));
+        closeModal();
+    };
+
+    const showQrCode = (mpino) => alert(`QR Code de ${mpino.nom} ${mpino.prenom}: ${mpino.qrcode}`);
+    const downloadFiche = (mpino) => alert(`Téléchargement de la fiche de ${mpino.nom} ${mpino.prenom}`);
+    
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setFormData(prev => ({ ...prev, photo_mpin: reader.result }));
             };
-            setMpinoList(prev => [...prev, newMpino]);
+            reader.readAsDataURL(file);
         }
-
-        closeModals();
+    };
+    const handleDrop = (e) => {
+        e.preventDefault();
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setFormData(prev => ({ ...prev, photo_mpin: reader.result }));
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
-    // Supprimer un mpino
-    const handleDelete = () => {
-        setMpinoList(prev => prev.filter(mpino => mpino.id !== currentMpino.id));
-        closeModals();
+    const handleDragOver = (e) => {
+        e.preventDefault();
     };
 
-    // Télécharger la fiche PDF
-    const downloadFiche = (mpino) => {
-        alert(`Téléchargement de la fiche de ${mpino.nom} ${mpino.prenom}`);
-        // Ici, vous implémenteriez la logique de téléchargement réel
-    };
-
-    // Afficher le QR Code
-    const showQrCode = (mpino) => {
-        alert(`QR Code de ${mpino.nom} ${mpino.prenom}: ${mpino.qrcode}`);
-        // Ici, vous implémenteriez l'affichage du QR Code
-    };
 
     return (
         <div className="mpino-management">
             <div className="pageMpino-header">
                 <h1>Gestion des Mpino</h1>
-                <button className="btnMpino btn-primary" onClick={openAddModal}>
+                <button className="btnMpino btn-primary" onClick={openAdd}>
                     <FaPlus /> Nouveau Mpino
                 </button>
             </div>
@@ -325,9 +195,7 @@ const Mpino = () => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <div className="searchMpino-stats">
-                    {filteredMpino.length} mpino(s) trouvé(s)
-                </div>
+                <div className="searchMpino-stats">{filteredMpino.length} mpino(s) trouvé(s)</div>
             </div>
 
             <div className="mpino-grid">
@@ -345,49 +213,54 @@ const Mpino = () => {
                         </div>
 
                         <div className="cardMpino-details">
-                            <div className="detailMpino-item">
-                                <strong>Sexe:</strong> {mpino.sexe}
-                            </div>
-                            <div className="detailMpino-item">
-                                <strong>Talenta:</strong> {mpino.talenta}
-                            </div>
-                            <div className="detailMpino-item">
-                                <strong>Kartie:</strong> {mpino.kartie}
-                            </div>
-                            <div className="detailMpino-item">
-                                <strong>Fiangonana:</strong> {mpino.finagonana}
-                            </div>
+                            <div className="detailMpino-item"><strong>Sexe:</strong> {mpino.sexe}</div>
+                            <div className="detailMpino-item"><strong>Talenta:</strong> {mpino.talenta}</div>
+                            <div className="detailMpino-item"><strong>Kartie:</strong> {mpino.kartie}</div>
+                            <div className="detailMpino-item"><strong>Fiangonana:</strong> {mpino.finagonana}</div>
                         </div>
 
                         <div className="cardMpino-actions">
-                            <button className="btnMpino-icon" onClick={() => showQrCode(mpino)} title="Voir QR Code">
-                                <FaQrcode />
-                            </button>
-                            <button className="btnMpino-icon" onClick={() => downloadFiche(mpino)} title="Télécharger fiche">
-                                <FaDownload />
-                            </button>
-                            <button className="btnMpino-icon" onClick={() => openEditModal(mpino)} title="Modifier">
-                                <FaEdit />
-                            </button>
-                            <button className="btnMpino-icon btn-danger" onClick={() => openDeleteModal(mpino)} title="Supprimer">
-                                <FaTrash />
-                            </button>
+                            <button className="btnMpino-icon" onClick={() => showQrCode(mpino)}><FaQrcode /></button>
+                            <button className="btnMpino-icon" onClick={() => downloadFiche(mpino)}><FaDownload /></button>
+                            <button className="btnMpino-icon" onClick={() => openEdit(mpino)}><FaEdit /></button>
+                            <button className="btnMpino-icon btn-danger" onClick={() => openDelete(mpino)}><FaTrash /></button>
                         </div>
                     </div>
                 ))}
             </div>
 
-            {/* Modal d'ajout/modification */}
-            {isModalOpen && (
+            {/* Modal add/edit */}
+            {(isOpen("add") || isOpen("edit")) && (
                 <div className="modalMpino-overlay">
                     <div className="modalMpino">
                         <div className="modalMpino-header">
-                            <h2>{isEditing ? 'Modifier le Mpino' : 'Ajouter un Nouveau Mpino'}</h2>
-                            <button className="modalMpino-close" onClick={closeModals}>×</button>
+                            <h2>{isOpen("add") ? 'Ajouter un Nouveau Mpino' : 'Modifier le Mpino'}</h2>
+                            <button className="modalMpino-close" onClick={closeModal}>×</button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="modalMpino-form">
+                        <form className="modalMpino-form" onSubmit={(e) => { e.preventDefault(); isOpen("add") ? handleAddMpino() : handleEditMpino(); }}>
                             <div className="formMpino-grid">
+                                <div
+                                    className="formMpino-group photo-dropzone"
+                                    onDrop={handleDrop}
+                                    onDragOver={handleDragOver}
+                                >
+                                    <label>Photo</label>
+                                    <input
+                                        type="file"
+                                        name="photo_mpin"
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                    />
+                                    {formData.photo_mpin && (
+                                        <div className="photo-preview">
+                                            <img src={formData.photo_mpin} alt="Preview" />
+                                        </div>
+                                    )}
+                                    <p>Ou glissez votre image ici</p>
+                                </div>
+
+
                                 <div className="formMpino-group">
                                     <label>Nom *</label>
                                     <input
@@ -559,37 +432,38 @@ const Mpino = () => {
                                         Vita Mariazy
                                     </label>
                                 </div>
+                                 <div className="formMpino-group">
+                                    <label className="checkbox-label">
+                                        <input
+                                            type="checkbox"
+                                            name="is_vitaMariazy"
+                                            checked={formData.is_vitaMariazy}
+                                            onChange={handleInputChange}
+                                        />
+                                        Vita Mariazy
+                                    </label>
+                                </div>
                             </div>
 
                             <div className="modalMpino-actions">
-                                <button type="button" onClick={closeModals}>Annuler</button>
-                                <button type="submit">{isEditing ? 'Modifier' : 'Ajouter'}</button>
+                                <button type="button" onClick={closeModal}>Annuler</button>
+                                <button className="save-komitie-btn" onClick={isOpen("add") ? handleAddMpino : handleEditMpino}>
+                                    {isOpen("add") ? "Ajouter" : "Modifier"}
+                                </button>
                             </div>
                         </form>
                     </div>
                 </div>
             )}
 
-            {/* Modal de confirmation de suppression */}
-            {isDeleteModalOpen && currentMpino && (
-                <div className="modalMpino-overlay">
-                    <div className="modalMpino confirm-modal">
-                        <div className="modalMpino-header">
-                            <h2>Confirmer la suppression</h2>
-                            <button className="modalMpino-close" onClick={closeModals}>×</button>
-                        </div>
-
-                        <div className="modalMpino-body">
-                            <p>Êtes-vous sûr de vouloir supprimer le mpino <strong>{currentMpino.prenom} {currentMpino.nom}</strong> ?</p>
-                            <p>Cette action est irréversible.</p>
-                        </div>
-
-                        <div className="modalMpino-actions">
-                            <button type="button" onClick={closeModals}>Annuler</button>
-                            <button type="button" className="btn-danger" onClick={handleDelete}>Supprimer</button>
-                        </div>
-                    </div>
-                </div>
+            {/* Modal delete */}
+            {isOpen("delete") && modal.data && (
+                <ConfirmDeleteModal
+                    isOpen={true}
+                    onClose={closeModal}
+                    onConfirm={handleDeleteMpino}
+                    message={`Êtes-vous sûr de vouloir supprimer le mpino "${modal.data.prenom} ${modal.data.nom}" ?`}
+                />
             )}
         </div>
     );

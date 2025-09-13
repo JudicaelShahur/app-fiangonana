@@ -263,10 +263,12 @@
     background-color: var(--card-bg);
     border-radius: var(--border-radius);
     width: 100%;
-    max-width: 700px;
+    max-width: 500px;
     max-height: 90vh;
     overflow-y: auto;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
 }
 
 .modalMpino-header {
@@ -280,6 +282,7 @@
 .modalMpino-header h2 {
     margin: 0;
     color: var(--primary-color);
+    font-size: 1.5rem;
 }
 
 .modalMpino-close {
@@ -288,18 +291,23 @@
     font-size: 1.5rem;
     color: var(--secondary-color);
     cursor: pointer;
+    transition: color var(--transition-speed);
+}
+
+.modalMpino-close:hover {
+    color: var(--primary-color);
 }
 
 .modalMpino-form {
     padding: 20px;
 }
 
-.formMpino-grid {
+/* .formMpino-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 15px;
     margin-bottom: 20px;
-}
+} */
 
 .formMpino-group {
     display: flex;
@@ -340,6 +348,23 @@
     margin: 0;
 }
 
+/* ===== PHOTO PREVIEW ===== */
+.photo-preview {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.photo-preview img {
+    max-width: 150px;
+    max-height: 150px;
+    border-radius: var(--border-radius);
+    object-fit: cover;
+    border: 1px solid var(--border-color);
+}
+
+/* ===== ACTION BUTTONS ===== */
 .modalMpino-actions {
     display: flex;
     justify-content: flex-end;
@@ -372,12 +397,32 @@
     background-color: #e74a3b;
 }
 
+/* ===== CONFIRM DELETE MODAL ===== */
 .confirm-modal .modalMpino-body {
     padding: 20px;
 }
 
 .confirm-modal .modalMpino-body p {
     margin: 0 0 15px 0;
+    color: var(--text-color);
+}
+
+.photo-dropzone {
+    border: 2px dashed var(--border-color);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.photo-dropzone:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.photo-dropzone p {
+    margin-top: 10px;
+    font-size: 0.9rem;
     color: var(--text-color);
 }
 

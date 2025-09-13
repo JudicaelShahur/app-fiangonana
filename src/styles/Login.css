@@ -1,0 +1,393 @@
+/* Container global */
+.containerLogin {
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.15),
+        0 10px 10px rgba(0, 0, 0, 0.10);
+    position: relative;
+    overflow: hidden;
+    width: 900px;
+    max-width: 90%;
+    min-height: 550px;
+    display: flex;
+    margin: 100px auto;
+}
+
+/* Formulaire login */
+.formLogin-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+}
+
+.formLogin {
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    height: 100%;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+}
+
+.formLogin h1 {
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 2rem;
+}
+
+/* Logo */
+.logoLogin {
+    margin-bottom: 20px;
+}
+
+.logoLogin img {
+    width: 100px;
+    height: auto;
+}
+
+/* Groupes d'input */
+.formLogin-group {
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 350px;
+}
+
+.formLogin-group label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: #444;
+    text-align: left;
+}
+
+/* Conteneur pour input avec icône */
+.input-with-icon {
+    position: relative;
+}
+
+.input-with-icon input {
+    width: 100%;
+    padding: 12px 40px 12px 40px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s;
+    box-sizing: border-box;
+}
+
+.input-with-icon input:focus {
+    border-color: #4a6fa5;
+}
+
+.input-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    font-size: 14px;
+}
+
+/* Conteneur spécial pour mot de passe */
+.password-container {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #666;
+    z-index: 2;
+}
+
+/* Message erreur */
+.error-message {
+    color: red;
+    font-size: 13px;
+    margin: 10px 0;
+}
+
+/* Remember / Forgot */
+.remember-forgot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 350px;
+    font-size: 13px;
+    margin: 10px 0 20px;
+}
+
+.remember {
+    display: flex;
+    align-items: center;
+}
+
+.remember input {
+    margin-right: 6px;
+}
+
+.forgot-password {
+    color: #4a6fa5;
+    text-decoration: none;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+/* Boutons */
+.btnLogin {
+    border-radius: 20px;
+    border: 1px solid #4a6fa5;
+    background-color: #4a6fa5;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 12px 40px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: transform 0.2s ease-in;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+    max-width: 350px;
+}
+
+.btnLogin:hover {
+    background-color: #3a5a80;
+    border-color: #3a5a80;
+    transform: scale(1.02);
+}
+
+.ghost {
+    background: transparent;
+    color: #e4e4e6;
+    border-radius: 20px;
+    border: 1px solid #f6f8fa;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 12px 40px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.2s ease-in;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.ghost:hover {
+    background-color: #f0f0f0;
+    border-color: #3a5a80;
+    color: #3a5a80;
+    transform: scale(1.02);
+}
+
+.ghost a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* Overlay */
+.overlay-container {
+    flex: 1;
+    background: linear-gradient(to right, #4a6fa5, #6d9dc5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    padding: 40px;
+}
+
+.overlay-panel {
+    text-align: center;
+    max-width: 300px;
+}
+
+.overlay-panel h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.overlay-panel p {
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+
+@media (min-width: 2000px) {
+    .containerLogin {
+        width: 1200px;
+        min-height: 700px;
+        margin: 150px auto;
+    }
+
+    .formLogin h1 {
+        font-size: 2.5rem;
+    }
+
+    .formLogin-group label,
+    .input-with-icon input,
+    .remember-forgot,
+    .btnLogin,
+    .ghost {
+        font-size: 18px;
+    }
+
+    .input-with-icon input {
+        padding: 16px 45px 16px 45px;
+    }
+
+    .input-icon {
+        font-size: 18px;
+        left: 15px;
+    }
+
+    .overlay-panel h1 {
+        font-size: 32px;
+    }
+
+    .overlay-panel p {
+        font-size: 18px;
+    }
+
+    .btnLogin,
+    .ghost {
+        padding: 16px 45px;
+        font-size: 18px;
+    }
+}
+
+/* Tablettes et petits écrans d'ordinateur */
+@media (max-width: 992px) {
+    .containerLogin {
+        flex-direction: column;
+        width: 90%;
+        min-height: auto;
+        margin: 40px auto;
+        max-width: 500px;
+    }
+
+    .overlay-container {
+        order: -1;
+        padding: 30px;
+        min-height: 200px;
+    }
+
+    .formLogin-container {
+        padding: 30px;
+    }
+
+    .formLogin {
+        padding: 0 15px;
+    }
+}
+
+/* Grands téléphones */
+@media (max-width: 768px) {
+    .containerLogin {
+        width: 95%;
+        margin: 20px auto;
+    }
+
+    .formLogin-container,
+    .overlay-container {
+        padding: 20px;
+    }
+
+    .remember-forgot {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    .forgot-password {
+        margin-left: auto;
+    }
+}
+
+/* Petits téléphones */
+@media (max-width: 480px) {
+    .containerLogin {
+        border-radius: 10px;
+        width: 100%;
+        margin: 10px auto;
+        box-shadow: none;
+    }
+
+    .formLogin-container,
+    .overlay-container {
+        padding: 15px;
+    }
+
+    .formLogin h1 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+
+    .logoLogin img {
+        width: 80px;
+    }
+
+    .input-with-icon input {
+        padding: 10px 35px 10px 35px;
+    }
+
+    .btnLogin,
+    .ghost {
+        padding: 10px 30px;
+    }
+
+    .overlay-panel h1 {
+        font-size: 20px;
+    }
+
+    .overlay-panel p {
+        font-size: 12px;
+    }
+}
+
+/* Mode paysage sur mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+    .containerLogin {
+        min-height: 300px;
+        margin: 20px auto;
+    }
+
+    .formLogin-container {
+        padding: 15px;
+    }
+
+    .formLogin-group {
+        margin-bottom: 10px;
+    }
+
+    .remember-forgot {
+        margin: 5px 0 10px;
+    }
+}
+
+/* Écrans avec réduction de mouvement (accessibilité) */
+@media (prefers-reduced-motion: reduce) {
+
+    .btnLogin,
+    .ghost {
+        transition: none;
+    }
+
+    .btnLogin:hover,
+    .ghost:hover {
+        transform: none;
+    }
+}

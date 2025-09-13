@@ -15,9 +15,15 @@ import Fiangonana from "./pages/Fiangonana";
 import PrivateRoute from "./routes/PrivateRoute";
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
+import { ToastContainer } from "react-toastify";
+import SampanaManags from "./pages/SampanaManags";
+import Utilisateurs from "./pages/Utilisateurs";
+// import Parametres from "./pages/Parametres";
+import AideSupport from "./pages/AideSupport";
 
 function App() {
   return (
+    <>
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
@@ -34,8 +40,14 @@ function App() {
         <Route path="/vola" element={<Vola />} />
         <Route path="/komitie" element={<Komitie />} />
         <Route path="/sampana" element={<Sampana />} />
+        <Route path="/sampanamanaga" element={<SampanaManags />} />
+        <Route path="/utilisateur" element={<Utilisateurs />} />
+        {/* <Route path="/parametre" element={<Parametres />} /> */}
+        <Route path="/aide_support" element={<AideSupport />} />
       </Route>
     </Routes>
+      <ToastContainer />
+      </>
   );
 }
 
