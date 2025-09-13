@@ -312,6 +312,7 @@
 .formMpino-group {
     display: flex;
     flex-direction: column;
+    margin-top: 20px;
 }
 
 .formMpino-group.full-width {

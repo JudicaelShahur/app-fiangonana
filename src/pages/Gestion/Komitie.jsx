@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import "./../styles/Komitie.css";
-import useModal from "../hooks/useModal";
-import ConfirmDeleteModal from "../utils/ConfirmDeleteModal.jsx";
+import "../../styles/Komitie.css";
+import useModal from "../../hooks/useModal.js";
+import ConfirmDeleteModal from "../../utils/ConfirmDeleteModal.jsx";
 
 const Komitie = () => {
   const [komities, setKomities] = useState([
     { id: 1, titre_kom: "Komity Ara-bola", id_mpin: "MP001" },
     { id: 2, titre_kom: "Komity Tanora", id_mpin: "MP002" },
   ]);
-  
+
   const [formData, setFormData] = useState({ titre_kom: "", id_mpin: "" });
   const [searchTerm, setSearchTerm] = useState("");
-  
+
   const { modal, openModal, closeModal, isOpen } = useModal();
 
   const handleInputChange = (e) => {
@@ -51,7 +51,7 @@ const Komitie = () => {
 
   const filteredKomities = komities.filter(
     k => k.titre_kom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-         k.id_mpin.toLowerCase().includes(searchTerm.toLowerCase())
+      k.id_mpin.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -123,11 +123,11 @@ const Komitie = () => {
             <div className="modal-komitie-body">
               <div className="form-komitie-group">
                 <label>Titre Komitie</label>
-                <input type="text" name="titre_kom" value={formData.titre_kom} onChange={handleInputChange} placeholder="Titre du komitie"/>
+                <input type="text" name="titre_kom" value={formData.titre_kom} onChange={handleInputChange} placeholder="Titre du komitie" />
               </div>
               <div className="form-komitie-group">
                 <label>ID Mpitondra</label>
-                <input type="text" name="id_mpin" value={formData.id_mpin} onChange={handleInputChange} placeholder="Identifiant Mpitondra"/>
+                <input type="text" name="id_mpin" value={formData.id_mpin} onChange={handleInputChange} placeholder="Identifiant Mpitondra" />
               </div>
             </div>
             <div className="modal-komitie-footer">

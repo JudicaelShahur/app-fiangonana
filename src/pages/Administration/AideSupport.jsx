@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import "./../styles/AideSupport.css";
+import "../../styles/AideSupport.css";
 
 const AideSupport = () => {
     const faqData = [

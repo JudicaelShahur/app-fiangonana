@@ -12,7 +12,7 @@ import {
     Tooltip,
     Legend,
 } from 'chart.js';
-import "./../styles/Statistique.css";
+import "../../styles/Statistique.css";
 
 // Enregistrer les composants de Chart.js
 ChartJS.register(

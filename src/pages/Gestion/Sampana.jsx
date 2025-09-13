@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import "./../styles/Sampana.css";
+import "../../styles/Sampana.css";
 
 const Sampana = () => {
     const [sampanas, setSampanas] = useState([

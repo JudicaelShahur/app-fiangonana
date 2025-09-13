@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FaUsers, FaChurch, FaCoins, FaCalendarAlt } from "react-icons/fa";
-import "./../styles/Dashboard.css";
+import "../../styles/Dashboard.css";
 
 const Dashboard = () => {
     const [activePeriod, setActivePeriod] = useState('week');

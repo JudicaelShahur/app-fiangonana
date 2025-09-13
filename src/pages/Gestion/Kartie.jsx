@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import "./../styles/Kartie.css";
+import "../../styles/Kartie.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash, faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FaSearch } from "react-icons/fa";
-import ConfirmDeleteModal from "../utils/ConfirmDeleteModal.jsx";
-import useModal from "../hooks/useModal"; 
+import ConfirmDeleteModal from "../../utils/ConfirmDeleteModal.jsx";
+import useModal from "../../hooks/useModal.js";
 
 const Kartie = () => {
   const [searchTerm, setSearchTerm] = useState("");

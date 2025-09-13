@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrash, FaPlus, FaSearch } from "react-icons/fa";
-import "./../styles/Utilisateur.css";
-import useModal from "../hooks/useModal";
-import ConfirmDeleteModal from "../utils/ConfirmDeleteModal";
+import "../../styles/Utilisateur.css";
+import useModal from "../../hooks/useModal";
+import ConfirmDeleteModal from "../../utils/ConfirmDeleteModal";
 
 const Utilisateurs = () => {
   const [utilisateurs, setUtilisateurs] = useState([]);
@@ -115,9 +115,8 @@ const Utilisateurs = () => {
               <div className="detailUtilisateur-item">
                 <strong>Rôle:</strong>{" "}
                 <span
-                  className={`role-badge ${
-                    u.role === "Admin" ? "admin" : "user"
-                  }`}
+                  className={`role-badge ${u.role === "Admin" ? "admin" : "user"
+                    }`}
                 >
                   {u.role}
                 </span>

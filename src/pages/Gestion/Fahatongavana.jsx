@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaCheck, FaTimes, FaMoneyBillWave, FaSearch, FaPlus, FaEdit, FaTrash, FaCalendarAlt } from 'react-icons/fa';
-import "./../styles/Fahatongavana.css";
+import "../../styles/Fahatongavana.css";
 
 const Fahatongavana = () => {
     const [presences, setPresences] = useState([]);

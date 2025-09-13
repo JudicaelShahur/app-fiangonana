@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import "./../styles/Mpitondra.css";
+import "../../styles/Mpitondra.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 

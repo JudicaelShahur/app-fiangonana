@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { FaEdit, FaTrash, FaPlus, FaSearch, FaSync, FaQrcode, FaDownload } from 'react-icons/fa';
-import "./../styles/Mpino.css";
-import useModal from "../hooks/useModal";
-import ConfirmDeleteModal from "../utils/ConfirmDeleteModal";
+import "../../styles/Mpino.css";
+import useModal from "../../hooks/useModal";
+import ConfirmDeleteModal from "../../utils/ConfirmDeleteModal";
 
 const Mpino = () => {
     const [mpinoList, setMpinoList] = useState([]);
@@ -148,7 +148,7 @@ const Mpino = () => {
 
     const showQrCode = (mpino) => alert(`QR Code de ${mpino.nom} ${mpino.prenom}: ${mpino.qrcode}`);
     const downloadFiche = (mpino) => alert(`Téléchargement de la fiche de ${mpino.nom} ${mpino.prenom}`);
-    
+
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -432,7 +432,7 @@ const Mpino = () => {
                                         Vita Mariazy
                                     </label>
                                 </div>
-                                 <div className="formMpino-group">
+                                <div className="formMpino-group">
                                     <label className="checkbox-label">
                                         <input
                                             type="checkbox"
