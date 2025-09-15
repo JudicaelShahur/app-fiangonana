@@ -115,7 +115,30 @@
     gap: 1.5rem;
     margin-bottom: 40px;
 }
+.pagination {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    margin-top: 20px;
+}
 
+.pagination button {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+}
+
+.pagination button.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
 /* Card mitovy amin'ny dashboard-card */
 .mpino-card {
     background: var(--card-bg);

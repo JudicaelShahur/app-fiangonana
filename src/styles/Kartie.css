@@ -135,7 +135,32 @@
     width: 100%;
     overflow-x: auto;
 }
+.paginationKartie {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0;
+}
 
+.paginationKartie button {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 8px 14px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.paginationKartie button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.paginationKartie button:hover:not(:disabled) {
+    background-color: var(--primary-color);
+    color: white;
+}
 .kartie-table {
     width: 100%;
     border-collapse: collapse;
@@ -209,11 +234,26 @@
     background-color: #e74a3b;
 }
 
-.no-resultsKartie {
-    padding: 30px;
-    text-align: center;
-    color: #6c757d;
-    font-style: italic;
+.loader {
+    border: 4px solid #f3f3f3;
+    /* Light grey */
+    border-top: 4px solid #3498db;
+    /* Blue */
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 /* ===== Modal Kartie ===== */
@@ -281,7 +321,7 @@
     color: #2c3e50;
 }
 
-.formKartie-group input {
+.formKartie-group input,select {
     width: 100%;
     padding: 10px;
     border: 1px solid #ddd;

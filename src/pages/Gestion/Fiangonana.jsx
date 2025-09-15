@@ -95,11 +95,8 @@ const FiangonanaItem = ({ fiangonana, handleEdit, openDelete }) => {
         <div className="fiangonana-item">
             <div className="fiangonana-image">
                 <img
-                    src={fiangonana.photo || "https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"}
+                    src={fiangonana.photo}
                     alt={fiangonana.name}
-                    onError={(e) => {
-                        e.target.src = "https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80";
-                    }}
                 />
             </div>
             <div className="fiangonana-info">

@@ -1,4 +1,3 @@
-//services/fiangonanaService.js
 import api from "../api";
 
 export const getFiangonanas = async (data) => {
@@ -9,11 +8,26 @@ export const getFiangonanas = async (data) => {
         throw error.response?.data || { message: "Erreur inconnue" };
     }
 }
+
 // Ajouter une nouvelle fiangonana
 export const ajoutFiangonana = async (data) => {
     try {
-        const res = await api.post("/fiangonanas", data);
-        return res.data.results || [];
+        const formData = new FormData();
+        formData.append('fiang_nom', data.name);
+        formData.append('fiang_mail', data.email);
+        formData.append('fiang_num', data.phone);
+        
+        // Ajouter le fichier photo seulement s'il existe
+        if (data.photoFile) {
+            formData.append('fiang_pho', data.photoFile);
+        }
+        
+        const res = await api.post("/fiangonanas", formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return res.data.results;
     } catch (error) {
         throw error.response?.data || { message: "Erreur inconnue" };
     }
@@ -22,8 +36,22 @@ export const ajoutFiangonana = async (data) => {
 // Modifier une fiangonana existante
 export const modifierFiangonana = async (id, data) => {
     try {
-        const res = await api.put(`/fiangonanas/${id}`, data);
-        return res.data.results || [];
+        const formData = new FormData();
+        formData.append('fiang_nom', data.name);
+        formData.append('fiang_mail', data.email);
+        formData.append('fiang_num', data.phone);
+        formData.append('_method', 'POST'); 
+        // Ajouter le fichier photo seulement s'il existe
+        if (data.photoFile) {
+            formData.append('fiang_pho', data.photoFile);
+        }
+        
+        const res = await api.post(`/fiangonanas/${id}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return res.data.results;
     } catch (error) {
         throw error.response?.data || { message: "Erreur inconnue" };
     }
@@ -47,6 +75,4 @@ export const listeFiangonana = async () => {
   } catch (error) {
     throw error.response?.data || { message: "Erreur inconnue" };
   }
-};
-
-
+};  

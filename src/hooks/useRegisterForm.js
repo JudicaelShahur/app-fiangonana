@@ -2,8 +2,7 @@
 import { useState } from "react";
 import { registerUser } from "../services/authService";
 import { useNavigate } from "react-router-dom";
-import { afficherToastSuccès, afficherToastErreur } from "../utils/toast"; 
-import { getBackendMessage } from "../utils/getBackendMessage";
+import { afficherToastSuccès, afficherToastErreur,getBackendMessage } from "../utils/toast"; 
 export default function useRegisterForm() {
     const [rôleActif, setRôleActif] = useState("admin");
 
@@ -57,13 +56,13 @@ export default function useRegisterForm() {
                 ? {
                     nom_user: formulaireAdmin.nomUtilisateur,
                     mdp_user: formulaireAdmin.motDePasse,
-                    mdp_user_confirmation: formulaireAdmin.confirmerMotDePasse, // <-- ajouter
+                    mdp_user_confirmation: formulaireAdmin.confirmerMotDePasse, 
                     role: "admin_fiangonana",
                 }
                 : {
                     nom_user: formulaireUtilisateur.nomUtilisateur,
                     mdp_user: formulaireUtilisateur.motDePasse,
-                    mdp_user_confirmation: formulaireUtilisateur.confirmerMotDePasse, // <-- ajouter
+                    mdp_user_confirmation: formulaireUtilisateur.confirmerMotDePasse, 
                     role: "user",
                     fiang_id: formulaireUtilisateur.église,
                 };
