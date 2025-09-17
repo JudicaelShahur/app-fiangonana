@@ -9,6 +9,15 @@ export const listeMpinos = async (page = 1, per_page = 10) => {
     throw error.response?.data || { message: "Erreur inconnue lors de la récupération des Mpinos." };
   }
 };
+/* Compter les Mpinos par Fiangonana pour l'utilisateur connecté */
+export const countMpinosByFiangonana = async () => {
+  try {
+    const res = await api.get("/mpinos/count-by-fiangonana");
+    return res.data;
+  } catch (error) {
+    throw error.response?.data || { message: "Erreur lors de la récupération du compteur de Mpinos." };
+  }
+};
 
 /* Ajouter un Mpino (FormData pour inclure la photo) */
 export const ajoutMpino = async (data) => {
@@ -58,8 +67,8 @@ export const telechargerPdfMpino = async (id) => {
     const res = await api.get(`/mpinos/${id}/telecharger-pdf`, {
       responseType: 'blob'
     });
-    return res.data; 
+    return res.data; // blob
   } catch (error) {
-    throw error.response?.data || { message: "Erreur lors du téléchargement du PDF." };
+    throw { message: error.response?.data?.message || "Erreur lors du téléchargement du PDF." };
   }
 };

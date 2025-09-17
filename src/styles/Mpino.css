@@ -88,7 +88,7 @@
 
 .searchMpino-input svg {
     position: absolute;
-    right: 15px;
+    left: 15px;
     top: 50%;
     transform: translateY(-50%);
     color: var(--secondary-color);
@@ -99,6 +99,7 @@
     padding: 12px 15px 12px 45px;
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
+    background-color: var(--card-bg);
     font-size: 1rem;
     box-sizing: border-box;
 }
@@ -111,7 +112,7 @@
 /* Grid mitovy amin'ny dashboard-grid */
 .mpino-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 1.5rem;
     margin-bottom: 40px;
 }
@@ -119,7 +120,7 @@
     display: flex;
     gap: 5px;
     justify-content: center;
-    margin-top: 20px;
+    margin-bottom: 30px;
 }
 
 .pagination button {
@@ -127,6 +128,7 @@
     border: 1px solid #ccc;
     background-color: white;
     cursor: pointer;
+    border-radius: 5px;
 }
 
 .pagination button.active {
@@ -139,7 +141,7 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
-/* Card mitovy amin'ny dashboard-card */
+/* Card */
 .mpino-card {
     background: var(--card-bg);
     border-radius: 12px;
@@ -168,6 +170,12 @@
 .mpino-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+.no-resultat{
+   font-size: 1.1rem;
+  color: var(--secondary-color);
+  margin: 0;
+  text-align: center;
 }
 
 /* Card header */

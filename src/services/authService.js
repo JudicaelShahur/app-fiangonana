@@ -50,12 +50,13 @@ export const listeEn_attenteUser = async() => {
 };
 
 // Accepter ou supprimer un utilisateur
-export const gererUser = async(userId, action, token) => {
+export const gererUser = async(userId, action) => {
     try {
-        const response = await api.post( `/gerer/${userId}`,{ action });
+        const response = await api.post(`/gerer/${userId}`, { action });
         return response.data;
     } catch (error) {
         throw error;
     }
 };
+
 

@@ -285,7 +285,7 @@
     background-color: var(--card-bg);
     border-radius: 12px;
     width: 100%;
-    max-width: 700px;
+    max-width: 400px;
     max-height: 90vh;
     overflow-y: auto;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
@@ -376,6 +376,35 @@
 
 .modalFahatongavana-actions button.btn-danger {
     background-color: #e74a3b;
+}
+/* Autocomplete list */
+.autocomplete-list {
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    max-height: 200px;
+    overflow-y: auto;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 70px;
+    padding: 0;
+    list-style: none;
+    z-index: 1000;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.autocomplete-list li {
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.autocomplete-list li:hover {
+    background-color: #f0f0f0;
+}
+.formFahatongavana-group {
+    position: relative;
 }
 /* ===== RESPONSIVE ===== */
 

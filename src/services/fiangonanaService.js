@@ -68,11 +68,23 @@ export const supprimerFiangonana = async (id) => {
 }
 
 // Lister toutes les fiangonanas
-export const listeFiangonana = async () => {
+export const listeFiangonana = async (page = 1, per_page = 10) => {
   try {
-    const res = await api.get("/fiangonanas");
-    return res.data.results.data || [];
+    const res = await api.get("/fiangonanas", { params: { page, per_page } });
+    return res.data; 
+  } catch (error) {
+    throw error.response?.data || { message: "Erreur inconnue lors de la récupération des Fiangonanas." };
+  }
+};
+
+// Récupérer une fiangonana par ID
+export const getFiangonanaById = async (id) => {
+  try {
+    const res = await api.get(`/fiangonanas/${id}`);
+    return res.data;
+    
   } catch (error) {
     throw error.response?.data || { message: "Erreur inconnue" };
   }
-};  
+};
+

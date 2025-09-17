@@ -1,3 +1,4 @@
+// src/hooks/useFiangonana.js
 import { useState, useEffect } from "react";
 import useModal from "./useModal";
 import { 
@@ -6,17 +7,17 @@ import {
   supprimerFiangonana, 
   listeFiangonana 
 } from "../services/fiangonanaService";
-import { afficherToastSuccès, afficherToastErreur, getBackendMessage } from "../utils/toast";
+import { afficherToastSuccès, afficherToastErreur,getBackendMessage } from "../utils/toast";
+import { saveToLocalStorage, loadFromLocalStorage } from "../utils/localStorageCrypto";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const STORAGE_KEY = "fiangonanas"; // Key ho an'ny cache
 
 const useFiangonana = () => {
   const { modal, openModal, closeModal, isOpen } = useModal();
 
-  const [loading, setLoading] = useState(true);
-  const [fiangonanas, setFiangonanas] = useState([]);
+  //  State miaraka amin'ny cache encrypted
+  const [fiangonanas, setFiangonanas] = useState(() => loadFromLocalStorage(STORAGE_KEY) || []);
   const [fiangonanaTerm, setFiangonanaTerm] = useState('');
-
   const [currentFiangonana, setCurrentFiangonana] = useState({
     name: '',
     photo: '',
@@ -25,23 +26,12 @@ const useFiangonana = () => {
     phone: ''
   });
 
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const [perPage] = useState(10);
-  const [totalPages, setTotalPages] = useState(1);
-
-  // Fetch fiangonanas depuis l’API
+  // Fetch API sy update cache
   useEffect(() => {
     const fetchFiangonanas = async () => {
-      setLoading(true);
       try {
-        const res = await listeFiangonana(currentPage, perPage);
-
-        // ✅ Version voahitsy: maka array avy amin'ny res.results.data
-        const fiangList = res?.results?.data || [];
-        const last_page = res?.results?.last_page || 1;
-
-        const fiangFormatted = fiangList.map(f => ({
+        const res = await listeFiangonana();
+        const fiangFormatted = res.map(f => ({
           id: f.id,
           name: f.fiang_nom,
           photo: f.fiang_pho ? JSON.parse(f.fiang_pho).url : "",
@@ -50,25 +40,14 @@ const useFiangonana = () => {
           admin: f.admin_nom || "",
           address: f.fiang_kartie || ""
         }));
-
         setFiangonanas(fiangFormatted);
-        setTotalPages(last_page);
+        saveToLocalStorage(STORAGE_KEY, fiangFormatted); 
       } catch (error) {
         console.error("Erreur lors du chargement:", error);
-        setFiangonanas([]);
-        setTotalPages(1);
-      } finally {
-        setLoading(false);
       }
     };
-
     fetchFiangonanas();
-  }, [currentPage, perPage]);
-
-  // Reset page si search change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [fiangonanaTerm]);
+  }, []);
 
   // Input change
   const handleInputChange = (e) => {
@@ -76,7 +55,7 @@ const useFiangonana = () => {
     const fieldMap = { fiang_nom: 'name', fiang_mail: 'email', fiang_num: 'phone' };
     const field = fieldMap[id];
     if (!field) return;
-    setCurrentFiangonana(prev => ({ ...prev, [field]: value }));
+    setCurrentFiangonana({ ...currentFiangonana, [field]: value });
   };
 
   // Add / Edit submit
@@ -94,7 +73,9 @@ const useFiangonana = () => {
           admin: response.admin_nom || "",
           address: response.fiang_address || ""
         };
-        setFiangonanas(prev => [newFiangonana, ...prev]);
+        const updatedList = [...fiangonanas, newFiangonana];
+        setFiangonanas(updatedList);
+        saveToLocalStorage(STORAGE_KEY, updatedList);
         afficherToastSuccès(response.data || response.message || "Église ajoutée avec succès !");
       } else if (modal.type === "edit") {
         const response = await modifierFiangonana(currentFiangonana.id, currentFiangonana);
@@ -107,7 +88,9 @@ const useFiangonana = () => {
           admin: response.admin_nom || "",
           address: response.fiang_address || ""
         };
-        setFiangonanas(prev => prev.map(f => f.id === updated.id ? updated : f));
+        const updatedList = fiangonanas.map(f => f.id === updated.id ? updated : f);
+        setFiangonanas(updatedList);
+        saveToLocalStorage(STORAGE_KEY, updatedList);
         afficherToastSuccès(response.data || response.message || "Église modifiée avec succès !");
       }
       closeModal();
@@ -118,7 +101,8 @@ const useFiangonana = () => {
     }
   };
 
-  // Search filter (frontend)
+  // Search
+  const handleSearch = (e) => setFiangonanaTerm(e.target.value);
   const filteredFiangonanas = fiangonanas.filter(f =>
     f.name.toLowerCase().includes(fiangonanaTerm.toLowerCase()) ||
     f.address?.toLowerCase().includes(fiangonanaTerm.toLowerCase()) ||
@@ -136,7 +120,9 @@ const useFiangonana = () => {
   const handleDelete = async (fiangonana) => {
     try {
       await supprimerFiangonana(fiangonana.id);
-      setFiangonanas(prev => prev.filter(f => f.id !== fiangonana.id));
+      const updatedList = fiangonanas.filter(f => f.id !== fiangonana.id);
+      setFiangonanas(updatedList);
+      saveToLocalStorage(STORAGE_KEY, updatedList);
       closeModal();
       afficherToastSuccès("Église supprimée avec succès !");
     } catch (error) {
@@ -153,6 +139,7 @@ const useFiangonana = () => {
     reader.onloadend = () => setCurrentFiangonana(prev => ({ ...prev, photo: reader.result, photoFile: file }));
     reader.readAsDataURL(file);
   };
+
   const handleDrop = (e) => {
     e.preventDefault();
     const file = e.dataTransfer.files[0];
@@ -161,6 +148,7 @@ const useFiangonana = () => {
     reader.onloadend = () => setCurrentFiangonana(prev => ({ ...prev, photo: reader.result, photoFile: file }));
     reader.readAsDataURL(file);
   };
+
   const handleDragOver = (e) => e.preventDefault();
 
   return {
@@ -170,7 +158,7 @@ const useFiangonana = () => {
     isOpen,
     handleInputChange,
     handleSubmit,
-    handleSearch: (e) => setFiangonanaTerm(e.target.value),
+    handleSearch,
     handleEdit,
     openDelete,
     handleDelete,
@@ -180,11 +168,6 @@ const useFiangonana = () => {
     openModal,
     closeModal,
     fiangonanaTerm,
-    loading,
-    currentPage,
-    totalPages,
-    perPage,
-    setCurrentPage,
   };
 };
 

@@ -32,7 +32,7 @@ export const useKartie = () => {
   // --- Fetch Kartie ---
   const fetchKartie = async (page = 1) => {
   try {
-    setLoading(true); // START loader
+    setLoading(true); 
     const res = await listeKartie(page);
     const data = Array.isArray(res.results.data) ? res.results.data : [];
     setKartie(data);
@@ -40,7 +40,7 @@ export const useKartie = () => {
   } catch (error) {
     afficherToastErreur(getBackendMessage(error));
   } finally {
-    setLoading(false); // STOP loader
+    setLoading(false); 
   }
 };
 
@@ -54,7 +54,7 @@ export const useKartie = () => {
     }
   };
 
-  // --- Load data on mount / page change ---
+
   useEffect(() => {
     fetchKartie(currentPage);
     fetchFiangonanas();

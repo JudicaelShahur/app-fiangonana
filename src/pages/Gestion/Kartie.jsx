@@ -52,6 +52,9 @@ const Kartie = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
+          <button className="filterKartie-btn">
+            <i className="fas fa-filter"></i> Filtrer
+          </button>
         </div>
 
         <div className="tableKartie-container">
@@ -99,7 +102,11 @@ const Kartie = () => {
                 ))
               ) : (
                 <tr>
-                      <td colSpan="5" style={{ textAlign: "center", padding: "20px" }} className="no-resultsKartie">
+                      <td colSpan="5" style={{
+                        textAlign: "center", padding: "20px",
+                        color: "var(--secondary-color)",
+                        fontSize: "1.1rem"
+                      }} className="no-resultsKartie">
                     Aucun résultat trouvé pour "{searchTerm}"
                   </td>
                 </tr>
@@ -117,7 +124,7 @@ const Kartie = () => {
               Précédent
             </button>
 
-            {/* Pages manokana */}
+            {/* Pages */}
             {getPagesArray().map(page => (
               <button
                 key={page}

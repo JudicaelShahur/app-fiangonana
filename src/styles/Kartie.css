@@ -80,7 +80,7 @@
 
 .searchKartie-input {
     position: relative;
-    flex: 1;
+    flex-grow: 1;
 }
 
 .searchKartie-input .searchKartie-icon {
@@ -89,8 +89,7 @@
     right: 15px;
     transform: translateY(-50%);
     color: var(--secondary-color);
-    font-size: 1rem;
-    pointer-events: none;
+    
 }
 
 .searchKartie-input input {
@@ -104,7 +103,6 @@
     transition: all 0.3s ease;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
-
 .searchKartie-input:focus {
     outline: none;
     border-color: var(--primary-color);

@@ -1,0 +1,211 @@
+import { useState, useEffect } from "react";
+import useModal from "./useModal.js";
+import { getFahatongavanas, ajoutFahatongavana, modifierFahatongavana, supprimerFahatongavana } from "../services/fahatongavanaService";
+import { listeMpinos, countMpinosByFiangonana } from "../services/mpinoService";
+import { afficherToastSuccès, afficherToastErreur, getBackendMessage } from "../utils/toast.js";
+import { todayLocal } from "../utils/date";
+export const useFahatongavana = () => {
+    const { modal, openModal, closeModal, isOpen } = useModal();
+
+    // --- Pagination / Data ---
+    const [presences, setPresences] = useState([]);
+    const [currentPage, setCurrentPage] = useState(() => Number(localStorage.getItem("fahatongavanaPage")) || 1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    // --- Form & Modal ---
+    const [formData, setFormData] = useState({ mpino_id: "", has_paid: false, amount: null });
+    const [currentPresence, setCurrentPresence] = useState(null);
+
+    // --- Search / Filter ---
+    const [searchTerm, setSearchTerm] = useState("");
+    const [selectedDate, setSelectedDate] = useState(todayLocal());
+    const [filteredPresences, setFilteredPresences] = useState([]);
+
+    // --- Mpinos (autocomplete) ---
+    const [mpinos, setMpinos] = useState([]);
+    const [searchMpino, setSearchMpino] = useState("");
+    const [filteredMpinos, setFilteredMpinos] = useState([]);
+    const [totals, setTotals] = useState([]);
+
+    // --- Fetch Presences ---
+    const fetchPresences = async (page = 1) => {
+        try {
+            setLoading(true);
+            setError(null);
+            const res = await getFahatongavanas(page, 50);
+            const data = res.results?.data || [];
+            const normalized = data.map(p => ({
+                id: p.id,
+                nom: p.nom || "",
+                prenom: p.prenom || "",
+                adresse: p.adresse || "",
+                kartie: p.Kartie || "",
+                fiangonana: p.fiangonana || "",
+                status_presence: p.status_fahatongavana ? "Présent" : "Absent",
+                status_payment: p.status_nandoa_vola ? "Payé" : "Non payé",
+                amount: p.vola ? parseFloat(p.vola) : 0,
+                date: p.created_at?.split("T")[0],
+                raw: p,
+            }));
+            setPresences(normalized);
+            setTotalPages(res.results?.last_page || 1);
+        } catch (err) {
+            setError(err.message || "Erreur lors du chargement des présences");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // --- Fetch Mpinos / Totals ---
+    const fetchMpinos = async () => {
+        try {
+            const res = await listeMpinos();
+            const list = res.results?.data.map(mpino => {
+                let photoObj = null;
+                try { photoObj = mpino.photo ? JSON.parse(mpino.photo) : null; } catch { }
+                let qrCodeObj = null;
+                try { qrCodeObj = mpino.qrcode ? JSON.parse(mpino.qrcode) : null; } catch { }
+                return { ...mpino, photo: photoObj, qrcode: qrCodeObj };
+            });
+            setMpinos(list);
+        } catch (err) {
+            console.error("Erreur Mpino:", err.message);
+            setMpinos([]);
+        }
+    };
+
+    const fetchTotals = async () => {
+        try {
+            const res = await countMpinosByFiangonana();
+            if (res.success) setTotals(res.data);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    // --- Effects ---
+    useEffect(() => {
+        fetchPresences(currentPage);
+        fetchMpinos();
+        fetchTotals();
+    }, [currentPage]);
+
+    useEffect(() => {
+        localStorage.setItem("fahatongavanaPage", currentPage);
+    }, [currentPage]);
+
+    // --- Filtered Presences ---
+    useEffect(() => {
+        const filtered = presences.filter(
+            p =>
+                (p.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    p.prenom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    p.status_payment.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    p.adresse.toLowerCase().includes(searchTerm.toLowerCase())) &&
+                p.date === selectedDate
+        );
+        setFilteredPresences(filtered);
+    }, [presences, searchTerm, selectedDate]);
+
+    // --- Form Handlers ---
+    const handleInputChange = e => {
+        const { name, value, type, checked } = e.target;
+        setFormData(prev => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+    };
+
+    const handleSubmit = async e => {
+        e.preventDefault();
+        try {
+            const payload = {
+                unique_id: formData.mpino_id,
+                status_nandoa_vola: formData.has_paid,
+                id_vola: formData.has_paid ? formData.amount : null,
+            };
+            if (currentPresence) await modifierFahatongavana(currentPresence.id, payload);
+            else await ajoutFahatongavana(payload);
+            await fetchPresences(currentPage);
+            closeModal();
+            afficherToastSuccès("Présence enregistrée avec succès !");
+        } catch (err) {
+            afficherToastErreur(getBackendMessage(err));
+        }
+    };
+
+    const handleDelete = async id => {
+        try {
+            await supprimerFahatongavana(id);
+            await fetchPresences(currentPage);
+            closeModal();
+            afficherToastSuccès("Présence supprimée avec succès !");
+        } catch (err) {
+            afficherToastErreur(getBackendMessage(err));
+        }
+    };
+
+    // --- Pagination helpers ---
+    const nextPage = () => { if (currentPage < totalPages) setCurrentPage(prev => prev + 1); };
+    const prevPage = () => { if (currentPage > 1) setCurrentPage(prev => prev - 1); };
+    const getPagesArray = () => Array.from({ length: totalPages }, (_, i) => i + 1);
+
+    // --- Stats ---
+    const totalPresent = filteredPresences.filter(p => p.status_presence === "Présent").length;
+    const totalPaid = filteredPresences.filter(p => p.status_payment === "Payé").length;
+    const totalAmount = filteredPresences.reduce((sum, p) => sum + (p.amount || 0), 0);
+    // Filtrage autocomplete sur id_unique
+    const handleSearchMpino = (e) => {
+        const value = e.target.value;
+        setSearchMpino(value);
+
+        if (value.length > 0 && Array.isArray(mpinos)) {
+            const filtered = mpinos.filter(m =>
+                m.id_unique.toLowerCase().includes(value.toLowerCase())
+            );
+            setFilteredMpinos(filtered);
+        } else {
+            setFilteredMpinos([]);
+        }
+    };
+
+    const selectMpino = (m) => {
+        setSearchMpino(m.id_unique);
+        setFormData(prev => ({ ...prev, mpino_id: m.id_unique }));
+        setFilteredMpinos([]);
+    };
+    return {
+        presences,
+        filteredPresences,
+        searchTerm,
+        setSearchTerm,
+        selectedDate,
+        setSelectedDate,
+        loading,
+        error,
+        totals,
+        formData,
+        handleInputChange,
+        handleSubmit,
+        handleDelete,
+        modal,
+        isOpen,
+        openModal,
+        closeModal,
+        handleSearchMpino,
+        selectMpino,
+        currentPresence,
+        setCurrentPresence,
+        searchMpino,
+        setSearchMpino,
+        mpinos,
+        filteredMpinos,
+        nextPage,
+        prevPage,
+        getPagesArray,
+        currentPage,
+        totalPages,
+        totalPresent,
+        totalPaid,
+        totalAmount
+    };
+};

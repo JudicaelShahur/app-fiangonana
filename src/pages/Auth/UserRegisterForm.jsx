@@ -135,7 +135,7 @@ const UserRegisterForm = ({
             >
               <option value="">Sélectionnez votre rôle</option>
               <option value="katekiste">Katekiste</option>
-              <option value="diacre">Diacre</option>
+              <option value="pasteur">pasteur</option>
               <option value="membre">Membre</option>
               <option value="déconne">Déconne</option>
             </select>

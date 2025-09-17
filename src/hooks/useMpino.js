@@ -8,6 +8,7 @@ import {
   telechargerPdfMpino
 } from "../services/mpinoService";
 import { listeKartie } from "../services/kartieService";
+import { afficherToastSuccès, afficherToastErreur } from "../utils/toast";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -44,7 +45,9 @@ export const useMpino = () => {
 
   const { modal, openModal, closeModal, isOpen } = useModal();
 
-  // Charger Mpino + Kartie
+  
+
+  //  Charger Mpino + Kartie
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -52,13 +55,9 @@ export const useMpino = () => {
         const res = await listeMpinos(currentPage, perPage);
         const list = res.results?.data.map(mpino => {
           let photoObj = null;
-          try {
-            photoObj = mpino.photo ? JSON.parse(mpino.photo) : null;
-          } catch {}
+          try { photoObj = mpino.photo ? JSON.parse(mpino.photo) : null; } catch {}
           let qrCodeObj = null;
-          try {
-            qrCodeObj = mpino.qrcode ? JSON.parse(mpino.qrcode) : null;
-          } catch {}
+          try { qrCodeObj = mpino.qrcode ? JSON.parse(mpino.qrcode) : null; } catch {}
           return { ...mpino, photo: photoObj, qrcode: qrCodeObj };
         });
         setMpinoList(list);
@@ -66,6 +65,7 @@ export const useMpino = () => {
       } catch (error) {
         console.error("Erreur Mpino:", error.message);
         setMpinoList([]);
+        afficherToastErreur("Erreur lors du chargement des mpinos");
       } finally {
         setLoading(false);
       }
@@ -78,6 +78,7 @@ export const useMpino = () => {
         setKartieList(data);
       } catch (error) {
         console.error("Erreur Kartie:", error.message);
+        afficherToastErreur("Erreur lors du chargement des karties");
       }
     };
 
@@ -85,7 +86,7 @@ export const useMpino = () => {
     fetchKartie();
   }, [currentPage, perPage]);
 
-  // Validation
+  //  Validation
   const validateForm = () => {
     const errors = {};
     if (!formData.nom_mpin) errors.nom_mpin = "Le nom est requis";
@@ -97,7 +98,7 @@ export const useMpino = () => {
     return Object.keys(errors).length === 0;
   };
 
-  // Filtrage
+  //  Filtrage
   const filteredMpino = mpinoList.filter(mpino =>
     (mpino.nom_mpin || mpino.nom || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
     (mpino.prenom_mpin || mpino.prenom || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -105,13 +106,10 @@ export const useMpino = () => {
     (mpino.kartie_nom || mpino.kartie || "").toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Inputs
+  //  Inputs
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value
-    }));
+    setFormData(prev => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
     if (formErrors[name]) setFormErrors(prev => ({ ...prev, [name]: "" }));
   };
 
@@ -134,7 +132,7 @@ export const useMpino = () => {
 
   const handleDragOver = (e) => e.preventDefault();
 
-  // CRUD
+  //  CRUD avec Toast
   const handleAddMpino = async () => {
     if (!validateForm()) return;
     setIsSubmitting(true);
@@ -142,15 +140,10 @@ export const useMpino = () => {
       const dataToSend = new FormData();
       Object.keys(formData).forEach(key => {
         if (formData[key] !== undefined && formData[key] !== null && formData[key] !== "") {
-          if (key === "photo_mpin" && formData[key] instanceof File) {
-            dataToSend.append(key, formData[key]);
-          } else if (
-            ["is_vitaBatisa", "is_mpandray", "is_mpiandry", "is_manambady", "is_vitaSoratra", "is_vitaMariazy"].includes(key)
-          ) {
+          if (key === "photo_mpin" && formData[key] instanceof File) dataToSend.append(key, formData[key]);
+          else if (["is_vitaBatisa","is_mpandray","is_mpiandry","is_manambady","is_vitaSoratra","is_vitaMariazy"].includes(key)) 
             dataToSend.append(key, formData[key] ? 1 : 0);
-          } else {
-            dataToSend.append(key, formData[key]);
-          }
+          else dataToSend.append(key, formData[key]);
         }
       });
 
@@ -158,13 +151,11 @@ export const useMpino = () => {
       const newMpino = res.data || res.results || res;
       setMpinoList(prev => [...prev, newMpino]);
       closeModal();
+      afficherToastSuccès("Mpino ajouté avec succès !");
     } catch (error) {
       console.error("Erreur lors de l'ajout:", error);
-      if (error.errors) {
-        setFormErrors(error.errors);
-      } else {
-        alert(error.message || "Une erreur s'est produite lors de l'ajout");
-      }
+      if (error.errors) setFormErrors(error.errors);
+      else afficherToastErreur(error.message || "Erreur lors de l'ajout");
     } finally {
       setIsSubmitting(false);
     }
@@ -177,15 +168,10 @@ export const useMpino = () => {
       const dataToSend = new FormData();
       Object.keys(formData).forEach(key => {
         if (formData[key] !== undefined && formData[key] !== null && formData[key] !== "") {
-          if (key === "photo_mpin" && formData[key] instanceof File) {
-            dataToSend.append(key, formData[key]);
-          } else if (
-            ["is_vitaBatisa", "is_mpandray", "is_mpiandry", "is_manambady", "is_vitaSoratra", "is_vitaMariazy"].includes(key)
-          ) {
+          if (key === "photo_mpin" && formData[key] instanceof File) dataToSend.append(key, formData[key]);
+          else if (["is_vitaBatisa","is_mpandray","is_mpiandry","is_manambady","is_vitaSoratra","is_vitaMariazy"].includes(key))
             dataToSend.append(key, formData[key] ? 1 : 0);
-          } else {
-            dataToSend.append(key, formData[key]);
-          }
+          else dataToSend.append(key, formData[key]);
         }
       });
 
@@ -193,13 +179,11 @@ export const useMpino = () => {
       const updatedMpino = res.data || res.results || res;
       setMpinoList(prev => prev.map(mpino => (mpino.id === modal.data.id ? updatedMpino : mpino)));
       closeModal();
+      afficherToastSuccès("Mpino modifié avec succès !");
     } catch (error) {
       console.error("Erreur lors de la modification:", error);
-      if (error.errors) {
-        setFormErrors(error.errors);
-      } else {
-        alert(error.message || "Une erreur s'est produite lors de la modification");
-      }
+      if (error.errors) setFormErrors(error.errors);
+      else afficherToastErreur(error.message || "Erreur lors de la modification");
     } finally {
       setIsSubmitting(false);
     }
@@ -210,31 +194,21 @@ export const useMpino = () => {
       await supprimerMpino(modal.data.id);
       setMpinoList(prev => prev.filter(mpino => mpino.id !== modal.data.id));
       closeModal();
+      afficherToastSuccès("Mpino supprimé avec succès !");
     } catch (error) {
       console.error("Erreur lors de la suppression:", error.message);
-      alert(error.message || "Une erreur s'est produite lors de la suppression");
+      afficherToastErreur(error.message || "Erreur lors de la suppression");
     }
   };
 
-  // Modal
+  //  Modal
   const openAdd = () => {
     setFormData({
-      nom_mpin: "",
-      prenom_mpin: "",
-      naiss_mpin: "",
-      is_vitaBatisa: false,
-      date_batisa: "",
-      num_mpin: "",
-      sexe_mpin: "",
-      talenta_mpin: "",
-      is_mpandray: false,
-      is_mpiandry: false,
-      is_manambady: false,
-      is_vitaSoratra: false,
-      is_vitaMariazy: false,
-      adress_mpin: "",
-      id_kartie: "",
-      photo_mpin: null
+      nom_mpin: "", prenom_mpin: "", naiss_mpin: "", is_vitaBatisa: false,
+      date_batisa: "", num_mpin: "", sexe_mpin: "", talenta_mpin: "",
+      is_mpandray: false, is_mpiandry: false, is_manambady: false,
+      is_vitaSoratra: false, is_vitaMariazy: false, adress_mpin: "",
+      id_kartie: "", photo_mpin: null
     });
     setPhotoPreview(null);
     setFormErrors({});
@@ -257,19 +231,13 @@ export const useMpino = () => {
       is_vitaSoratra: mpino.is_vitaSoratra || false,
       is_vitaMariazy: mpino.is_vitaMariazy || false,
       adress_mpin: mpino.adress_mpin || mpino.adress || "",
-      id_kartie:
-        mpino.id_kartie ||
-        kartieList.find(k => k.nom === (mpino.kartie_nom || mpino.kartie))?.id ||
-        "",
+      id_kartie: mpino.id_kartie || kartieList.find(k => k.nom === (mpino.kartie_nom || mpino.kartie))?.id || "",
       photo_mpin: mpino.photo_mpin instanceof File ? mpino.photo_mpin : null
     });
 
     setPhotoPreview(
-      mpino.photo_mpin instanceof File
-        ? URL.createObjectURL(mpino.photo_mpin)
-        : mpino.photo?.url
-        ? `${BASE_URL}${mpino.photo.url}`
-        : null
+      mpino.photo_mpin instanceof File ? URL.createObjectURL(mpino.photo_mpin)
+      : mpino.photo?.url ? `${BASE_URL}${mpino.photo.url}` : null
     );
 
     setFormErrors({});
@@ -278,65 +246,35 @@ export const useMpino = () => {
 
   const openDelete = (mpino) => openModal("delete", mpino);
 
-  // QR + PDF
+  //  QR + PDF
   const showQrCode = (mpino) => {
     const qrCode = mpino.qr_code || mpino.qrcode;
-    alert(
-      `QR Code de ${mpino.nom_mpin || mpino.nom} ${
-        mpino.prenom_mpin || mpino.prenom
-      }: ${qrCode?.url || qrCode || "Non disponible"}`
-    );
+    alert(`QR Code de ${mpino.nom_mpin || mpino.nom} ${mpino.prenom_mpin || mpino.prenom}: ${qrCode?.url || qrCode || "Non disponible"}`);
   };
+const downloadFiche = async (mpino) => {
+  try {
+    const blob = await telechargerPdfMpino(mpino.id);
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `fiche_${mpino.id}.pdf`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+    afficherToastSuccès("Téléchargement PDF réussi !");
+  } catch (error) {
+    console.error("Erreur lors du téléchargement PDF:", error.message);
+    afficherToastErreur(error.message || "Erreur lors du téléchargement");
+  }
+};
 
-  const downloadFiche = async (mpino) => {
-    try {
-      const data = await telechargerPdfMpino(mpino.id);
-      const url = window.URL.createObjectURL(
-        new Blob([data], { type: "application/pdf" })
-      );
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `fiche_${mpino.id}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Erreur lors du téléchargement PDF:", error.message);
-      alert(error.message || "Une erreur s'est produite lors du téléchargement");
-    }
-  };
 
   return {
-    // states
-    currentPage,
-    setCurrentPage,
-    totalPages,
-    loading,
-    mpinoList,
-    kartieList,
-    searchTerm,
-    setSearchTerm,
-    formData,
-    formErrors,
-    isSubmitting,
-    photoPreview,
-    modal,
-    isOpen,
-    // handlers
-    handleInputChange,
-    handleFileChange,
-    handleDrop,
-    handleDragOver,
-    handleAddMpino,
-    handleEditMpino,
-    handleDeleteMpino,
-    openAdd,
-    openEdit,
-    openDelete,
-    showQrCode,
-    downloadFiche,
-    filteredMpino,
-    closeModal
+    currentPage, setCurrentPage, totalPages, loading, mpinoList, kartieList,
+    searchTerm, setSearchTerm, formData, formErrors, isSubmitting, photoPreview,
+    modal, isOpen, handleInputChange, handleFileChange, handleDrop, handleDragOver,
+    handleAddMpino, handleEditMpino, handleDeleteMpino, openAdd, openEdit, openDelete,
+    showQrCode, downloadFiche, filteredMpino, closeModal
   };
 };

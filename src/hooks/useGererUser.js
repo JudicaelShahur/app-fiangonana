@@ -9,7 +9,9 @@ export default function useGererUser(refetchMembres) {
     async (membre, action) => {
       setLoading(true);
       try {
-        await gererUser(membre.id, action);
+        // Map action React → backend
+        let backendAction = action === "confirmer" ? "accepte" : "refuse";
+        await gererUser(membre.id, backendAction);
 
         if (action === "confirmer") {
           afficherToastSuccès(`La demande de compte de ${membre.nom_user} est confirmée`);

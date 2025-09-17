@@ -63,7 +63,7 @@ export default function useRegisterForm() {
                     nom_user: formulaireUtilisateur.nomUtilisateur,
                     mdp_user: formulaireUtilisateur.motDePasse,
                     mdp_user_confirmation: formulaireUtilisateur.confirmerMotDePasse, 
-                    role: "user",
+                    role: formulaireUtilisateur.rôle,
                     fiang_id: formulaireUtilisateur.église,
                 };
 

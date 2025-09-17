@@ -163,6 +163,31 @@
     background-color: rgba(0, 0, 0, 0.03);
 }
 
+.paginationVola {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+.paginationVola button {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.paginationVola button.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.paginationVola button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
 /* Action Buttons */
 .action-btn-vola {
     display: flex;
