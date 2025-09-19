@@ -1,95 +1,63 @@
-import React, { useState } from 'react';
+import React from "react";
+import Select from "react-select";
 import "../../styles/Mpitondra.css";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faTrash, faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
+
+import ConfirmDeleteModal from "../../utils/ConfirmDeleteModal.jsx";
+import { useMpitondra } from "../../hooks/useMpitondra.js";
 
 const Mpitondra = () => {
-    const [mpitondras, setMpitondras] = useState([
-        { id: 1, id_mpin: "MP001", annee_mpitondra: 2024, titre_mpitondra: "Président", desc_mpitondra: "Responsable principal", id_fiang: "F001" },
-        { id: 2, id_mpin: "MP002", annee_mpitondra: 2025, titre_mpitondra: "Secrétaire", desc_mpitondra: "Gestion administrative", id_fiang: "F002" }
-    ]);
-
-    const [searchTerm, setSearchTerm] = useState('');
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingId, setEditingId] = useState(null); // null = ajout, sinon modification
-    const [newMpitondra, setNewMpitondra] = useState({
-        id_mpin: '',
-        annee_mpitondra: '',
-        titre_mpitondra: '',
-        desc_mpitondra: '',
-        id_fiang: ''
-    });
-
-    const handleOpenModal = (mpitondra = null) => {
-        if (mpitondra) {
-            setNewMpitondra(mpitondra); // Pré-remplir pour édition
-            setEditingId(mpitondra.id);
-        } else {
-            setNewMpitondra({ id_mpin: '', annee_mpitondra: '', titre_mpitondra: '', desc_mpitondra: '', id_fiang: '' });
-            setEditingId(null);
-        }
-        setIsModalOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-        setNewMpitondra({ id_mpin: '', annee_mpitondra: '', titre_mpitondra: '', desc_mpitondra: '', id_fiang: '' });
-        setEditingId(null);
-    };
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setNewMpitondra({ ...newMpitondra, [name]: value });
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (editingId) {
-            // mode modification
-            setMpitondras(mpitondras.map(m => m.id === editingId ? { ...newMpitondra, id: editingId } : m));
-            alert("Mpitondra modifié avec succès !");
-        } else {
-            // mode ajout
-            const newItem = { ...newMpitondra, id: mpitondras.length + 1 };
-            setMpitondras([...mpitondras, newItem]);
-            alert("Mpitondra ajouté avec succès !");
-        }
-        handleCloseModal();
-    };
-
-    const handleDelete = (id) => {
-        if (window.confirm("Voulez-vous vraiment supprimer ce mpitondra ?")) {
-            setMpitondras(mpitondras.filter(m => m.id !== id));
-        }
-    };
-
-    const filteredMpitondras = mpitondras.filter(m =>
-        m.id_mpin.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        m.titre_mpitondra.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const {
+        filteredMpitondras,
+        searchTerm,
+        setSearchTerm,
+        openAdd,
+        openEdit,
+        openDelete,
+        formData,
+        handleInputChange,
+        addMpitondraHandler,
+        editMpitondraHandler,
+        deleteMpitondraHandler,
+        modal,
+        isOpen,
+        closeModal,
+        currentPage,
+        setCurrentPage,
+        totalPages,
+        getPagesArray,
+        loading,
+        fiangonanas,
+        mpinos,
+        setFormData
+    } = useMpitondra();
 
     return (
         <div className="mpitondra-container">
             <div className="mpitondra-content">
-                <header className="mpitondra-header">
-                    <h1>Liste des mpitondra</h1>
-                    <button className="add-btn-mpitondra" onClick={() => handleOpenModal()}>
-                        <i className="fas fa-plus"></i> Ajouter un mpitondra
-                    </button>
+                {/* Header */}
+                <header className="mpitondra-header">         
+                        <h1>Liste complète des Mpitondra</h1>
+                        <button className="add-btn-mpitondra" onClick={openAdd}>
+                            <FontAwesomeIcon icon={faPlus} /> Ajouter un Mpitondra
+                        </button>
                 </header>
 
+                {/* Search bar */}
                 <div className="search-mpitondra-bar">
                     <div className="search-mpitondra-input">
+                        <span className="search-mpitondra-icon"><i className="fas fa-search"></i></span>
                         <input
                             type="text"
-                            placeholder="Rechercher..."
+                            placeholder="Rechercher par titre ou ID..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                        <span className="search-mpitondra-icon"><i className="fas fa-search"></i></span>
                     </div>
                 </div>
 
+                {/* Tableau */}
                 <div className="table-mpitondra-container">
                     <table className="mpitondra-table">
                         <thead>
@@ -103,74 +71,193 @@ const Mpitondra = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredMpitondras.map(m => (
-                                <tr key={m.id}>
-                                    <td data-label="ID MPIN">{m.id_mpin}</td>
-                                    <td data-label="Année">{m.annee_mpitondra}</td>
-                                    <td data-label="Titre">{m.titre_mpitondra}</td>
-                                    <td data-label="Description">{m.desc_mpitondra}</td>
-                                    <td data-label="ID Fiang">{m.id_fiang}</td>
-                                    <td data-label="Actions" className="action-btn-mpitondra">
-                                        <button className="btn-mpitondra" onClick={() => handleOpenModal(m)}>
-                                            <FontAwesomeIcon icon={faEdit} />
-                                        </button>
-                                        <button className="btn-mpitondra btn-danger" onClick={() => handleDelete(m.id)}>
-                                            <FontAwesomeIcon icon={faTrash} />
-                                        </button>
+                            {loading ? (
+                                <tr>
+                                    <td colSpan="6" style={{ textAlign: "center", padding: "20px" }}>
+                                        <div className="loader"></div>
                                     </td>
                                 </tr>
-                            ))}
+                            ) : filteredMpitondras.length > 0 ? (
+                                filteredMpitondras.map((m) => (
+                                    <tr key={m.id}>
+                                        <td data-label="ID MPIN">{m.mpino_nom} {m.mpino_prenom}</td>
+                                        <td data-label="Année">{m.annee_mpitondra}</td>
+                                        <td data-label="Titre">{m.titre_mpitondra}</td>
+                                        <td data-label="Description">{m.desc_mpitondra}</td>
+                                        <td data-label="ID Fiang">{m.fiang_nom}</td>
+                                        <td data-label="Actions" className="action-btn-mpitondra">
+                                            <button className="btn-mpitondra" onClick={() => openEdit(m)}>
+                                                <FontAwesomeIcon icon={faEdit} />
+                                            </button>
+                                            <button
+                                                className="btn-mpitondra btn-danger"
+                                                onClick={() => openDelete(m)}
+                                            >
+                                                <FontAwesomeIcon icon={faTrash} />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td
+                                        colSpan="6"
+                                        style={{
+                                            textAlign: "center",
+                                            padding: "20px",
+                                            color: "var(--secondary-color)",
+                                            fontSize: "1.1rem",
+                                        }}
+                                        className="no-resultsMpitondra"
+                                    >
+                                        Aucun résultat trouvé pour "{searchTerm}"
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
 
-                    {filteredMpitondras.length === 0 && (
-                        <div className="no-results-mpitondra">
-                            Aucun résultat trouvé pour "{searchTerm}"
-                        </div>
-                    )}
-                </div>
+                    {/* Pagination */}
+                    <div className="pagination">
+                        <button
+                            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                            disabled={currentPage <= 1}
+                        >
+                            Précédent
+                        </button>
 
-                {isModalOpen && (
-                    <div className="modal-mpitondra-overlay">
-                        <div className="modal-mpitondra-content">
-                            <div className="modal-mpitondra-header">
-                                <h2>{editingId ? "Modifier un mpitondra" : "Ajouter un mpitondra"}</h2>
-                                <button className="close-btn-mpitondra" onClick={handleCloseModal}>&times;</button>
+                        {getPagesArray().map((page) => (
+                            <button
+                                key={page}
+                                onClick={() => setCurrentPage(page)}
+                                style={{
+                                    backgroundColor: currentPage === page ? "#3498db" : "",
+                                    color: currentPage === page ? "#fff" : "",
+                                    borderRadius: "4px",
+                                    padding: "5px 10px",
+                                    margin: "0 2px",
+                                    border: "1px solid #ccc",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                {page}
+                            </button>
+                        ))}
+
+                        <button
+                            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                            disabled={currentPage >= totalPages}
+                        >
+                            Suivant
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Modal ajout / édition */}
+            {(isOpen("add") || isOpen("edit")) && (
+                <div className="modal-mpitondra-overlay">
+                    <div className="modal-mpitondra-content">
+                        <div className="modal-mpitondra-header">
+                            <h2>{isOpen("add") ? "Ajouter un Mpitondra" : "Modifier le Mpitondra"}</h2>
+                            <button className="close-btn-mpitondra" onClick={closeModal}>
+                                <FontAwesomeIcon icon={faTimes} />
+                            </button>
+                        </div>
+                        <div className="modal-mpitondra-body">
+                           <div className="form-mpitondra-group">
+                                <label>Mpino</label>
+                                <Select
+                                    placeholder="Rechercher un Mpino..."
+                                    options={mpinos.map((mp) => ({
+                                        value: mp.id,
+                                        label: `${mp.nom} ${mp.prenom}`,
+                                    }))}
+                                    value={
+                                        mpinos
+                                            .map((mp) => ({ value: mp.id, label: `${mp.nom} ${mp.prenom}` }))
+                                            .find((opt) => opt.value === Number(formData.id_mpin)) || null
+                                    }
+                                    onChange={(selected) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            id_mpin: selected ? selected.value.toString() : "",
+                                        }))
+                                    }
+                                    isSearchable
+                                />
                             </div>
-                            <div className="modal-mpitondra-body">
-                                <form>
-                                    <div className="form-mpitondra-group">
-                                        <label>ID MPIN *</label>
-                                        <input type="text" name="id_mpin" value={newMpitondra.id_mpin} onChange={handleInputChange} required />
-                                    </div>
-                                    <div className="form-mpitondra-group">
-                                        <label>Année *</label>
-                                        <input type="number" name="annee_mpitondra" value={newMpitondra.annee_mpitondra} onChange={handleInputChange} required />
-                                    </div>
-                                    <div className="form-mpitondra-group">
-                                        <label>Titre *</label>
-                                        <input type="text" name="titre_mpitondra" value={newMpitondra.titre_mpitondra} onChange={handleInputChange} required />
-                                    </div>
-                                    <div className="form-mpitondra-group">
-                                        <label>Description *</label>
-                                        <input type="text" name="desc_mpitondra" value={newMpitondra.desc_mpitondra} onChange={handleInputChange} required />
-                                    </div>
-                                    <div className="form-mpitondra-group">
-                                        <label>ID Fiang *</label>
-                                        <input type="text" name="id_fiang" value={newMpitondra.id_fiang} onChange={handleInputChange} required />
-                                    </div>
-                                </form>
+
+                            <div className="form-mpitondra-group">
+                                <label>Année</label>
+                                <input
+                                    type="number"
+                                    name="annee_mpitondra"
+                                    value={formData.annee_mpitondra}
+                                    onChange={handleInputChange}
+                                    placeholder="Ex: 2025"
+                                />
                             </div>
-                            <div className="modal-mpitondra-footer">
-                                <button className="cancel-mpitondra-btn" onClick={handleCloseModal}>Annuler</button>
-                                <button className="save-mpitondra-btn" onClick={handleSubmit}>
-                                    {editingId ? "Modifier" : "Enregistrer"}
-                                </button>
+                            <div className="form-mpitondra-group">
+                                <label>Titre</label>
+                                <input
+                                    type="text"
+                                    name="titre_mpitondra"
+                                    value={formData.titre_mpitondra}
+                                    onChange={handleInputChange}
+                                    placeholder="Entrez le titre"
+                                />
                             </div>
+                            <div className="form-mpitondra-group">
+                                <label>Description</label>
+                                <input
+                                    type="text"
+                                    name="desc_mpitondra"
+                                    value={formData.desc_mpitondra}
+                                    onChange={handleInputChange}
+                                    placeholder="Entrez la description"
+                                />
+                            </div>
+                            <div className="form-mpitondra-group">
+                                <label>Fiangonana</label>
+                                <select
+                                    name="id_fiang"
+                                    value={formData.id_fiang}
+                                    onChange={handleInputChange}
+                                >
+                                    <option value="">-- Sélectionner une Fiangonana --</option>
+                                    {fiangonanas.map((f) => (
+                                        <option key={f.id} value={f.id}>
+                                            {f.fiang_nom}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                        <div className="modal-mpitondra-footer">
+                            <button className="cancel-mpitondra-btn" onClick={closeModal}>
+                                Annuler
+                            </button>
+                            <button
+                                className="save-mpitondra-btn"
+                                onClick={isOpen("add") ? addMpitondraHandler : editMpitondraHandler}
+                            >
+                                {isOpen("add") ? "Ajouter" : "Enregistrer"}
+                            </button>
                         </div>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
+
+            {/* Modal suppression */}
+            {isOpen("delete") && modal.data && (
+                <ConfirmDeleteModal
+                    isOpen={true}
+                    onClose={closeModal}
+                    onConfirm={deleteMpitondraHandler}
+                    message={`Êtes-vous sûr de vouloir supprimer le Mpitondra "${modal.data.titre_mpitondra}" ?`}
+                />
+            )}
         </div>
     );
 };

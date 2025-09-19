@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import useModal from "./useModal.js";
 import { getFahatongavanas, ajoutFahatongavana, modifierFahatongavana, supprimerFahatongavana } from "../services/fahatongavanaService";
-import { listeMpinos, countMpinosByFiangonana } from "../services/mpinoService";
+import { listeMpinos, countMpinosByFiangonana, getMpinoById } from "../services/mpinoService";
 import { afficherToastSuccès, afficherToastErreur, getBackendMessage } from "../utils/toast.js";
+import { listeVola } from "../services/volaService";
 import { todayLocal } from "../utils/date";
 export const useFahatongavana = () => {
     const { modal, openModal, closeModal, isOpen } = useModal();
@@ -85,11 +86,24 @@ export const useFahatongavana = () => {
         }
     };
 
+    const [volas, setVolas] = useState([]);
+
+    const fetchVolas = async () => {
+        try {
+            const res = await listeVola();
+            console.log("vola", res);
+            setVolas(res.results?.data || []);
+        } catch (err) {
+            console.error("Erreur Volas:", err.message);
+            setVolas([]);
+        }
+    };
     // --- Effects ---
     useEffect(() => {
         fetchPresences(currentPage);
         fetchMpinos();
         fetchTotals();
+        fetchVolas();
     }, [currentPage]);
 
     useEffect(() => {
@@ -126,7 +140,7 @@ export const useFahatongavana = () => {
             if (currentPresence) await modifierFahatongavana(currentPresence.id, payload);
             else await ajoutFahatongavana(payload);
             await fetchPresences(currentPage);
-            closeModal();
+            handleCloseModal();
             afficherToastSuccès("Présence enregistrée avec succès !");
         } catch (err) {
             afficherToastErreur(getBackendMessage(err));
@@ -154,24 +168,49 @@ export const useFahatongavana = () => {
     const totalPaid = filteredPresences.filter(p => p.status_payment === "Payé").length;
     const totalAmount = filteredPresences.reduce((sum, p) => sum + (p.amount || 0), 0);
     // Filtrage autocomplete sur id_unique
-    const handleSearchMpino = (e) => {
+    const handleSearchMpino = async (e) => {
         const value = e.target.value;
         setSearchMpino(value);
 
-        if (value.length > 0 && Array.isArray(mpinos)) {
-            const filtered = mpinos.filter(m =>
-                m.id_unique.toLowerCase().includes(value.toLowerCase())
-            );
-            setFilteredMpinos(filtered);
-        } else {
+        if (value.length === 0) {
             setFilteredMpinos([]);
+            return;
         }
+        // Filtrage local
+        let filtered = mpinos.filter(m =>
+            m.id_unique.toLowerCase().includes(value.toLowerCase()) ||
+            m.nom.toLowerCase().includes(value.toLowerCase()) ||
+            m.prenom.toLowerCase().includes(value.toLowerCase())
+        );
+        if (filtered.length === 0) {
+            // Raha tsy hita amin'ny filtre local dia maka avy amin'ny API
+            try {
+                const mpinoFromApi = await getMpinoById(value);
+                if (mpinoFromApi) filtered = [mpinoFromApi];
+            } catch (err) {
+                console.error("Erreur getMpinoById:", err);
+            }
+        }
+        setFilteredMpinos(filtered);
     };
+
 
     const selectMpino = (m) => {
         setSearchMpino(m.id_unique);
         setFormData(prev => ({ ...prev, mpino_id: m.id_unique }));
         setFilteredMpinos([]);
+    };
+    // --- Close modal avec reset ---
+    const resetForm = () => {
+        setFormData({ mpino_id: "", has_paid: false, amount: null });
+        setSearchMpino("");
+        setFilteredMpinos([]);
+        setCurrentPresence(null);
+    };
+
+    const handleCloseModal = () => {
+        resetForm();
+        closeModal(); // avy ao @ useModal
     };
     return {
         presences,
@@ -190,7 +229,7 @@ export const useFahatongavana = () => {
         modal,
         isOpen,
         openModal,
-        closeModal,
+        closeModal: handleCloseModal,
         handleSearchMpino,
         selectMpino,
         currentPresence,
@@ -206,6 +245,8 @@ export const useFahatongavana = () => {
         totalPages,
         totalPresent,
         totalPaid,
-        totalAmount
+        totalAmount,
+        volas,
+        setFormData
     };
 };

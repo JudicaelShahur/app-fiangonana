@@ -131,6 +131,7 @@ body.sidebar-active .navbar-brand {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
+    color: var(--text-color);
     box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
     width: 320px;
     max-height: 400px;

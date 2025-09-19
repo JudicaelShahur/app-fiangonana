@@ -1,58 +1,37 @@
-import React, { useState } from "react";
+import React from "react";
+import Select from "react-select";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "../../styles/Komitie.css";
-import useModal from "../../hooks/useModal.js";
 import ConfirmDeleteModal from "../../utils/ConfirmDeleteModal.jsx";
+import { useKomity } from "../../hooks/useKomity.js";
 
 const Komitie = () => {
-  const [komities, setKomities] = useState([
-    { id: 1, titre_kom: "Komity Ara-bola", id_mpin: "MP001" },
-    { id: 2, titre_kom: "Komity Tanora", id_mpin: "MP002" },
-  ]);
-
-  const [formData, setFormData] = useState({ titre_kom: "", id_mpin: "" });
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const { modal, openModal, closeModal, isOpen } = useModal();
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const openAdd = () => {
-    setFormData({ titre_kom: "", id_mpin: "" });
-    openModal("add");
-  };
-
-  const openEdit = (kom) => {
-    setFormData({ titre_kom: kom.titre_kom, id_mpin: kom.id_mpin });
-    openModal("edit", kom);
-  };
-
-  const openDelete = (kom) => openModal("delete", kom);
-
-  const handleAddKomitie = () => {
-    setKomities([...komities, { ...formData, id: komities.length + 1 }]);
-    closeModal();
-  };
-
-  const handleEditKomitie = () => {
-    setKomities(
-      komities.map(k => k.id === modal.data.id ? { ...k, ...formData } : k)
-    );
-    closeModal();
-  };
-
-  const handleDeleteKomitie = () => {
-    setKomities(komities.filter(k => k.id !== modal.data.id));
-    closeModal();
-  };
-
-  const filteredKomities = komities.filter(
-    k => k.titre_kom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      k.id_mpin.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const {
+    komities,
+    filteredKomities,
+    formData,
+    handleInputChange,
+    searchTerm,
+    setSearchTerm,
+    modal,
+    isOpen,
+    openAdd,
+    openEdit,
+    openDelete,
+    closeModal,
+    addKomityHandler,
+    editKomityHandler,
+    deleteKomityHandler,
+    loading,
+    mpinos,
+    setFormData,
+    currentPage,
+    setCurrentPage,
+    totalPages,
+    nextPage,
+    prevPage,
+    getPagesArray,
+  } = useKomity();
 
   return (
     <div className="komitie-container">
@@ -81,20 +60,27 @@ const Komitie = () => {
 
       {/* Table */}
       <div className="table-komitie-container">
-        {filteredKomities.length > 0 ? (
+        
           <table className="komitie-table">
             <thead>
               <tr>
                 <th>Titre Komitie</th>
-                <th>ID Mpitondra</th>
+                <th>Nom et Prénom</th>
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody>
-              {filteredKomities.map(kom => (
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan="6" style={{ textAlign: "center", padding: "20px" }}>
+                  <div className="loader"></div>
+                </td>
+              </tr>
+            ) : filteredKomities.length > 0 ? (
+              filteredKomities.map((kom) => (
                 <tr key={kom.id}>
                   <td data-label="Titre">{kom.titre_kom}</td>
-                  <td data-label="ID Mpitondra">{kom.id_mpin}</td>
+                  <td data-label="ID Mpitondra">{kom.nom} {kom.prenom}</td>
                   <td data-label="Actions" className="action-btn-komitie">
                     <button className="btn-komitie" onClick={() => openEdit(kom)}>
                       <i className="fas fa-edit"></i>
@@ -104,12 +90,49 @@ const Komitie = () => {
                     </button>
                   </td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p className="no-results-komitie">Aucun résultat trouvé pour "{searchTerm}"</p>
+              ))
+            ) : (
+            <p className="no-results-komitie">Aucun résultat trouvé pour "{searchTerm}"</p>
         )}
+            </tbody>
+        </table>
+        {/* Pagination */}
+        <div className="paginationKartie">
+          <button
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage <= 1}
+          >
+            Précédent
+          </button>
+
+          {/* Pages */}
+          {getPagesArray().map(page => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              style={{
+                backgroundColor: currentPage === page ? "#3498db" : "",
+                color: currentPage === page ? "#fff" : "",
+                borderRadius: "4px",
+                padding: "5px 10px",
+                margin: "0 2px",
+                border: "1px solid #ccc",
+                cursor: "pointer"
+              }}
+            >
+              {page}
+            </button>
+          ))}
+
+
+          <button
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={currentPage >= totalPages}
+          >
+            Suivant
+          </button>
+        </div>
+        
       </div>
 
       {/* Modal add/edit */}
@@ -123,16 +146,43 @@ const Komitie = () => {
             <div className="modal-komitie-body">
               <div className="form-komitie-group">
                 <label>Titre Komitie</label>
-                <input type="text" name="titre_kom" value={formData.titre_kom} onChange={handleInputChange} placeholder="Titre du komitie" />
+                <input
+                  type="text"
+                  name="titre_kom"
+                  value={formData.titre_kom}
+                  onChange={handleInputChange}
+                  placeholder="Titre du komitie"
+                />
               </div>
               <div className="form-komitie-group">
-                <label>ID Mpitondra</label>
-                <input type="text" name="id_mpin" value={formData.id_mpin} onChange={handleInputChange} placeholder="Identifiant Mpitondra" />
+                <label>Mpino</label>
+                <Select
+                  placeholder="Rechercher un Mpino..."
+                  options={mpinos.map((mp) => ({
+                    value: mp.id,
+                    label: `${mp.nom} ${mp.prenom}`,
+                  }))}
+                  value={
+                    mpinos
+                      .map((mp) => ({ value: mp.id, label: `${mp.nom} ${mp.prenom}` }))
+                      .find((opt) => opt.value === Number(formData.id_mpin)) || null
+                  }
+                  onChange={(selected) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      id_mpin: selected ? selected.value.toString() : "",
+                    }))
+                  }
+                  isSearchable
+                />
               </div>
             </div>
             <div className="modal-komitie-footer">
               <button className="cancel-komitie-btn" onClick={closeModal}>Annuler</button>
-              <button className="save-komitie-btn" onClick={isOpen("add") ? handleAddKomitie : handleEditKomitie}>
+              <button
+                className="save-komitie-btn"
+                onClick={isOpen("add") ? addKomityHandler : editKomityHandler}
+              >
                 {isOpen("add") ? "Ajouter" : "Modifier"}
               </button>
             </div>
@@ -145,7 +195,7 @@ const Komitie = () => {
         <ConfirmDeleteModal
           isOpen={true}
           onClose={closeModal}
-          onConfirm={handleDeleteKomitie}
+          onConfirm={deleteKomityHandler}
           message={`Êtes-vous sûr de vouloir supprimer le komitie "${modal.data.titre_kom}" ?`}
         />
       )}

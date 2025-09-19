@@ -1,189 +1,186 @@
-import { useState } from "react";
-import "@fortawesome/fontawesome-free/css/all.min.css";
+import React from "react";
 import "../../styles/Sampana.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faTrash, faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FaSearch } from "react-icons/fa";
+import ConfirmDeleteModal from "../../utils/ConfirmDeleteModal.jsx";
+import { useSampana } from "../../hooks/useSampana.js";
 
 const Sampana = () => {
-    const [sampanas, setSampanas] = useState([
-        { id: 1, nom_samp: "Sampana Tanora", desc_samp: "Regroupe les jeunes" },
-        { id: 2, nom_samp: "Sampana Vehivavy", desc_samp: "Association des femmes" },
-    ]);
+  const {
+    filteredSampanas,
+    searchTerm,
+    setSearchTerm,
+    openAdd,
+    openEdit,
+    openDelete,
+    formData,
+    handleInputChange,
+    addSampanaHandler,
+    editSampanaHandler,
+    deleteSampanaHandler,
+    modal,
+    isOpen,
+    closeModal,
+    currentPage,
+    setCurrentPage,
+    totalPages,
+    getPagesArray,
+    loading
+  } = useSampana();
 
-    const [showModal, setShowModal] = useState(false);
-    const [editingId, setEditingId] = useState(null);
-    const [newSampana, setNewSampana] = useState({ nom_samp: "", desc_samp: "" });
-    const [searchTerm, setSearchTerm] = useState("");
+  return (
+    <div className="sampana-container">
+        <header>
+          <div className="sampana-header">
+            <h1>Liste complète des Sampana</h1>
+            <button className="add-btn-sampana" onClick={openAdd}>
+              <FontAwesomeIcon icon={faPlus} /> Ajouter un Sampana
+            </button>
+          </div>
+        </header>
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setNewSampana({ ...newSampana, [name]: value });
-    };
-
-    const handleOpenModal = (samp = null) => {
-        if (samp) {
-            setNewSampana(samp);
-            setEditingId(samp.id);
-        } else {
-            setNewSampana({ nom_samp: "", desc_samp: "" });
-            setEditingId(null);
-        }
-        setShowModal(true);
-    };
-
-    const handleCloseModal = () => {
-        setShowModal(false);
-        setNewSampana({ nom_samp: "", desc_samp: "" });
-        setEditingId(null);
-    };
-
-    const handleSubmit = () => {
-        if (!newSampana.nom_samp || !newSampana.desc_samp) return;
-
-        if (editingId) {
-            // 🔄 Modification
-            setSampanas(
-                sampanas.map((s) =>
-                    s.id === editingId ? { ...newSampana, id: editingId } : s
-                )
-            );
-            alert("Sampana modifié avec succès !");
-        } else {
-            // ➕ Ajout
-            setSampanas([...sampanas, { ...newSampana, id: sampanas.length + 1 }]);
-            alert("Sampana ajouté avec succès !");
-        }
-
-        handleCloseModal();
-    };
-
-    const handleDelete = (id) => {
-        if (window.confirm("Voulez-vous vraiment supprimer ce sampana ?")) {
-            setSampanas(sampanas.filter((s) => s.id !== id));
-        }
-    };
-
-    const filteredSampanas = sampanas.filter(
-        (s) =>
-            s.nom_samp.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            s.desc_samp.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    return (
-        <div className="sampana-container">
-            {/* Header */}
-            <div className="sampana-header">
-                <h1>Gestion des Sampana</h1>
-                <button className="add-btn-sampana" onClick={() => handleOpenModal()}>
-                    <i className="fas fa-plus"></i> Ajouter un sampana
-                </button>
+          <div className="search-sampana-bar ">
+          <div className="search-sampana-input">
+            <FaSearch className="search-sampana-icon" />
+            <input
+              type="text"
+              placeholder="Rechercher..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
             </div>
-
-            {/* Barre de recherche */}
-            <div className="search-mpitondra-bar">
-                <div className="search-mpitondra-input">
-                    <input
-                        type="text"
-                        placeholder="Rechercher..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    <span className="search-mpitondra-icon">
-                        <i className="fas fa-search"></i>
-                    </span>
-                </div>
-            </div>
-
-            {/* Table */}
-            <div className="table-sampana-container">
-                {filteredSampanas.length > 0 ? (
-                    <table className="sampana-table">
-                        <thead>
-                            <tr>
-                                <th>Nom Sampana</th>
-                                <th>Description</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredSampanas.map((samp) => (
-                                <tr key={samp.id}>
-                                    <td data-label="Nom">{samp.nom_samp}</td>
-                                    <td data-label="Description">{samp.desc_samp}</td>
-                                    <td data-label="Actions" className="action-btn-sampana">
-                                        <button
-                                            className="btn-sampana"
-                                            onClick={() => handleOpenModal(samp)}
-                                        >
-                                            <i className="fas fa-edit"></i>
-                                        </button>
-                                        <button
-                                            className="btn-sampana btn-danger"
-                                            onClick={() => handleDelete(samp.id)}
-                                        >
-                                            <i className="fas fa-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                ) : (
-                    <p className="no-results-sampana">
-                        Aucun résultat trouvé pour "{searchTerm}"
-                    </p>
-                )}
-            </div>
-
-            {/* Modal */}
-            {showModal && (
-                <div className="modal-sampana-overlay">
-                    <div className="modal-sampana-content">
-                        <div className="modal-sampana-header">
-                            <h2>{editingId ? "Modifier un Sampana" : "Ajouter un Sampana"}</h2>
-                            <button
-                                className="close-btn-sampana"
-                                onClick={handleCloseModal}
-                            >
-                                &times;
-                            </button>
-                        </div>
-                        <div className="modal-sampana-body">
-                            <div className="form-sampana-group">
-                                <label>Nom Sampana</label>
-                                <input
-                                    type="text"
-                                    name="nom_samp"
-                                    value={newSampana.nom_samp}
-                                    onChange={handleInputChange}
-                                    placeholder="Nom du sampana"
-                                />
-                            </div>
-                            <div className="form-sampana-group">
-                                <label>Description</label>
-                                <input
-                                    type="text"
-                                    name="desc_samp"
-                                    value={newSampana.desc_samp}
-                                    onChange={handleInputChange}
-                                    placeholder="Description du sampana"
-                                />
-                            </div>
-                        </div>
-                        <div className="modal-sampana-footer">
-                            <button
-                                className="cancel-sampana-btn"
-                                onClick={handleCloseModal}
-                            >
-                                Annuler
-                            </button>
-                            <button className="save-sampana-btn" onClick={handleSubmit}>
-                                {editingId ? "Modifier" : "Enregistrer"}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <button className="filter-sampana-btn">
+            <i className="fas fa-filter"></i> Filtrer
+            </button>
         </div>
-    );
+
+        <div className="table-sampana-container">
+          <table className="sampana-table">
+            <thead>
+              <tr>
+                <th>Nom Sampana</th>
+                <th>Description</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan="3" style={{ textAlign: "center", padding: "20px" }}>
+                    <div className="loader"></div>
+                  </td>
+                </tr>
+              ) : filteredSampanas.length > 0 ? (
+                filteredSampanas.map(s => (
+                  <tr key={s.id}>
+                    <td data-label="Nom">{s.nom_samp}</td>
+                    <td data-label="Description">{s.desc_samp}</td>
+                    <td data-label="Actions" className="action-btn-sampana">
+                      <button className="btn-sampana" onClick={() => openEdit(s)}>
+                        <FontAwesomeIcon icon={faEdit} />
+                      </button>
+                      <button className="btn-sampana btn-danger" onClick={() => openDelete(s)}>
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="3" style={{
+                    textAlign: "center",
+                    padding: "20px",
+                    color: "var(--secondary-color)",
+                    fontSize: "1.1rem"
+                  }} className="no-resultsSampana">
+                    Aucun résultat trouvé pour "{searchTerm}"
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+
+          {/* Pagination */}
+           <div className="paginationKartie">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage <= 1}
+            >
+              Précédent
+            </button>
+
+            {/* Pages */}
+            {getPagesArray().map(page => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                style={{
+                  backgroundColor: currentPage === page ? "#3498db" : "",
+                  color: currentPage === page ? "#fff" : "",
+                  borderRadius: "4px",
+                  padding: "5px 10px",
+                  margin: "0 2px",
+                  border: "1px solid #ccc",
+                  cursor: "pointer"
+                }}
+              >
+                {page}
+              </button>
+            ))}
+
+
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage >= totalPages}
+            >
+              Suivant
+            </button>
+          </div>
+        </div>
+      
+
+      {/* Modal ajout / édition */}
+      {(isOpen("add") || isOpen("edit")) && (
+        <div className="modal-sampana-overlay">
+          <div className="modal-sampana-content">
+            <div className="modal-sampana-header">
+              <h2>{isOpen("add") ? "Ajouter un Sampana" : "Modifier le Sampana"}</h2>
+              <button className="close-btn-sampana" onClick={closeModal}>
+                <FontAwesomeIcon icon={faTimes} />
+              </button>
+            </div>
+            <div className="modal-sampana-body">
+              <div className="form-sampana-group">
+                <label>Nom Sampana</label>
+                <input type="text" name="nom_samp" value={formData.nom_samp} onChange={handleInputChange} placeholder="Nom du Sampana" />
+              </div>
+              <div className="form-sampana-group">
+                <label>Description</label>
+                <input type="text" name="desc_samp" value={formData.desc_samp} onChange={handleInputChange} placeholder="Description" />
+              </div>
+            </div>
+            <div className="modal-sampana-footer">
+              <button className="cancel-sampana-btn" onClick={closeModal}>Annuler</button>
+              <button className="save-sampana-btn" onClick={isOpen("add") ? addSampanaHandler : editSampanaHandler}>
+                {isOpen("add") ? "Ajouter" : "Enregistrer"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal suppression */}
+      {isOpen("delete") && modal.data && (
+        <ConfirmDeleteModal
+          isOpen={true}
+          onClose={closeModal}
+          onConfirm={deleteSampanaHandler}
+          message={`Êtes-vous sûr de vouloir supprimer le Sampana "${modal.data.nom_samp}" ?`}
+        />
+      )}
+    </div>
+  );
 };
 
 export default Sampana;

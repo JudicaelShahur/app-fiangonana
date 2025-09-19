@@ -3,7 +3,7 @@ import { FaPlus, FaSearch, FaCalendarAlt, FaEdit, FaTrash } from "react-icons/fa
 import { useFahatongavana } from "../../hooks/useFahatongavana";
 import "../../styles/Fahatongavana.css";
 import ConfirmDeleteModal from "../../utils/ConfirmDeleteModal";
-
+import MpinoScanner from "../Gestion/MpinoScanner";
 const Fahatongavana = () => {
     const {
         filteredPresences,
@@ -33,6 +33,7 @@ const Fahatongavana = () => {
         totalPresent,
         totalPaid,
         totalAmount,
+        volas
     } = useFahatongavana();
 
     return (
@@ -110,21 +111,21 @@ const Fahatongavana = () => {
                         <tbody>
                             {filteredPresences.map((p) => (
                                 <tr key={p.id}>
-                                    <td>{p.nom}</td>
-                                    <td>{p.prenom}</td>
-                                    <td>{p.adresse}</td>
-                                    <td>
+                                    <td data-label="Nom">{p.nom}</td>
+                                    <td data-label="Prénom">{p.prenom}</td>
+                                    <td data-label="Adresse">{p.adresse}</td>
+                                    <td data-label="Présence">
                                         <span className={`status-badge ${p.status_presence === "Présent" ? "present" : "absent"}`}>
                                             {p.status_presence}
                                         </span>
                                     </td>
-                                    <td>
+                                    <td data-label="Paiement">
                                         <span className={`status-badge ${p.status_payment === "Payé" ? "paid" : "not-paid"}`}>
                                             {p.status_payment}
                                         </span>
                                     </td>
-                                    <td>{p.amount.toLocaleString()} Ar</td>
-                                    <td className="action-buttons">
+                                    <td data-label="Montant">{p.amount.toLocaleString()} Ar</td>
+                                    <td data-label="Actions" className="action-buttons">
                                         {/* <button className="btn-icon" onClick={() => openModal("edit", p)}>
                                             <FaEdit />
                                         </button> */}
@@ -200,17 +201,69 @@ const Fahatongavana = () => {
 
                             {formData.has_paid && (
                                 <div className="formFahatongavana-group">
-                                    <label>Montant (Ar) *</label>
-                                    <input
-                                        type="number"
+                                    <label>Vola *</label>
+                                    <select
                                         name="amount"
-                                        value={formData.amount}
+                                        value={formData.amount || ""}
                                         onChange={handleInputChange}
                                         required
-                                        min="0"
-                                    />
+                                    >
+                                        <option value="">-- Misafidiana vola --</option>
+                                        {volas.map(v => (
+                                            <option key={v.id} value={v.id}>
+                                                {v.montant.toLocaleString()} Ar - {v.desc_vola}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                             )}
+                            {/* Scanner QR code */}
+                            <div className="scanner-section">
+                                {!formData.showScanner ? (
+                                    <button
+                                        type="button"
+                                        className="btnMpino btn-secondary"
+                                        onClick={() =>
+                                            handleInputChange({
+                                                target: { name: "showScanner", value: true },
+                                            })
+                                        }
+                                    >
+                                        Scanner un QR code
+                                    </button>
+                                ) : (
+                                    <div className="scanner-wrapper">
+                                        {/* bouton fermer */}
+                                        <button
+                                            type="button"
+                                            className="close-scanner-btn"
+                                            onClick={() =>
+                                                handleInputChange({
+                                                    target: { name: "showScanner", value: false },
+                                                })
+                                            }
+                                        >
+                                            ×
+                                        </button>
+
+                                        {/* composant scanner */}
+                                            <MpinoScanner
+                                                onDetect={(qrData) => {
+                                                    let idUnique = qrData;
+                                                    try {
+                                                        const obj = JSON.parse(qrData);
+                                                        idUnique = obj.unique_id;
+                                                    } catch { }
+                                                    handleSearchMpino({ target: { value: idUnique } });
+                                                    const mpino = filteredMpinos.find((m) => m.id_unique === idUnique);
+                                                    if (mpino) selectMpino(mpino);
+                                                }}
+                                                isOpen={formData.showScanner} // <<— manan-danja eto
+                                            />
+                                    </div>
+                                )}
+                            </div>
+
 
                             <div className="modalFahatongavana-actions">
                                 <button type="button" onClick={closeModal}>Annuler</button>

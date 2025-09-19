@@ -9,6 +9,18 @@ export const listeMpinos = async (page = 1, per_page = 10) => {
     throw error.response?.data || { message: "Erreur inconnue lors de la récupération des Mpinos." };
   }
 };
+
+export const getMpinoById = async (qrObj) => {
+  try {
+    const id = qrObj.id; // maka ny id fotsiny
+    const res = await api.get(`/mpinos/${id}`);
+    return res.data.success ? res.data.results : null;
+  } catch (err) {
+    console.error("Erreur getMpinoById:", err.response?.data || err);
+    return null;
+  }
+};
+
 /* Compter les Mpinos par Fiangonana pour l'utilisateur connecté */
 export const countMpinosByFiangonana = async () => {
   try {
@@ -72,3 +84,4 @@ export const telechargerPdfMpino = async (id) => {
     throw { message: error.response?.data?.message || "Erreur lors du téléchargement du PDF." };
   }
 };
+

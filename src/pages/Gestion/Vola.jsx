@@ -70,7 +70,7 @@ const Vola = () => {
                                     <tr key={v.id}>
                                         <td data-label="Montant">{v.montant}</td>
                                         <td data-label="Description">{v.desc_vola}</td>
-                                        <td data-label="ID Fiangonana">{v.fiang_id}</td>
+                                        <td data-label="ID Fiangonana">{v.fiang_nom}</td>
                                         <td data-label="Actions" className="action-btn-vola">
                                             <button className="btn-vola" onClick={() => openModal(v)}>
                                                 <FontAwesomeIcon icon={faEdit} />

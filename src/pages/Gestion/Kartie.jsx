@@ -86,11 +86,11 @@ const Kartie = () => {
                         <img
                           src={JSON.parse(k.fiang_pho).url}
                           alt={k.fiang_nom}
-                          style={{ width: "50px", height: "50px", objectFit: "cover", borderRadius: "4px" }}
+                          style={{ width: "30px", height: "30px", objectFit: "cover", borderRadius: "4px" }}
                         />
                       ) : "-"}
                     </td>
-                    <td data-label="Actions">
+                    <td data-label="Actions" className="action-btn-kartie">
                       <button className="btnKartie" onClick={() => openEdit(k)}>
                         <FontAwesomeIcon icon={faEdit} />
                       </button>

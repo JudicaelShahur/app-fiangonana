@@ -41,6 +41,7 @@
 
 .user-name {
     font-weight: bold;
+    color: var(--text-color);
 }
 
 .user-role {

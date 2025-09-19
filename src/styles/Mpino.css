@@ -118,17 +118,23 @@
 }
 .pagination {
     display: flex;
-    gap: 5px;
     justify-content: center;
-    margin-bottom: 30px;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0;
+    
+    
 }
 
 .pagination button {
-    padding: 5px 10px;
-    border: 1px solid #ccc;
-    background-color: white;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 8px 14px;
+    border-radius: var(--border-radius);
+    color: var(--text-color);
     cursor: pointer;
-    border-radius: 5px;
+    transition: all 0.2s;
+    
 }
 
 .pagination button.active {
