@@ -1,10 +1,15 @@
 import api from "../api";
 
-/* Liste toutes les Kartie*/
-export const listeKartie = async (page = 1) => {
+/* Liste toutes les Kartie avec pagination + recherche */
+export const listeKartie = async (page = 1, search = "") => {
   try {
-    const res = await api.get("/karties", { params: { page } });
-    return res.data; // satria ny API-nao dia manana { results: {...}, message: ... }
+    const res = await api.get("/karties", {
+      params: {
+        page,
+        search  
+      }
+    });
+    return res.data; 
   } catch (error) {
     throw error.response?.data || { message: "Erreur inconnue" };
   }

@@ -242,6 +242,7 @@ const Statistique = () => {
                     change={12.5}
                     icon="👥"
                     color="var(--primary-color)"
+                    
                 />
                 <StatCard
                     title="Fahatongavana"

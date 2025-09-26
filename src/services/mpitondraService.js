@@ -1,10 +1,10 @@
 import api from "../api";
 
 /* Liste toutes les Mpitondra */
-export const listeMpitondra = async (page = 1, perPage = 10) => {
+export const listeMpitondra = async (page = 1, perPage = 10, search = "") => {
     try {
         const res = await api.get("/mpitondras", {
-            params: { page, per_page: perPage },
+            params: { page, per_page: perPage, search},
         });
         return res.data; 
     } catch (error) {

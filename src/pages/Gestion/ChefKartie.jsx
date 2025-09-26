@@ -32,7 +32,8 @@ const ChefKartie = () => {
         loading,
         mpinos,
         karties,
-        setFormData
+        setFormData,
+        isDebouncing
     } = useChefKartie();
 
     return (
@@ -56,6 +57,7 @@ const ChefKartie = () => {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
+                        {isDebouncing && <div className="small-loader"></div>}
                     </div>
                     <button className="filterChefKartie-btn">
                         <i className="fas fa-filter"></i> Filtrer

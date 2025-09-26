@@ -1,14 +1,25 @@
 import api from "../api";
 
 // Lister avec pagination
-export const getFahatongavanas = async (page = 1, per_page = 10) => {
+export const getFahatongavanas = async (page = 1, search = "") => {
     try {
-        const res = await api.get("/fahatongavana", { params: { page, per_page } });
+        const res = await api.get("/fahatongavana", { params: { page, search } });
         return res.data;
     } catch (error) {
         throw error.response?.data || { message: "Erreur lors de la récupération des Fahatongavanas." };
     }
 };
+
+// Récupérer status des mpinos aujourd'hui
+export const getMpinosStatusToday = async () => {
+    try {
+        const res = await api.get("/fahatongavana/status-today");
+        return res.data;
+    } catch (err) {
+        throw err.response?.data || { message: "Erreur lors de la récupération des statuses des mpinos." };
+    }
+};
+
 
 // Créer un nouveau
 export const ajoutFahatongavana = async (data) => {
@@ -49,3 +60,16 @@ export const getFahatongavanaById = async (id) => {
         throw error.response?.data || { message: "Erreur lors de la récupération du Fahatongavana." };
     }
 };
+/* Compter les vola recu par Fiangonana pour l'utilisateur connecté */
+export const sommeVolas = async (period = "week", month = null, year = null) => {
+    try {
+        const params = { period };
+        if (month) params.month = month;
+        if (year) params.year = year;
+        const res = await api.get("/fahatongavana/sommeVola", {params});
+        return res.data;
+    } catch (err) {
+        throw err.response?.data || { message: "Erreur lors du fetch somme" };
+    }
+};
+

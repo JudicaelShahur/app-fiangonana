@@ -45,19 +45,30 @@ export const useMpino = () => {
 
   const { modal, openModal, closeModal, isOpen } = useModal();
 
-  
+  const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
+  const [isDebouncing, setIsDebouncing] = useState(false);
 
-  //  Charger Mpino + Kartie
+  // Debounce searchTerm
+  useEffect(() => {
+    setIsDebouncing(true);
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm); // alefa any backend
+      setIsDebouncing(false);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
+
+  // Charger Mpino + Kartie
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await listeMpinos(currentPage, perPage);
+        const res = await listeMpinos(currentPage, perPage, debouncedSearch);
         const list = res.results?.data.map(mpino => {
           let photoObj = null;
-          try { photoObj = mpino.photo ? JSON.parse(mpino.photo) : null; } catch {}
+          try { photoObj = mpino.photo ? JSON.parse(mpino.photo) : null; } catch { }
           let qrCodeObj = null;
-          try { qrCodeObj = mpino.qrcode ? JSON.parse(mpino.qrcode) : null; } catch {}
+          try { qrCodeObj = mpino.qrcode ? JSON.parse(mpino.qrcode) : null; } catch { }
           return { ...mpino, photo: photoObj, qrcode: qrCodeObj };
         });
         setMpinoList(list);
@@ -84,7 +95,7 @@ export const useMpino = () => {
 
     fetchData();
     fetchKartie();
-  }, [currentPage, perPage]);
+  }, [currentPage, perPage, debouncedSearch]);
 
   //  Validation
   const validateForm = () => {
@@ -98,13 +109,19 @@ export const useMpino = () => {
     return Object.keys(errors).length === 0;
   };
 
-  //  Filtrage
-  const filteredMpino = mpinoList.filter(mpino =>
-    (mpino.nom_mpin || mpino.nom || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (mpino.prenom_mpin || mpino.prenom || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (mpino.num_mpin || mpino.numero || "").includes(searchTerm) ||
-    (mpino.kartie_nom || mpino.kartie || "").toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const normalize = str => str?.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+  const filteredMpino = mpinoList.filter(mpino => {
+    const search = normalize(debouncedSearch); // normalize ny recherche
+    return (
+      normalize(mpino.nom_mpin || mpino.nom || "").includes(search) ||
+      normalize(mpino.prenom_mpin || mpino.prenom || "").includes(search) ||
+      (mpino.num_mpin || mpino.numero || "").includes(debouncedSearch) ||
+      normalize(mpino.kartie_nom || mpino.kartie || "").includes(search) 
+    );
+  });
+
+
 
   //  Inputs
   const handleInputChange = (e) => {
@@ -272,7 +289,7 @@ const downloadFiche = async (mpino) => {
 
   return {
     currentPage, setCurrentPage, totalPages, loading, mpinoList, kartieList,
-    searchTerm, setSearchTerm, formData, formErrors, isSubmitting, photoPreview,
+    searchTerm, setSearchTerm, isDebouncing , formData, formErrors, isSubmitting, photoPreview,
     modal, isOpen, handleInputChange, handleFileChange, handleDrop, handleDragOver,
     handleAddMpino, handleEditMpino, handleDeleteMpino, openAdd, openEdit, openDelete,
     showQrCode, downloadFiche, filteredMpino, closeModal

@@ -6,10 +6,10 @@ import api from "../api";
  * @param {number} perPage - Nombre d'éléments par page (10 par défaut)
  * @returns {Promise<Object>} - { data, current_page, last_page, per_page, total }
  */
-export const listeChefkartie = async (page = 1, perPage = 10) => {
+export const listeChefkartie = async (page = 1, search = "") => {
     try {
         const res = await api.get("/chefkarties", {
-            params: { page, per_page: perPage },
+            params: { page, search },
         });
         return res.data; // l'API retourne déjà { data, current_page, last_page, per_page, total, message }
     } catch (error) {

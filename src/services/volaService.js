@@ -2,9 +2,9 @@ import api from "../api";
 
 // Liste de tous les Vola
 // Liste de tous les Vola avec pagination
-export const listeVola = async (page = 1, per_page = 10) => {
+export const listeVola = async (page = 1, per_page = 10, search = "") => {
   try {
-    const res = await api.get("/vola", { params: { page, per_page } });
+    const res = await api.get("/vola", { params: { page, per_page, search } });
     return res.data; 
   } catch (error) {
     throw error.response?.data || { message: "Erreur lors de la récupération des Vola." };

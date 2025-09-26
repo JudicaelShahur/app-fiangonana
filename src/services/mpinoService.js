@@ -1,9 +1,11 @@
 import api from "../api";
 
-/* Liste tous les Mpinos avec pagination */
-export const listeMpinos = async (page = 1, per_page = 10) => {
+/* Liste tous les Mpinos avec pagination et recherche */
+export const listeMpinos = async (page = 1, per_page = 10, search = "") => {
   try {
-    const res = await api.get("/mpinos", { params: { page, per_page } });
+    const res = await api.get("/mpinos", {
+      params: { page, per_page, search } // mandefa search koa
+    });
     return res.data;
   } catch (error) {
     throw error.response?.data || { message: "Erreur inconnue lors de la récupération des Mpinos." };
@@ -22,14 +24,18 @@ export const getMpinoById = async (qrObj) => {
 };
 
 /* Compter les Mpinos par Fiangonana pour l'utilisateur connecté */
-export const countMpinosByFiangonana = async () => {
+export const countMpinosByFiangonana = async (period = "all", month = null, year = null) => {
   try {
-    const res = await api.get("/mpinos/count-by-fiangonana");
+    const params = { period };// envoie ?period=week, month ou year
+    if (month) params.month = month;
+    if (year) params.year = year;
+    const res = await api.get("/mpinos/stats", {params});
     return res.data;
   } catch (error) {
     throw error.response?.data || { message: "Erreur lors de la récupération du compteur de Mpinos." };
   }
 };
+
 
 /* Ajouter un Mpino (FormData pour inclure la photo) */
 export const ajoutMpino = async (data) => {

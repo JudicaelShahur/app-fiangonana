@@ -14,10 +14,7 @@ export const useChefKartie = () => {
   const { modal, openModal, closeModal, isOpen } = useModal();
 
   // Pagination persistante
-  const [currentPage, setCurrentPage] = useState(() => {
-    const savedPage = localStorage.getItem("chefCurrentPage");
-    return savedPage ? Number(savedPage) : 1;
-  });
+  const [currentPage, setCurrentPage] = useState(() => {});
   const [totalPages, setTotalPages] = useState(1);
 
   const [chefs, setChefs] = useState([]);
@@ -25,15 +22,24 @@ export const useChefKartie = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    localStorage.setItem("chefCurrentPage", currentPage);
-  }, [currentPage]);
+  const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
+  const [isDebouncing, setIsDebouncing] = useState(false);
 
+  // --- Debounce recherche ---
+  useEffect(() => {
+    setCurrentPage(1);
+    setIsDebouncing(true);
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setIsDebouncing(false);
+    }, 1000);
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
   // --- Fetch ChefKartie ---
-  const fetchChefs = async (page = 1) => {
+  const fetchChefs = async (page = 1, search = "") => {
     try {
       setLoading(true);
-      const res = await listeChefkartie(page);
+      const res = await listeChefkartie(page, search);
       const data = Array.isArray(res.results.data) ? res.results.data : [];
       setChefs(data);
       setTotalPages(res.results.last_page || 1);
@@ -45,8 +51,8 @@ export const useChefKartie = () => {
   };
 
   useEffect(() => {
-    fetchChefs(currentPage);
-  }, [currentPage]);
+    fetchChefs(currentPage, debouncedSearch);
+  }, [currentPage, debouncedSearch]);
 
     const [mpinos, setMpinos] = useState([]);
     const [karties, setKarties] = useState([]);
@@ -126,12 +132,16 @@ export const useChefKartie = () => {
   const getPagesArray = () => Array.from({ length: totalPages }, (_, i) => i + 1);
 
   // --- Filtrage simple ---
-  const filteredChefs = chefs.filter(c =>
-    // (c.id_mpin || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-    // (c.id_kar || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (c.kartie_nom || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (c.fiang_nom || "").toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const normalize = str => str?.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const filteredChefs = chefs.filter(c => {
+    const search = normalize(debouncedSearch);
+    return (
+      normalize(c.mpino_nom || "").includes(search) ||
+      normalize(c.mpino_prenom || "").includes(search) ||
+      normalize(c.kartie_nom || "").includes(search) ||
+      (c.annee_kar ? c.annee_kar.toString() : "").includes(search)
+    );
+  });
 
   return {
     chefs,
@@ -158,6 +168,7 @@ export const useChefKartie = () => {
     loading,
     mpinos,
     karties,
-    setFormData
+    setFormData,
+    isDebouncing
   };
 };

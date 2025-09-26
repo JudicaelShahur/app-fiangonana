@@ -1,54 +1,73 @@
-import React, { useState } from "react";
-import { FaUsers, FaChurch, FaCoins, FaCalendarAlt } from "react-icons/fa";
+import React from "react";
 import "../../styles/Dashboard.css";
+import { useDashboard } from "../../hooks/useDashboard.jsx";
 
 const Dashboard = () => {
-    const [activePeriod, setActivePeriod] = useState('week');
-    const [viewMode, setViewMode] = useState('charts');
-
-    const stats = [
-        { id: 1, title: "Nombre de membres", value: 120, icon: <FaUsers className="dashboard-card-icon" /> },
-        { id: 2, title: "Églises", value: 8, icon: <FaChurch className="dashboard-card-icon" /> },
-        { id: 3, title: "Dons reçus", value: "5 200 €", icon: <FaCoins className="dashboard-card-icon" /> },
-        { id: 4, title: "Évènements à venir", value: 3, icon: <FaCalendarAlt className="dashboard-card-icon" /> },
-    ];
-
-    const recentActivities = [
-        { id: 1, user: "Jean", action: "a rejoint l'église", date: "2025-09-10 10:15" },
-        { id: 2, user: "Marie", action: "a fait un don de 50 €", date: "2025-09-09 18:30" },
-        { id: 3, user: "Paul", action: "a assisté à l'événement 'Prière du dimanche'", date: "2025-09-08 09:00" },
-    ];
+    const {
+        activePeriod,
+        setActivePeriod,
+        selectedMonth,
+        setSelectedMonth,
+        selectedYear,
+        setSelectedYear,
+        viewMode,
+        setViewMode,
+        stats,
+        recentActivities,
+    } = useDashboard();
 
     return (
         <div className="dashboard-container">
             <h1>Tableau de bord</h1>
+
+            {/* Contrôles de période */}
             <div className="dashboard-controls">
                 <div className="dashboard-period-selector">
                     <span>Période :</span>
-                    <button
-                        className={`dashboard-period-btn ${activePeriod === 'week' ? 'active' : ''}`}
-                        onClick={() => setActivePeriod('week')}
-                    >
-                        Semaine
-                    </button>
-                    <button
-                        className={`dashboard-period-btn ${activePeriod === 'month' ? 'active' : ''}`}
-                        onClick={() => setActivePeriod('month')}
-                    >
-                        Mois
-                    </button>
-                    <button
-                        className={`dashboard-period-btn ${activePeriod === 'year' ? 'active' : ''}`}
-                        onClick={() => setActivePeriod('year')}
-                    >
-                        Année
-                    </button>
+                    {["week", "month", "year"].map(p => (
+                        <button
+                            key={p}
+                            className={`dashboard-period-btn ${activePeriod === p ? "active" : ""}`}
+                            onClick={() => setActivePeriod(p)}
+                        >
+                            {p === "week" ? "Semaine" : p === "month" ? "Mois" : "Année"}
+                        </button>
+                    ))}
                 </div>
+                <div className="dashboard-view-toggle">
+                    {/* Dropdown mois si période = month */}
+                    {activePeriod === "month" && (
+                        <select
+                            className={`view-btn ${viewMode === 'charts' ? 'active' : ''}`}
+                            value={selectedMonth}
+                            onChange={e => setSelectedMonth(parseInt(e.target.value))}
+                        >
+                            {[...Array(12).keys()].map(m => (
+                                <option key={m + 1} value={m + 1}>
+                                    {new Date(0, m).toLocaleString('fr-FR', { month: 'long' })}
+                                </option>
+                            ))}
+                        </select>
+                    )}
 
+                    {/* Dropdown année si période = month ou year */}
+                    {(activePeriod === "month" || activePeriod === "year") && (
+                        <select
+                            className={`view-btn ${viewMode === 'charts' ? 'active' : ''}`}
+                            value={selectedYear}
+                            onChange={e => setSelectedYear(parseInt(e.target.value))}
+                        >
+                            {Array.from({ length: 50 }, (_, i) => new Date().getFullYear() - i).map(y => (
+                                <option key={y} value={y}>{y}</option>
+                            ))}
+                        </select>
+                    )}
+                </div>
             </div>
 
+            {/* Statistiques */}
             <div className="dashboard-grid">
-                {stats.map((stat) => (
+                {stats.map(stat => (
                     <div key={stat.id} className="dashboard-card">
                         <div className="dashboard-card-title">{stat.title}</div>
                         <div className="dashboard-card-value">{stat.value}</div>
@@ -57,17 +76,47 @@ const Dashboard = () => {
                 ))}
             </div>
 
+            {/* Activités récentes */}
             <div className="dashboard-recent-activities">
                 <h2>Activités récentes</h2>
                 {recentActivities.length === 0 ? (
                     <p>Aucune activité récente</p>
                 ) : (
                     <ul>
-                        {recentActivities.map((activity) => (
-                            <li key={activity.id} className="dashboard-activity-item">
-                                <strong>{activity.user}</strong> {activity.action} <span className="activity-date">{activity.date}</span>
-                            </li>
-                        ))}
+                        {recentActivities.map(activity => {
+                            const userName = activity.user || "Utilisateur inconnu";
+                            return (
+                                <li key={activity.id} className="dashboard-activity-item" data-action-type={activity.action}>
+                                    <div className="activity-header">
+                                        <strong>{userName}</strong>
+                                        <span>a effectué une action</span>
+                                        <em>{activity.action} {activity.target}</em>
+                                    </div>
+
+                                    {activity.meta && (
+                                        <div className="activity-details">
+                                            {activity.meta.old && (
+                                                <div className="activity-old">
+                                                    <strong>Ancien:</strong> {JSON.stringify(activity.meta.old)}
+                                                </div>
+                                            )}
+                                            {activity.meta.new && (
+                                                <div className="activity-new">
+                                                    <strong>Nouveau:</strong> {JSON.stringify(activity.meta.new)}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    <span className="activity-date">
+                                        {new Date(activity.created_at).toLocaleString("fr-FR", {
+                                            dateStyle: "short",
+                                            timeStyle: "short",
+                                        })}
+                                    </span>
+                                </li>
+                            );
+                        })}
                     </ul>
                 )}
             </div>

@@ -31,6 +31,7 @@ const Komitie = () => {
     nextPage,
     prevPage,
     getPagesArray,
+    isDebouncing,
   } = useKomity();
 
   return (
@@ -55,6 +56,7 @@ const Komitie = () => {
           <span className="search-mpitondra-icon">
             <i className="fas fa-search"></i>
           </span>
+          {isDebouncing && <div className="small-loader"></div>}
         </div>
       </div>
 
@@ -92,8 +94,16 @@ const Komitie = () => {
                 </tr>
               ))
             ) : (
-            <p className="no-results-komitie">Aucun résultat trouvé pour "{searchTerm}"</p>
-        )}
+              <tr>
+                <td colSpan="5" style={{
+                  textAlign: "center", padding: "20px",
+                  color: "var(--secondary-color)",
+                  fontSize: "1.1rem"
+                }} className="no-resultsKartie">
+                  Aucun résultat trouvé pour "{searchTerm}"
+                </td>
+              </tr>
+            )}
             </tbody>
         </table>
         {/* Pagination */}

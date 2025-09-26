@@ -29,20 +29,34 @@ export const useKartie = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
+  const [isDebouncing, setIsDebouncing] = useState(false);
+
+  // --- Debounce recherche ---
+  useEffect(() => {
+    setCurrentPage(1); // reset page rehefa manova search
+    setIsDebouncing(true);
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setIsDebouncing(false);
+    }, 1000);
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
+
   // --- Fetch Kartie ---
-  const fetchKartie = async (page = 1) => {
-  try {
-    setLoading(true); 
-    const res = await listeKartie(page);
-    const data = Array.isArray(res.results.data) ? res.results.data : [];
-    setKartie(data);
-    setTotalPages(res.results.last_page || 1);
-  } catch (error) {
-    afficherToastErreur(getBackendMessage(error));
-  } finally {
-    setLoading(false); 
-  }
-};
+  const fetchKartie = async (page = 1, search = "") => {
+    try {
+      setLoading(true);
+      const res = await listeKartie(page, search);
+      const data = Array.isArray(res.results.data) ? res.results.data : [];
+      setKartie(data);
+      setTotalPages(res.results.last_page || 1);
+    } catch (error) {
+      afficherToastErreur(getBackendMessage(error));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // --- Fetch Fiangonanas ---
   const fetchFiangonanas = async () => {
@@ -54,11 +68,11 @@ export const useKartie = () => {
     }
   };
 
-
+  // --- Effet principal ---
   useEffect(() => {
-    fetchKartie(currentPage);
+    fetchKartie(currentPage, debouncedSearch);
     fetchFiangonanas();
-  }, [currentPage]);
+  }, [currentPage, debouncedSearch]);
 
   // --- Form Handlers ---
   const handleInputChange = (e) => {
@@ -130,14 +144,19 @@ export const useKartie = () => {
   };
 
   // --- Filtrage simple ---
-  const filteredKartie = kartie.filter(k =>
-    (k.nom_kar || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (k.desc_kar || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (k.fiang_nom || "").toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const normalize = str => str?.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
+  const filteredKartie = kartie.filter(k => {
+    const search = normalize(debouncedSearch); 
+    return (
+      normalize(k.nom_kar ||  "").includes(search) ||
+      normalize(k.desc_kar ||  "").includes(search) ||
+      normalize(k.fiang_nom || "").includes(search)
+    );
+  });
   return {
     kartie,
+    isDebouncing,
     fiangonanas,
     formData,
     handleInputChange,

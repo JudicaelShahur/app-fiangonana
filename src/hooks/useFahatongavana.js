@@ -30,12 +30,23 @@ export const useFahatongavana = () => {
     const [filteredMpinos, setFilteredMpinos] = useState([]);
     const [totals, setTotals] = useState([]);
 
+    const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
+    const [isDebouncing, setIsDebouncing] = useState(false);
+    // --- Debounce recherche --- //
+    useEffect(() => {
+        setCurrentPage(1);
+        setIsDebouncing(true);
+        const handler = setTimeout(() => {
+        setDebouncedSearch(searchTerm);
+        setIsDebouncing(false);
+        }, 1000); return () => clearTimeout(handler);
+    }, [searchTerm]);
     // --- Fetch Presences ---
-    const fetchPresences = async (page = 1) => {
+    const fetchPresences = async (page = 1, search = "") => {
         try {
             setLoading(true);
             setError(null);
-            const res = await getFahatongavanas(page, 50);
+            const res = await getFahatongavanas(page,search);
             const data = res.results?.data || [];
             const normalized = data.map(p => ({
                 id: p.id,
@@ -80,7 +91,8 @@ export const useFahatongavana = () => {
     const fetchTotals = async () => {
         try {
             const res = await countMpinosByFiangonana();
-            if (res.success) setTotals(res.data);
+            console.log("total mpino", res);
+            if (res.success) setTotals(res);
         } catch (err) {
             console.error(err);
         }
@@ -100,11 +112,11 @@ export const useFahatongavana = () => {
     };
     // --- Effects ---
     useEffect(() => {
-        fetchPresences(currentPage);
+        fetchPresences(currentPage, debouncedSearch);
         fetchMpinos();
         fetchTotals();
         fetchVolas();
-    }, [currentPage]);
+    }, [currentPage, debouncedSearch]);
 
     useEffect(() => {
         localStorage.setItem("fahatongavanaPage", currentPage);
@@ -114,14 +126,16 @@ export const useFahatongavana = () => {
     useEffect(() => {
         const filtered = presences.filter(
             p =>
-                (p.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    p.prenom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    p.status_payment.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    p.adresse.toLowerCase().includes(searchTerm.toLowerCase())) &&
+                (   p.nom.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+                    p.prenom.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+                    p.status_payment.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+                    p.amount.toString().includes(debouncedSearch) ||
+                    p.adresse.toLowerCase().includes(debouncedSearch.toLowerCase())) &&
                 p.date === selectedDate
         );
         setFilteredPresences(filtered);
-    }, [presences, searchTerm, selectedDate]);
+    }, [presences, debouncedSearch, selectedDate]); 
+
 
     // --- Form Handlers ---
     const handleInputChange = e => {
@@ -247,6 +261,7 @@ export const useFahatongavana = () => {
         totalPaid,
         totalAmount,
         volas,
+        isDebouncing,
         setFormData
     };
 };

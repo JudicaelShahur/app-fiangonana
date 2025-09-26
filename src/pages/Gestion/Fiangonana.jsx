@@ -27,7 +27,8 @@ const Fiangonana = () => {
     loading,
     currentPage,
     totalPages,
-    setCurrentPage
+    setCurrentPage,
+    isDebouncing
   } = useFiangonana();
 
   return (
@@ -48,6 +49,7 @@ const Fiangonana = () => {
             value={fiangonanaTerm}
             onChange={handleSearch}
           />
+          {isDebouncing && <div className="small-loader"></div>}
         </div>
       </div>
 
@@ -64,7 +66,7 @@ const Fiangonana = () => {
             />
           ))
         ) : (
-          <div className="no-result-card"><p>Aucune église trouvée</p></div>
+              <div className="no-result-card"><p>Aucune église trouvée "{fiangonanaTerm}"</p></div>
         )}
       </div>
 

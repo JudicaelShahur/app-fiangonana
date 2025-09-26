@@ -3,6 +3,7 @@
     /* Couleurs Light Theme */
     --light-bg: #f8f9fa;
     --light-text: #212529;
+    --light-hoverCard:#e9ecef;
     --light-primary: #4e73df;
     --light-secondary: #6c757d;
     --light-accent: #36b9cc;
@@ -13,6 +14,7 @@
     /* Couleurs Dark Theme */
     --dark-bg: #1a1d21;
     --dark-text: #f8f9fa;
+    --dark-hoverCard: #59595a;
     --dark-primary: #4e73df;
     --dark-secondary: #8c98d3;
     --dark-accent: #36b9cc;
@@ -30,6 +32,7 @@
 .light {
     --bg-color: var(--light-bg);
     --text-color: var(--light-text);
+    --hover-card:var(--light-hoverCard);
     --primary-color: var(--light-primary);
     --secondary-color: var(--light-secondary);
     --accent-color: var(--light-accent);
@@ -43,6 +46,7 @@
     --bg-color: var(--dark-bg);
     --text-color: var(--dark-text);
     --primary-color: var(--dark-primary);
+    --hover-card: var(--dark-hoverCard);
     --secondary-color: var(--dark-secondary);
     --accent-color: var(--dark-accent);
     --card-bg: var(--dark-card);

@@ -1,15 +1,16 @@
 import api from "../api"; 
 
-// --- Liste avec pagination ---
-export const listeSampanas = async (page = 1, perPage = 10) => {
+// --- Liste avec pagination + recherche ---
+export const listeSampanas = async (page = 1, perPage = 10, search = "") => {
   try {
-    const response = await api.get(`/sampanas?page=${page}&per_page=${perPage}`);
+    const response = await api.get("/sampanas", {params: {page,per_page: perPage,search},});
     return response.data;
   } catch (error) {
     console.error("Erreur lors de la récupération des Sampanas :", error);
     throw error.response?.data || error;
   }
 };
+
 
 // --- Détails d'un Sampana ---
 export const getSampana = async (id) => {

@@ -8,14 +8,7 @@ export const useMpitondra = () => {
     const { modal, openModal, closeModal, isOpen } = useModal();
 
     // --- Current page persistent ---
-    const [currentPage, setCurrentPage] = useState(() => {
-        const savedPage = localStorage.getItem("mpitondraPage");
-        return savedPage ? Number(savedPage) : 1;
-    });
-
-    useEffect(() => {
-        localStorage.setItem("mpitondraPage", currentPage);
-    }, [currentPage]);
+    const [currentPage, setCurrentPage] = useState(1);
 
     const [totalPages, setTotalPages] = useState(1);
     const [mpitondras, setMpitondras] = useState([]);
@@ -29,11 +22,23 @@ export const useMpitondra = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(false);
 
+    const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
+    const [isDebouncing, setIsDebouncing] = useState(false);
+    //debouce
+    useEffect(() => {
+        setCurrentPage(1);
+        setIsDebouncing(true);
+        const handler = setTimeout(() => {
+            setDebouncedSearch(searchTerm);
+            setIsDebouncing(false);
+        }, 1000);
+        return () => clearTimeout(handler);
+    }, [searchTerm]);
     // --- Fetch Mpitondra ---
-    const fetchMpitondra = async (page = 1) => {
+    const fetchMpitondra = async (page = 1, search="") => {
         try {
             setLoading(true);
-            const res = await listeMpitondra(page);
+            const res = await listeMpitondra(page, 10, search);
             console.log('donne mpitondra', res);
             const data = Array.isArray(res.results.data) ? res.results.data : [];
             setMpitondras(data);
@@ -46,8 +51,8 @@ export const useMpitondra = () => {
     };
 
     useEffect(() => {
-        fetchMpitondra(currentPage);
-    }, [currentPage]);
+        fetchMpitondra(currentPage,debouncedSearch);
+    }, [currentPage, debouncedSearch]);
 
     const [mpinos, setMpinos] = useState([]);
     const [fiangonanas, setFiangonanas] = useState([]);
@@ -147,12 +152,20 @@ export const useMpitondra = () => {
     };
 
     // --- Filtrage simple ---
-    const filteredMpitondras = mpitondras.filter((m) =>
-        // (m.id_mpin || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (m.titre_mpitondra || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (m.annee_mpitondra || "").toString().includes(searchTerm)
-    );
+    const normalize = str => str?.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
+    const filteredMpitondras = mpitondras.filter(m => {
+        const search = normalize(debouncedSearch);
+        return (
+            normalize(m.titre_mpitondra || "").includes(search) ||
+            (m.annee_mpitondra || "").toString().includes(debouncedSearch) ||
+            normalize(m.desc_mpitondra || "").includes(search) ||
+            normalize(m.mpino_nom || "").includes(search) ||
+            normalize(m.mpino_prenom || "").includes(search) ||
+            normalize(m.fiang_nom || "").includes(search) 
+
+        );
+    });
     return {
         mpitondras,
         formData,
@@ -178,6 +191,7 @@ export const useMpitondra = () => {
         loading,
         fiangonanas,
         mpinos,
-        setFormData
+        setFormData,
+        isDebouncing
     };
 };

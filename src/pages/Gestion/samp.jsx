@@ -1,189 +1,211 @@
-import { useState } from "react";
-import "@fortawesome/fontawesome-free/css/all.min.css";
-import "../../styles/Sampana.css";
+import { useState, useEffect } from "react";
+import useModal from "./useModal";
+import {
+    ajoutFiangonana,
+    modifierFiangonana,
+    supprimerFiangonana,
+    listeFiangonana
+} from "../services/fiangonanaService";
+import { afficherToastSuccès, afficherToastErreur, getBackendMessage } from "../utils/toast";
 
-const Sampana = () => {
-    const [sampanas, setSampanas] = useState([
-        { id: 1, nom_samp: "Sampana Tanora", desc_samp: "Regroupe les jeunes" },
-        { id: 2, nom_samp: "Sampana Vehivavy", desc_samp: "Association des femmes" },
-    ]);
+const useFiangonana = () => {
+    const { modal, openModal, closeModal, isOpen } = useModal();
 
-    const [showModal, setShowModal] = useState(false);
-    const [editingId, setEditingId] = useState(null);
-    const [newSampana, setNewSampana] = useState({ nom_samp: "", desc_samp: "" });
-    const [searchTerm, setSearchTerm] = useState("");
+    const [fiangonanas, setFiangonanas] = useState([]);
+    const [currentFiangonana, setCurrentFiangonana] = useState({
+        name: '', photo: '', photoFile: null, email: '', phone: ''
+    });
+    const [fiangonanaTerm, setFiangonanaTerm] = useState('');
+    const [loading, setLoading] = useState(false);
 
+    const [currentPage, setCurrentPage] = useState(() => {
+    });
+    const [totalPages, setTotalPages] = useState(1);
+    const [perPage] = useState(10);
+
+    const [debouncedSearch, setDebouncedSearch] = useState(fiangonanaTerm);
+    const [isDebouncing, setIsDebouncing] = useState(false);
+
+    // Debounce search
+    useEffect(() => {
+        setCurrentPage(1);
+        setIsDebouncing(true);
+        const handler = setTimeout(() => {
+            setDebouncedSearch(fiangonanaTerm);
+            setIsDebouncing(false);
+        }, 1000);
+        return () => clearTimeout(handler);
+    }, [fiangonanaTerm]);
+
+    // Persist current page
+    useEffect(() => {
+        localStorage.setItem("currentFiangonanaPage", currentPage);
+    }, [currentPage]);
+
+    // Fetch fiangonanas
+    const fetchFiangonanas = async (page = 1, search = "") => {
+        try {
+            setLoading(true);
+            const res = await listeFiangonana(page, perPage, search);
+            const data = res?.results?.data || [];
+            setFiangonanas(data.map(f => ({
+                id: f.id,
+                name: f.fiang_nom,
+                photo: f.fiang_pho ? JSON.parse(f.fiang_pho).url : "",
+                email: f.fiang_mail,
+                phone: f.fiang_num,
+                admin: f.admin_nom || "",
+                address: f.fiang_kartie || ""
+            })));
+            setTotalPages(res?.results?.last_page || 1);
+        } catch (err) {
+            afficherToastErreur(getBackendMessage(err));
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchFiangonanas(currentPage, debouncedSearch);
+    }, [currentPage, debouncedSearch]);
+
+    // Input change
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setNewSampana({ ...newSampana, [name]: value });
+        const { id, value } = e.target;
+        const map = { fiang_nom: 'name', fiang_mail: 'email', fiang_num: 'phone' };
+        if (!map[id]) return;
+        setCurrentFiangonana(prev => ({ ...prev, [map[id]]: value }));
     };
 
-    const handleOpenModal = (samp = null) => {
-        if (samp) {
-            setNewSampana(samp);
-            setEditingId(samp.id);
-        } else {
-            setNewSampana({ nom_samp: "", desc_samp: "" });
-            setEditingId(null);
-        }
-        setShowModal(true);
-    };
-
-    const handleCloseModal = () => {
-        setShowModal(false);
-        setNewSampana({ nom_samp: "", desc_samp: "" });
-        setEditingId(null);
-    };
-
-    const handleSubmit = () => {
-        if (!newSampana.nom_samp || !newSampana.desc_samp) return;
-
-        if (editingId) {
-            // 🔄 Modification
-            setSampanas(
-                sampanas.map((s) =>
-                    s.id === editingId ? { ...newSampana, id: editingId } : s
-                )
-            );
-            alert("Sampana modifié avec succès !");
-        } else {
-            // ➕ Ajout
-            setSampanas([...sampanas, { ...newSampana, id: sampanas.length + 1 }]);
-            alert("Sampana ajouté avec succès !");
-        }
-
-        handleCloseModal();
-    };
-
-    const handleDelete = (id) => {
-        if (window.confirm("Voulez-vous vraiment supprimer ce sampana ?")) {
-            setSampanas(sampanas.filter((s) => s.id !== id));
+    // Add / Edit
+    const addFiangonanaHandler = async () => {
+        try {
+            await ajoutFiangonana(currentFiangonana);
+            fetchFiangonanas(currentPage, debouncedSearch);
+            closeModal();
+            afficherToastSuccès("Église ajoutée avec succès !");
+        } catch (err) {
+            afficherToastErreur(getBackendMessage(err));
         }
     };
 
-    const filteredSampanas = sampanas.filter(
-        (s) =>
-            s.nom_samp.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            s.desc_samp.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const editFiangonanaHandler = async () => {
+        try {
+            await modifierFiangonana(modal.data.id, currentFiangonana);
+            fetchFiangonanas(currentPage, debouncedSearch);
+            closeModal();
+            afficherToastSuccès("Église modifiée avec succès !");
+        } catch (err) {
+            afficherToastErreur(getBackendMessage(err));
+        }
+    };
 
-    return (
-        <div className="sampana-container">
-            {/* Header */}
-            <div className="sampana-header">
-                <h1>Gestion des Sampana</h1>
-                <button className="add-btn-sampana" onClick={() => handleOpenModal()}>
-                    <i className="fas fa-plus"></i> Ajouter un sampana
-                </button>
-            </div>
+    // Delete
+    const deleteFiangonanaHandler = async () => {
+        try {
+            await supprimerFiangonana(modal.data.id);
+            fetchFiangonanas(currentPage, debouncedSearch);
+            closeModal();
+            afficherToastSuccès("Église supprimée avec succès !");
+        } catch (err) {
+            afficherToastErreur(getBackendMessage(err));
+        }
+    };
 
-            {/* Barre de recherche */}
-            <div className="search-mpitondra-bar">
-                <div className="search-mpitondra-input">
-                    <input
-                        type="text"
-                        placeholder="Rechercher..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    <span className="search-mpitondra-icon">
-                        <i className="fas fa-search"></i>
-                    </span>
-                </div>
-            </div>
+    // Modal open
+    const openAdd = () => {
+        setCurrentFiangonana({ name: '', photo: '', photoFile: null, email: '', phone: '' });
+        openModal("add");
+    };
 
-            {/* Table */}
-            <div className="table-sampana-container">
-                {filteredSampanas.length > 0 ? (
-                    <table className="sampana-table">
-                        <thead>
-                            <tr>
-                                <th>Nom Sampana</th>
-                                <th>Description</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredSampanas.map((samp) => (
-                                <tr key={samp.id}>
-                                    <td data-label="Nom">{samp.nom_samp}</td>
-                                    <td data-label="Description">{samp.desc_samp}</td>
-                                    <td data-label="Actions" className="action-btn-sampana">
-                                        <button
-                                            className="btn-sampana"
-                                            onClick={() => handleOpenModal(samp)}
-                                        >
-                                            <i className="fas fa-edit"></i>
-                                        </button>
-                                        <button
-                                            className="btn-sampana btn-danger"
-                                            onClick={() => handleDelete(samp.id)}
-                                        >
-                                            <i className="fas fa-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                ) : (
-                    <p className="no-results-sampana">
-                        Aucun résultat trouvé pour "{searchTerm}"
-                    </p>
-                )}
-            </div>
+    const openEdit = (f) => {
+        setCurrentFiangonana({ ...f, photoFile: null });
+        openModal("edit", f);
+    };
 
-            {/* Modal */}
-            {showModal && (
-                <div className="modal-sampana-overlay">
-                    <div className="modal-sampana-content">
-                        <div className="modal-sampana-header">
-                            <h2>{editingId ? "Modifier un Sampana" : "Ajouter un Sampana"}</h2>
-                            <button
-                                className="close-btn-sampana"
-                                onClick={handleCloseModal}
-                            >
-                                &times;
-                            </button>
-                        </div>
-                        <div className="modal-sampana-body">
-                            <div className="form-sampana-group">
-                                <label>Nom Sampana</label>
-                                <input
-                                    type="text"
-                                    name="nom_samp"
-                                    value={newSampana.nom_samp}
-                                    onChange={handleInputChange}
-                                    placeholder="Nom du sampana"
-                                />
-                            </div>
-                            <div className="form-sampana-group">
-                                <label>Description</label>
-                                <input
-                                    type="text"
-                                    name="desc_samp"
-                                    value={newSampana.desc_samp}
-                                    onChange={handleInputChange}
-                                    placeholder="Description du sampana"
-                                />
-                            </div>
-                        </div>
-                        <div className="modal-sampana-footer">
-                            <button
-                                className="cancel-sampana-btn"
-                                onClick={handleCloseModal}
-                            >
-                                Annuler
-                            </button>
-                            <button className="save-sampana-btn" onClick={handleSubmit}>
-                                {editingId ? "Modifier" : "Enregistrer"}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </div>
-    );
+    const openDeleteModal = (f) => openModal("delete", f);
+
+    // Pagination helpers
+    const nextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
+    const prevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
+    const getPagesArray = () => Array.from({ length: totalPages }, (_, i) => i + 1);
+
+    // Filter frontend
+    const normalize = str => str?.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+    const filteredFiangonanas = fiangonanas.filter(f => {
+        const search = normalize(debouncedSearch);
+        return (
+            normalize(f.name || "").includes(search) ||
+            normalize(f.address || "").includes(search) ||
+            (f.phone || "").includes(debouncedSearch) ||
+            normalize(f.admin || "").includes(search)
+        );
+    });
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onloadend = () => setCurrentFiangonana(prev => ({ ...prev, photo: reader.result, photoFile: file }));
+        reader.readAsDataURL(file);
+    };
+    const handleDrop = (e) => {
+        e.preventDefault();
+        const file = e.dataTransfer.files[0];
+        if (!file?.type.startsWith("image/")) return;
+        const reader = new FileReader();
+        reader.onloadend = () => setCurrentFiangonana(prev => ({ ...prev, photo: reader.result, photoFile: file }));
+        reader.readAsDataURL(file);
+    };
+    const handleDragOver = (e) => e.preventDefault();
+
+    return {
+        fiangonanas: filteredFiangonanas,
+        currentFiangonana,
+        modal,
+        isOpen,
+        handleInputChange,
+        handleSubmit,
+        handleSearch: (e) => setFiangonanaTerm(e.target.value),
+        handleEdit,
+        openDelete,
+        handleDelete,
+        handleFileChange,
+        handleDrop,
+        handleDragOver,
+        openModal,
+        closeModal,
+        fiangonanaTerm,
+        loading,
+        currentPage,
+        totalPages,
+        perPage,
+        setCurrentPage,
+        isDebouncing,
+        //
+        fiangonanas: filteredFiangonanas,
+        currentFiangonana,
+        modal,
+        isOpen,
+        handleInputChange,
+        handleSubmit,
+        handleSearch: (e) => setFiangonanaTerm(e.target.value),
+        handleEdit,
+        openDelete,
+        handleDelete,
+        handleFileChange,
+        handleDrop,
+        handleDragOver,
+        openModal,
+        closeModal,
+        fiangonanaTerm,
+        loading,
+        currentPage,
+        totalPages,
+        perPage,
+        setCurrentPage,
+
+    };
 };
 
-export default Sampana;
+export default useFiangonana;

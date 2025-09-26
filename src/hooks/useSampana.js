@@ -28,11 +28,24 @@ export const useSampana = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
+  const [isDebouncing, setIsDebouncing] = useState(false);
+
+  // --- Debounce recherche ---
+  useEffect(() => {
+    setCurrentPage(1);
+    setIsDebouncing(true);
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setIsDebouncing(false);
+    }, 1000);
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
   // --- Fetch Sampanas ---
-  const fetchSampanas = async (page = 1) => {
+  const fetchSampanas = async (page = 1,search = "") => {
     try {
       setLoading(true);
-      const res = await listeSampanas(page);
+      const res = await listeSampanas(page,10,search);
       setSampanas(res.results?.data || []);
       setTotalPages(res.results?.last_page || 1);
     } catch (error) {
@@ -43,8 +56,8 @@ export const useSampana = () => {
   };
 
   useEffect(() => {
-    fetchSampanas(currentPage);
-  }, [currentPage]);
+    fetchSampanas(currentPage, debouncedSearch);
+  }, [currentPage,debouncedSearch]);
 
   // --- Form Handlers ---
   const handleInputChange = (e) => {
@@ -113,11 +126,15 @@ export const useSampana = () => {
   const getPagesArray = () => Array.from({ length: totalPages }, (_, i) => i + 1);
 
   // --- Filtrage simple ---
-  const filteredSampanas = sampanas.filter(
-    s =>
-      (s.nom_samp || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (s.desc_samp || "").toLowerCase().includes(searchTerm.toLowerCase())
-  );
+
+  const normalize = str => str?.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const filteredSampanas = sampanas.filter(s => {
+    const search = normalize(debouncedSearch);
+    return (
+      normalize(s.nom_samp || "").includes(search) ||
+      normalize(s.desc_samp || "").includes(search)
+    );
+  });
 
   return {
     sampanas,

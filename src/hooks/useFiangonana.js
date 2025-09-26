@@ -29,46 +29,51 @@ const useFiangonana = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
-
-  // Fetch fiangonanas depuis l’API
-  useEffect(() => {
-    const fetchFiangonanas = async () => {
-      setLoading(true);
-      try {
-        const res = await listeFiangonana(currentPage, perPage);
-
-        // ✅ Version voahitsy: maka array avy amin'ny res.results.data
-        const fiangList = res?.results?.data || [];
-        const last_page = res?.results?.last_page || 1;
-
-        const fiangFormatted = fiangList.map(f => ({
-          id: f.id,
-          name: f.fiang_nom,
-          photo: f.fiang_pho ? JSON.parse(f.fiang_pho).url : "",
-          email: f.fiang_mail,
-          phone: f.fiang_num,
-          admin: f.admin_nom || "",
-          address: f.fiang_kartie || ""
-        }));
-
-        setFiangonanas(fiangFormatted);
-        setTotalPages(last_page);
-      } catch (error) {
-        console.error("Erreur lors du chargement:", error);
-        setFiangonanas([]);
-        setTotalPages(1);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFiangonanas();
-  }, [currentPage, perPage]);
-
-  // Reset page si search change
+  const [debouncedSearch, setDebouncedSearch] = useState(fiangonanaTerm);
+  const [isDebouncing, setIsDebouncing] = useState(false);
+  // Debounce search
   useEffect(() => {
     setCurrentPage(1);
+    setIsDebouncing(true);
+    const handler = setTimeout(() => {
+      setDebouncedSearch(fiangonanaTerm);
+      setIsDebouncing(false);
+    }, 1000);
+    return () => clearTimeout(handler);
   }, [fiangonanaTerm]);
+
+  // Persist current page
+  useEffect(() => {
+    localStorage.setItem("currentFiangonanaPage", currentPage);
+  }, [currentPage]);
+
+  // Fetch fiangonanas
+  const fetchFiangonanas = async (page = 1, search = "") => {
+    try {
+      setLoading(true);
+      const res = await listeFiangonana(page, perPage, search);
+      const data = res?.results?.data || [];
+      setFiangonanas(data.map(f => ({
+        id: f.id,
+        name: f.fiang_nom,
+        photo: f.fiang_pho ? JSON.parse(f.fiang_pho).url : "",
+        email: f.fiang_mail,
+        phone: f.fiang_num,
+        admin: f.admin_nom || "",
+        address: f.fiang_kartie || ""
+      })));
+      setTotalPages(res?.results?.last_page || 1);
+    } catch (err) {
+      afficherToastErreur(getBackendMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFiangonanas(currentPage, debouncedSearch);
+  }, [currentPage, debouncedSearch]);
+
 
   // Input change
   const handleInputChange = (e) => {
@@ -118,12 +123,18 @@ const useFiangonana = () => {
     }
   };
 
-  // Search filter (frontend)
-  const filteredFiangonanas = fiangonanas.filter(f =>
-    f.name.toLowerCase().includes(fiangonanaTerm.toLowerCase()) ||
-    f.address?.toLowerCase().includes(fiangonanaTerm.toLowerCase()) ||
-    f.admin?.toLowerCase().includes(fiangonanaTerm.toLowerCase())
-  );
+  // Filter frontend
+  const normalize = str => str?.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+  const filteredFiangonanas = fiangonanas.filter(f => {
+    const search = normalize(debouncedSearch);
+    return (
+      normalize(f.name || "").includes(search) ||
+      normalize(f.address || "").includes(search) ||
+      (f.phone || "").includes(debouncedSearch) ||
+      normalize(f.admin || "").includes(search)
+    );
+  });
 
   // Edit
   const handleEdit = (fiangonana) => {
@@ -185,6 +196,7 @@ const useFiangonana = () => {
     totalPages,
     perPage,
     setCurrentPage,
+    isDebouncing,
   };
 };
 

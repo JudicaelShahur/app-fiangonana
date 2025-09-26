@@ -23,7 +23,8 @@ const Vola = () => {
         prevPage,
         goToPage,
         getPagesArray,
-        loading
+        loading,
+        isDebouncing
     } = useVola();
 
     return (
@@ -44,6 +45,7 @@ const Vola = () => {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
+                        {isDebouncing && <div className="small-loader"></div>}
                         <span className="search-vola-icon"><i className="fas fa-search"></i></span>
                     </div>
                 </div>

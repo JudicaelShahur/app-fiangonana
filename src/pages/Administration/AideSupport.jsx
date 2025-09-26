@@ -21,7 +21,7 @@ const AideSupport = () => {
     };
 
     const developers = [
-        { nom: "Razafindraibe Safidiniaina Judicael", role: "Développeur Fullstack Web", tel: "+261 34 35 17 339", avatar: "/images/dev1.png" },
+        { nom: "Razafindraibe Safidiniaina Judicael", role: "Développeur Fullstack Web", tel: "+261 34 35 17 339", avatar: "src/assets/judicael.JPG" },
         { nom: "Andriamihaja Lalao", role: "Développeur Frontend", tel: "+261 33 12 45 678", avatar: "/images/dev2.png" },
         { nom: "Rakotovao Hery", role: "Développeur Backend", tel: "+261 32 11 22 333", avatar: "/images/dev3.png" }
     ];

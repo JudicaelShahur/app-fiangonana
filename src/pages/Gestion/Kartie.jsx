@@ -27,7 +27,8 @@ const Kartie = () => {
     setCurrentPage,
     totalPages,
     getPagesArray,
-    loading
+    loading,
+    isDebouncing
   } = useKartie();
 
   return (
@@ -51,6 +52,7 @@ const Kartie = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
+            {isDebouncing && <div className="small-loader"></div>}
           </div>
           <button className="filterKartie-btn">
             <i className="fas fa-filter"></i> Filtrer

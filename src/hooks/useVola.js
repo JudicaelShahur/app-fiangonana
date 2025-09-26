@@ -14,27 +14,32 @@ export const useVola = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   // --- Pagination persistent ---
-  const [currentPage, setCurrentPage] = useState(() => {
-    const savedPage = localStorage.getItem("volaCurrentPage");
-    return savedPage ? Number(savedPage) : 1;
-  });
-
-  useEffect(() => {
-    localStorage.setItem("volaCurrentPage", currentPage);
-  }, [currentPage]);
-
+  const [currentPage, setCurrentPage] = useState(() => {});
   const [lastPage, setLastPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [total, setTotal] = useState(0);
 
   // --- Volas data ---
   const [volas, setVolas] = useState([]);
+  const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
+  const [isDebouncing, setIsDebouncing] = useState(false);
+
+  // --- Debounce recherche ---
+  useEffect(() => {
+    setCurrentPage(1); 
+    setIsDebouncing(true);
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setIsDebouncing(false);
+    }, 1000);
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
 
   // --- Fetch Volas ---
-  const fetchVolas = async (page = 1) => {
+  const fetchVolas = async (page = 1,search = "") => {
     setLoading(true);
     try {
-      const data = await listeVola(page, perPage);
+      const data = await listeVola(page, perPage,search);
 
       const results = data.results;
       if (results && Array.isArray(results.data)) {
@@ -56,8 +61,8 @@ export const useVola = () => {
 
   // --- Auto fetch on page/perPage change ---
   useEffect(() => {
-    fetchVolas(currentPage);
-  }, [currentPage, perPage]);
+    fetchVolas(currentPage, debouncedSearch);
+  }, [currentPage, perPage, debouncedSearch]);
 
   // --- Modal handlers ---
   const openModal = (vola = null) => {
@@ -118,11 +123,15 @@ export const useVola = () => {
   };
 
   // --- Filtering ---
-  const filteredVolas = volas.filter(v =>
-    (v.desc_vola || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (v.fiang_id ? String(v.fiang_id) : "").toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
+  const normalize = str => str?.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const filteredVolas = volas.filter(v => {
+    const search = normalize(debouncedSearch);
+    return (
+      normalize(v.desc_vola || "").includes(search) ||
+      (v.montant || "").includes(search)
+     
+    );
+  });
   // --- Pagination handlers ---
   const nextPage = () => {
     if (currentPage < lastPage) setCurrentPage(prev => prev + 1);
@@ -163,6 +172,7 @@ export const useVola = () => {
     prevPage,
     goToPage,
     getPagesArray,
-    fetchVolas
+    fetchVolas,
+    isDebouncing
   };
 };

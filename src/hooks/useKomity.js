@@ -17,14 +17,7 @@ export const useKomity = () => {
   const { modal, openModal, closeModal, isOpen } = useModal();
 
   // --- Current page persistent ---
-  const [currentPage, setCurrentPage] = useState(() => {
-    const savedPage = localStorage.getItem("currentKomityPage");
-    return savedPage ? Number(savedPage) : 1;
-  });
-
-  useEffect(() => {
-    localStorage.setItem("currentKomityPage", currentPage);
-  }, [currentPage]);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const [totalPages, setTotalPages] = useState(1);
   const [komities, setKomities] = useState([]);
@@ -34,15 +27,29 @@ export const useKomity = () => {
   const [loading, setLoading] = useState(false);
 
   // --- Fetch Komities ---
-  const fetchKomities = async (page = 1) => {
+  const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
+  const [isDebouncing, setIsDebouncing] = useState(false);
+
+  // Debounce search
+  useEffect(() => {
+    setCurrentPage(1);
+    setIsDebouncing(true);
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setIsDebouncing(false);
+    }, 1000);
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
+
+  const fetchKomities = async (page = 1, search = "") => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const res = await listeKomity(page);
-      const data = Array.isArray(res.results.data) ? res.results.data : [];
-      setKomities(data);
+      const res = await listeKomity(page, search);
+      console.log("donnee",res);
+      setKomities(res.results.data || []);
       setTotalPages(res.results.last_page || 1);
-    } catch (error) {
-      afficherToastErreur(getBackendMessage(error));
+    } catch (err) {
+      afficherToastErreur(getBackendMessage(err));
     } finally {
       setLoading(false);
     }
@@ -59,9 +66,9 @@ export const useKomity = () => {
   };
 
   useEffect(() => {
-    fetchKomities(currentPage);
+    fetchKomities(currentPage, debouncedSearch);
     fetchMpinos();
-  }, [currentPage]);
+  }, [currentPage, debouncedSearch]);
 
   // --- Form Handlers ---
   const handleInputChange = (e) => {
@@ -132,11 +139,17 @@ export const useKomity = () => {
   };
 
   // --- Filtrage ---
-  const filteredKomities = komities.filter(
-    (k) =>
-      (k.titre_kom || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (String(k.id_mpin) || "").toLowerCase().includes(searchTerm.toLowerCase())
-  );
+
+  const normalize = str => str?.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+  const filteredKomities = komities.filter(k => {
+    const search = normalize(debouncedSearch);
+    return (
+      normalize(k.titre_kom || "").includes(search) ||
+      normalize(k.nom || "").includes(search) ||
+      normalize(k.prenom || "").includes(search)
+    );
+  });
 
   return {
     komities,
@@ -163,5 +176,6 @@ export const useKomity = () => {
     nextPage,
     prevPage,
     getPagesArray,
+    isDebouncing,
   };
 };

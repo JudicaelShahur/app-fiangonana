@@ -3,6 +3,7 @@ import { FaPlus, FaSearch, FaCalendarAlt, FaEdit, FaTrash } from "react-icons/fa
 import { useFahatongavana } from "../../hooks/useFahatongavana";
 import "../../styles/Fahatongavana.css";
 import ConfirmDeleteModal from "../../utils/ConfirmDeleteModal";
+import { FiUsers, FiCheckCircle, FiDollarSign, FiShoppingBag } from "react-icons/fi";
 import MpinoScanner from "../Gestion/MpinoScanner";
 const Fahatongavana = () => {
     const {
@@ -33,7 +34,8 @@ const Fahatongavana = () => {
         totalPresent,
         totalPaid,
         totalAmount,
-        volas
+        volas,
+        isDebouncing
     } = useFahatongavana();
 
     return (
@@ -56,6 +58,7 @@ const Fahatongavana = () => {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
+                    {isDebouncing && <div className="small-loader"></div>}
                 </div>
                 <div className="date-filter">
                     <label>
@@ -72,22 +75,30 @@ const Fahatongavana = () => {
             {/* Stats */}
             <div className="stats-cards">
                 <div className="stat-card">
+                   
                     <div className="stat-value">
-                        {totals.reduce((acc, f) => acc + f.mpinos_count, 0)}
+                        {totals?.total_mpinos ?? 0}
                     </div>
                     <div className="stat-label">Total Mpino</div>
+                    <FiUsers size={24} className="dashboard-card-icon" />
                 </div>
-                <div className="stat-card">
+
+                <div className="stat-card">  
                     <div className="stat-value">{totalPresent}</div>
                     <div className="stat-label">Présents</div>
+                    <FiCheckCircle size={24} className="dashboard-card-icon" />
                 </div>
+
                 <div className="stat-card">
                     <div className="stat-value">{totalPaid}</div>
                     <div className="stat-label">Ont payé</div>
+                    <FiShoppingBag size={24} className="dashboard-card-icon" />   
                 </div>
+
                 <div className="stat-card">
                     <div className="stat-value">{totalAmount.toLocaleString()} Ar</div>
                     <div className="stat-label">Total collecté</div>
+                    <FiDollarSign size={24} className="dashboard-card-icon" />   
                 </div>
             </div>
 
@@ -154,7 +165,7 @@ const Fahatongavana = () => {
                     </div>
                 </div>
             ) : (
-                <div className="empty-state">Aucun mpino trouvé pour cette date.</div>
+                <div className="empty-state">Aucun mpino trouvé "{searchTerm}" pour cette date.</div>
             )}
 
             {/* Modal Ajouter / Modifier */}
@@ -185,7 +196,8 @@ const Fahatongavana = () => {
                                         ))}
                                     </ul>
                                 )}
-                            </div>
+                            </div>  
+                            
 
                             <div className="formFahatongavana-group checkbox-group">
                                 <label className="checkbox-label">

@@ -30,7 +30,8 @@ const Mpitondra = () => {
         loading,
         fiangonanas,
         mpinos,
-        setFormData
+        setFormData,
+        isDebouncing
     } = useMpitondra();
 
     return (
@@ -54,6 +55,7 @@ const Mpitondra = () => {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
+                        {isDebouncing && <div className="small-loader"></div>}
                     </div>
                 </div>
 

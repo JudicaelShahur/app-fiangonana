@@ -17,6 +17,7 @@ const Mpino = () => {
         kartieList,
         searchTerm,
         setSearchTerm,
+        isDebouncing,
         formData,
         formErrors,
         isSubmitting,
@@ -58,6 +59,7 @@ const Mpino = () => {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
+                    {isDebouncing && <div className="small-loader"></div>}
                 </div>
                 <div className="searchMpino-stats">{filteredMpino.length} mpino(s) trouvé(s)</div>
             </div>
@@ -101,7 +103,7 @@ const Mpino = () => {
                         </div>
                     ))
                 ) : (
-                    <p className="no-resultat" > Aucun mpino trouvé.</p>
+                    <p className="no-resultat" > Aucun mpino trouvé "{searchTerm}"</p>
                 )}
             </div>
 
@@ -257,7 +259,7 @@ const Mpino = () => {
 
                                 {/* Kartie */}
                                 <div className="formMpino-group">
-                                    <label>Kartie fiangonana ivavahana*</label>
+                                    <label>Kartie*</label>
                                     <select
                                         name="id_kartie"
                                         value={formData.id_kartie || ''}
@@ -327,7 +329,8 @@ const Mpino = () => {
                     isOpen={true}
                     onClose={closeModal}
                     onConfirm={handleDeleteMpino}
-                    message={`Êtes-vous sûr de vouloir supprimer le mpino "${modal.data.prenom_mpin || modal.data.prenom} ${modal.data.nom_mpin || modal.data.nom}" ?`}
+                    message={`Êtes-vous sûr de vouloir supprimer le mpino"${modal.data?.nom} ${modal.data?.prenom}"?`}
+
                 />
             )}
         </div>

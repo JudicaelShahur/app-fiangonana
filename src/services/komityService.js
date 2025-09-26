@@ -4,9 +4,9 @@ import api from "../api";
  * Liste tous les Komity avec pagination
  * @param {number} page - Numéro de la page (par défaut 1)
  */
-export const listeKomity = async (page = 1) => {
+export const listeKomity = async (page = 1, search = "") => {
   try {
-    const res = await api.get("/komities", { params: { page } });
+    const res = await api.get("/komities", { params: { page, search } });
     return res.data; 
   } catch (error) {
     throw error.response?.data || { message: "Erreur inconnue lors du chargement des Komity." };
