@@ -1,9 +1,11 @@
 import api from "../api";
 
-// Lister avec pagination
-export const getFahatongavanas = async (page = 1, search = "") => {
+// Lister avec pagination + recherche + date
+export const getFahatongavanas = async (page = 1, search = "", date = null) => {
     try {
-        const res = await api.get("/fahatongavana", { params: { page, search } });
+        const res = await api.get("/fahatongavana", { 
+            params: { page, search, date }
+        });
         return res.data;
     } catch (error) {
         throw error.response?.data || { message: "Erreur lors de la récupération des Fahatongavanas." };

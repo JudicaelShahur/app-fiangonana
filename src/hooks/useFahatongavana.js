@@ -5,12 +5,13 @@ import { listeMpinos, countMpinosByFiangonana, getMpinoById } from "../services/
 import { afficherToastSuccès, afficherToastErreur, getBackendMessage } from "../utils/toast.js";
 import { listeVola } from "../services/volaService";
 import { todayLocal } from "../utils/date";
+import debounce from "lodash.debounce";
 export const useFahatongavana = () => {
     const { modal, openModal, closeModal, isOpen } = useModal();
 
     // --- Pagination / Data ---
     const [presences, setPresences] = useState([]);
-    const [currentPage, setCurrentPage] = useState(() => Number(localStorage.getItem("fahatongavanaPage")) || 1);
+    const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -34,7 +35,7 @@ export const useFahatongavana = () => {
     const [isDebouncing, setIsDebouncing] = useState(false);
     // --- Debounce recherche --- //
     useEffect(() => {
-        setCurrentPage(1);
+      
         setIsDebouncing(true);
         const handler = setTimeout(() => {
         setDebouncedSearch(searchTerm);
@@ -42,12 +43,14 @@ export const useFahatongavana = () => {
         }, 1000); return () => clearTimeout(handler);
     }, [searchTerm]);
     // --- Fetch Presences ---
-    const fetchPresences = async (page = 1, search = "") => {
+    // --- Fetch Presences ---
+    const fetchPresences = async (page = 1, search = "", date = selectedDate) => {
         try {
             setLoading(true);
             setError(null);
-            const res = await getFahatongavanas(page,search);
+            const res = await getFahatongavanas(page, search, date);
             const data = res.results?.data || [];
+            console.log("fahatongavana", data);
             const normalized = data.map(p => ({
                 id: p.id,
                 nom: p.nom || "",
@@ -61,6 +64,8 @@ export const useFahatongavana = () => {
                 date: p.created_at?.split("T")[0],
                 raw: p,
             }));
+            
+
             setPresences(normalized);
             setTotalPages(res.results?.last_page || 1);
         } catch (err) {
@@ -70,23 +75,53 @@ export const useFahatongavana = () => {
         }
     };
 
+    // --- Effects ---
+    useEffect(() => {
+        fetchPresences(currentPage, debouncedSearch, selectedDate);
+        fetchTotals();
+    }, [currentPage, debouncedSearch, selectedDate]);
+
     // --- Fetch Mpinos / Totals ---
-    const fetchMpinos = async () => {
+    const loadMpinos = debounce(async (inputValue, callback) => {
         try {
-            const res = await listeMpinos();
-            const list = res.results?.data.map(mpino => {
-                let photoObj = null;
-                try { photoObj = mpino.photo ? JSON.parse(mpino.photo) : null; } catch { }
-                let qrCodeObj = null;
-                try { qrCodeObj = mpino.qrcode ? JSON.parse(mpino.qrcode) : null; } catch { }
-                return { ...mpino, photo: photoObj, qrcode: qrCodeObj };
+            const res = await listeMpinos(1, 10, inputValue);
+            const options = res.results?.data?.map(mp => ({
+                value: mp.id_unique,
+                label: `${mp.id_unique} - ${mp.nom} ${mp.prenom}`,
+            })) || [];
+
+            // Mitahiry mpinos amin'ny id_unique koa
+            setMpinos((prev) => {
+                const ids = new Set(prev.map(p => p.id));
+                const newMpinos = res.results?.data?.filter(p => !ids.has(p.id)) || [];
+                return [...prev, ...newMpinos];
             });
-            setMpinos(list);
-        } catch (err) {
-            console.error("Erreur Mpino:", err.message);
-            setMpinos([]);
+
+            callback(options);
+        } catch {
+            callback([]);
         }
-    };
+    }, 500);
+    const [volas, setVolas] = useState([]);
+
+    const loadVolas = debounce(async (inputValue, callback) => {
+        try {
+            const res = await listeVola(1, 10, inputValue); // afaka mandefa search koa raha ilaina
+            const options = res.results?.data?.map(v => ({
+                value: v.id,
+                label: `${v.montant.toLocaleString()} Ar - ${v.desc_vola}`,
+            })) || [];
+
+            // mitahiry vola ao amin'ny state raha mbola mila label ho an'ny value voafantina
+            setVolas(res.results?.data || []);
+
+            callback(options);
+        } catch (err) {
+            console.error("Erreur Volas:", err.message);
+            callback([]);
+        }
+    },500);
+
 
     const fetchTotals = async () => {
         try {
@@ -98,43 +133,20 @@ export const useFahatongavana = () => {
         }
     };
 
-    const [volas, setVolas] = useState([]);
-
-    const fetchVolas = async () => {
-        try {
-            const res = await listeVola();
-            console.log("vola", res);
-            setVolas(res.results?.data || []);
-        } catch (err) {
-            console.error("Erreur Volas:", err.message);
-            setVolas([]);
-        }
-    };
-    // --- Effects ---
-    useEffect(() => {
-        fetchPresences(currentPage, debouncedSearch);
-        fetchMpinos();
-        fetchTotals();
-        fetchVolas();
-    }, [currentPage, debouncedSearch]);
-
-    useEffect(() => {
-        localStorage.setItem("fahatongavanaPage", currentPage);
-    }, [currentPage]);
 
     // --- Filtered Presences ---
     useEffect(() => {
         const filtered = presences.filter(
             p =>
-                (   p.nom.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-                    p.prenom.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-                    p.status_payment.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-                    p.amount.toString().includes(debouncedSearch) ||
-                    p.adresse.toLowerCase().includes(debouncedSearch.toLowerCase())) &&
-                p.date === selectedDate
+                p.nom.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+                p.prenom.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+                p.status_payment.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+                p.amount.toString().includes(debouncedSearch) ||
+                p.adresse.toLowerCase().includes(debouncedSearch.toLowerCase())
         );
         setFilteredPresences(filtered);
-    }, [presences, debouncedSearch, selectedDate]); 
+    }, [presences, debouncedSearch]);
+ 
 
 
     // --- Form Handlers ---
@@ -262,6 +274,9 @@ export const useFahatongavana = () => {
         totalAmount,
         volas,
         isDebouncing,
-        setFormData
+        setFormData,
+        loadMpinos,
+        loadVolas,
+        setCurrentPage
     };
 };

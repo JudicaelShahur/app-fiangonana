@@ -1,4 +1,4 @@
-/* ===== Kartie CSS ===== */
+/*  Kartie CSS  */
 .kartie-container {
     margin-left: var(--sidebar-width);
     padding: 20px;
@@ -75,7 +75,7 @@
     border-radius: var(--border-radius);
     border: 1px solid var(--border-color);
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 55px;
 }
 
 .searchKartie-input {
@@ -86,7 +86,7 @@
 .searchKartie-input .searchKartie-icon {
     position: absolute;
     top: 50%;
-    right: 15px;
+    left: 15px;
     transform: translateY(-50%);
     color: var(--secondary-color);
     
@@ -94,7 +94,7 @@
 
 .searchKartie-input input {
     width: 100%;
-    padding: 14px 0px 15px 0px;
+    padding: 14px 0px 15px 35px;
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
     background-color: var(--card-bg);
@@ -103,7 +103,7 @@
     transition: all 0.3s ease;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
-.searchKartie-input:focus {
+.searchKartie-input input:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 4px 10px rgba(52, 152, 219, 0.15);
@@ -128,6 +128,17 @@
     transform: translateY(-2px);
 }
 
+.smallKartie-loader {
+    position: absolute;
+    right: -20px;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ccc;
+    border-top-color: #333;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    top: 30%;
+}
 /* Table Kartie */
 .tableKartie-container {
     width: 100%;
@@ -164,10 +175,11 @@
 .kartie-table {
     width: 100%;
     border-collapse: collapse;
-    background-color: var(--card-bg, #fff);
-    border-radius: var(--border-radius, 8px);
+    margin-bottom: 40px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
     overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .kartie-table th,
@@ -192,26 +204,11 @@
     font-weight: 500;
 }
 
-.status-badgeKartie {
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    display: inline-block;
-    text-align: center;
-}
-
-.synchronise {
-    background-color: #e8f5e9;
-    color: #2e7d32;
-}
 
 /* Action Buttons */
 .action-btn-kartie {
     display: flex;
     gap: 8px;
-   
-
 }
 
 .btnKartie {
@@ -256,7 +253,7 @@
     }
 }
 
-/* ===== Modal Kartie ===== */
+/*  Modal Kartie  */
 .modalKartie-overlay {
     position: fixed;
     top: 0;
@@ -372,9 +369,9 @@
     background-color: #2980b9;
 }
 
-/* ===== Responsive ===== */
+/*  Responsive  */
 
-/* Tablet */
+/* Tablette */
 @media (max-width: 992px) {
     .kartie-container {
         margin-left: 0;
@@ -396,8 +393,8 @@
 
     .kartie-table th,
     .kartie-table td {
+        padding: 8px 10px;
         font-size: 0.85rem;
-        padding: 10px;
     }
 
     .add-btnKartie {
@@ -413,49 +410,67 @@
     .saveKartie-btn {
         width: 100%;
     }
+    .searchKartie-bar {
+       flex-direction: row;
+       gap: 50px;
+   }
+
+   .searchKartie-input {
+       flex: 1;
+   }
+
+   .filterKartie-btn {
+       flex-shrink: 0;
+       padding: 16px 15px;
+   }
+   .action-btn-kartie {
+       display: flex;
+       gap: 20px;
+   }
+   .mpino-grid {
+       grid-template-columns: 1fr;
+       gap: 1rem;
+   }
 }
 
 /* Very Small Mobile – Transform table to cards */
 @media (max-width: 480px) {
 
     .kartie-table tr {
-        display: block;
         margin-bottom: 15px;
-        padding: 12px;
-        border-radius: 12px;
-        background-color: var(--card-bg, #fff);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-        border: 1px solid #e9ecef;
+        border-bottom: 2px solid var(--border-color);
+        padding-bottom: 10px;
     }
 
     .kartie-table td {
-        display: flex;
-        flex-direction: column;
-        /* colonne: label au-dessus, valeur en dessous */
-        text-align: left;
-        padding: 8px 0;
-        border: none;
+       text-align: left;
+        padding-left: 50%;
         position: relative;
+    }
+     .kartie-table,
+    .kartie-table thead,
+    .kartie-table tbody,
+    .kartie-table th,
+    .kartie-table td,
+    .kartie-table tr {
+        display: block;
+        width: 100%;
     }
 
     .kartie-table td::before {
         content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        width: 45%;
+        padding-right: 10px;
         font-weight: 600;
-        margin-bottom: 4px;
-        position: relative;
-        color: var(--secondary-color, #555);
+        text-align: left;
     }
 
     .kartie-table th {
         display: none;
     }
-
-    .status-badgeKartie {
-        font-size: 0.75rem;
-        padding: 4px 8px;
-    }
-
-    .action-btnKartie td {
-        margin-top: 5px;
-    }
+    .action-btn-kartie .btnKartie {
+       margin:5px ;
+   }
 }

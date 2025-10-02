@@ -3,42 +3,18 @@ import { FaEdit, FaTrash, FaPlus, FaSearch, FaSync, FaQrcode, FaDownload } from 
 import "../../styles/Mpino.css";
 import ConfirmDeleteModal from "../../utils/ConfirmDeleteModal";
 import { useMpino } from "../../hooks/useMpino.js";
+import AsyncSelect from "react-select/async";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Mpino = () => {
-    // Hook useMpino
+
     const {
-        currentPage,
-        setCurrentPage,
-        totalPages,
-        loading,
-        mpinoList,
-        kartieList,
-        searchTerm,
-        setSearchTerm,
-        isDebouncing,
-        formData,
-        formErrors,
-        isSubmitting,
-        photoPreview,
-        modal,
-        isOpen,
-        // handlers
-        handleInputChange,
-        handleFileChange,
-        handleDrop,
-        handleDragOver,
-        handleAddMpino,
-        handleEditMpino,
-        handleDeleteMpino,
-        openAdd,
-        openEdit,
-        openDelete,
-        showQrCode,
-        downloadFiche,
-        filteredMpino,
-        closeModal,
+        currentPage, setCurrentPage, totalPages, loading, mpinoList, kartieList,
+        searchTerm, setSearchTerm, isDebouncing, formData, formErrors, isSubmitting, photoPreview,
+        modal, isOpen, handleInputChange, handleFileChange, handleDrop, handleDragOver,
+        handleAddMpino, handleEditMpino, handleDeleteMpino, openAdd, openEdit, openDelete,
+        showQrCode, downloadFiche, filteredMpino, closeModal, karties, loadKarties, setFormData
     } = useMpino();
 
     return (
@@ -260,21 +236,19 @@ const Mpino = () => {
                                 {/* Kartie */}
                                 <div className="formMpino-group">
                                     <label>Kartie*</label>
-                                    <select
-                                        name="id_kartie"
-                                        value={formData.id_kartie || ''}
-                                        onChange={handleInputChange}
-                                        className={formErrors.id_kartie ? 'error' : ''}
-                                        required
-                                    >
-                                        <option value="">Sélectionner</option>
-                                        {kartieList.map(k => (
-                                            <option key={k.id} value={k.id}>
-                                                {k.nom_kar}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {formErrors.id_kartie && <span className="error-text">{formErrors.id_kartie}</span>}
+                                    <AsyncSelect
+                                        cacheOptions
+                                        loadOptions={loadKarties}
+                                        defaultOptions
+                                        placeholder="Rechercher un Kartie..."
+                                        value={formData.id_kartie ? (() => {
+                                            const k = karties.find(k => k.id === Number(formData.id_kartie));
+                                            return k ? { value: k.id, label: `${k.nom_kar}-${k.fiang_nom}` } : { value: Number(formData.id_kartie), label: "Chargement..." };
+                                        })() : null}
+                                        onChange={selected =>
+                                            setFormData(prev => ({ ...prev, id_kartie: selected ? selected.value.toString() : "" }))
+                                        }
+                                    />
                                 </div>
 
                                 {/* Checkbox divers */}

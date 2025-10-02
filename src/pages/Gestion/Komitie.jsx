@@ -1,5 +1,5 @@
 import React from "react";
-import Select from "react-select";
+import AsyncSelect from "react-select/async";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "../../styles/Komitie.css";
 import ConfirmDeleteModal from "../../utils/ConfirmDeleteModal.jsx";
@@ -24,12 +24,11 @@ const Komitie = () => {
     deleteKomityHandler,
     loading,
     mpinos,
+    loadMpinos,
     setFormData,
     currentPage,
     setCurrentPage,
     totalPages,
-    nextPage,
-    prevPage,
     getPagesArray,
     isDebouncing,
   } = useKomity();
@@ -166,24 +165,22 @@ const Komitie = () => {
               </div>
               <div className="form-komitie-group">
                 <label>Mpino</label>
-                <Select
+                <AsyncSelect
+                  cacheOptions
+                  loadOptions={loadMpinos}
+                  defaultOptions
                   placeholder="Rechercher un Mpino..."
-                  options={mpinos.map((mp) => ({
-                    value: mp.id,
-                    label: `${mp.nom} ${mp.prenom}`,
-                  }))}
                   value={
-                    mpinos
-                      .map((mp) => ({ value: mp.id, label: `${mp.nom} ${mp.prenom}` }))
-                      .find((opt) => opt.value === Number(formData.id_mpin)) || null
+                    formData.id_mpin
+                      ? (() => {
+                        const m = mpinos.find((m) => m.id === Number(formData.id_mpin));
+                        return m ? { value: m.id, label: `${m.nom} ${m.prenom}` } : { value: Number(formData.id_mpin), label: "Chargement..." };
+                      })()
+                      : null
                   }
                   onChange={(selected) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      id_mpin: selected ? selected.value.toString() : "",
-                    }))
+                    setFormData((prev) => ({ ...prev, id_mpin: selected ? selected.value.toString() : "" }))
                   }
-                  isSearchable
                 />
               </div>
             </div>

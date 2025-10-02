@@ -9,7 +9,7 @@ import {
 } from "../services/mpinoService";
 import { listeKartie } from "../services/kartieService";
 import { afficherToastSuccès, afficherToastErreur } from "../utils/toast";
-
+import debounce from "lodash.debounce";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const useMpino = () => {
@@ -50,9 +50,10 @@ export const useMpino = () => {
 
   // Debounce searchTerm
   useEffect(() => {
+    setCurrentPage(1); 
     setIsDebouncing(true);
     const handler = setTimeout(() => {
-      setDebouncedSearch(searchTerm); // alefa any backend
+      setDebouncedSearch(searchTerm); 
       setIsDebouncing(false);
     }, 500);
     return () => clearTimeout(handler);
@@ -81,22 +82,30 @@ export const useMpino = () => {
         setLoading(false);
       }
     };
-
-    const fetchKartie = async () => {
-      try {
-        const res = await listeKartie();
-        const data = Array.isArray(res.results.data) ? res.results.data : [];
-        setKartieList(data);
-      } catch (error) {
-        console.error("Erreur Kartie:", error.message);
-        afficherToastErreur("Erreur lors du chargement des karties");
-      }
-    };
-
     fetchData();
-    fetchKartie();
   }, [currentPage, perPage, debouncedSearch]);
 
+  const [karties, setKarties] = useState([]);
+  const loadKarties = debounce(async (inputValue, callback) => {
+    try {
+      const res = await listeKartie(1, inputValue);
+      const options = res.results?.data?.map((k) => ({
+        value: k.id,
+        label: `${k.nom_kar}-${k.fiang_nom}`,
+      })) || [];
+      console.log("ity lery", options)
+
+      setKarties(prev => {
+        const ids = new Set(prev.map(p => p.id));
+        const newKarties = res.results?.data?.filter(k => !ids.has(k.id)) || [];
+        return [...prev, ...newKarties];
+      });
+
+      callback(options);
+    } catch {
+      callback([]);
+    }
+  }, 500);
   //  Validation
   const validateForm = () => {
     const errors = {};
@@ -292,6 +301,6 @@ const downloadFiche = async (mpino) => {
     searchTerm, setSearchTerm, isDebouncing , formData, formErrors, isSubmitting, photoPreview,
     modal, isOpen, handleInputChange, handleFileChange, handleDrop, handleDragOver,
     handleAddMpino, handleEditMpino, handleDeleteMpino, openAdd, openEdit, openDelete,
-    showQrCode, downloadFiche, filteredMpino, closeModal
+    showQrCode, downloadFiche, filteredMpino, closeModal, karties, loadKarties, setFormData
   };
 };

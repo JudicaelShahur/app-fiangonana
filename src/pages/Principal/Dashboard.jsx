@@ -1,19 +1,21 @@
 import React from "react";
 import "../../styles/Dashboard.css";
 import { useDashboard } from "../../hooks/useDashboard.jsx";
+import { FaSearch } from "react-icons/fa";
 
 const Dashboard = () => {
     const {
-        activePeriod,
-        setActivePeriod,
-        selectedMonth,
-        setSelectedMonth,
-        selectedYear,
-        setSelectedYear,
+        activePeriod, setActivePeriod,
+        selectedMonth, setSelectedMonth,
+        selectedYear, setSelectedYear,
         viewMode,
-        setViewMode,
         stats,
-        recentActivities,
+        searchText, setSearchText,
+        isDebouncing,
+        filteredActivities,
+        currentPage, totalPages, nextPage, prevPage, getPagesArray,
+        loadingActivities,
+        loadingStats,
     } = useDashboard();
 
     return (
@@ -34,6 +36,7 @@ const Dashboard = () => {
                         </button>
                     ))}
                 </div>
+
                 <div className="dashboard-view-toggle">
                     {/* Dropdown mois si période = month */}
                     {activePeriod === "month" && (
@@ -70,20 +73,50 @@ const Dashboard = () => {
                 {stats.map(stat => (
                     <div key={stat.id} className="dashboard-card">
                         <div className="dashboard-card-title">{stat.title}</div>
-                        <div className="dashboard-card-value">{stat.value}</div>
+
+                        <div className="dashboard-card-value">
+                            {loadingStats ? (
+                                <div className="small-loader"></div> 
+                            ) : (
+                                stat.value
+                            )}
+                        </div>
+
                         {stat.icon}
                     </div>
                 ))}
             </div>
 
+
+            {/* Barre de recherche */}
+            <div className="searchDashboard-bar">
+                <div className="searchDashboard-input">
+                    <FaSearch className="searchDashboard-icon" />
+                    <input
+                        type="text"
+                        placeholder="Rechercher une activité..."
+                        value={searchText}
+                        onChange={e => setSearchText(e.target.value)}
+                    />
+                    {(isDebouncing || loadingActivities) && <div className="smallDashboard-loader"></div>}
+                </div>
+                <button className="filterDashboard-btn">
+                    <i className="fas fa-filter"></i> Filtrer
+                </button>
+            </div>
+
             {/* Activités récentes */}
             <div className="dashboard-recent-activities">
                 <h2>Activités récentes</h2>
-                {recentActivities.length === 0 ? (
-                    <p>Aucune activité récente</p>
+                {loadingActivities ? (
+                    
+                        <div className="loader"></div>
+                   
+                ) : filteredActivities.length === 0 ? (
+                    <p>Aucune activité trouvée</p>
                 ) : (
                     <ul>
-                        {recentActivities.map(activity => {
+                        {filteredActivities.map(activity => {
                             const userName = activity.user || "Utilisateur inconnu";
                             return (
                                 <li key={activity.id} className="dashboard-activity-item" data-action-type={activity.action}>
@@ -119,6 +152,29 @@ const Dashboard = () => {
                         })}
                     </ul>
                 )}
+
+                {/* Pagination
+                <div className="paginationDashboard">
+                    <button onClick={prevPage} disabled={currentPage <= 1}>Précédent</button>
+                    {getPagesArray().map(p => (
+                        <button
+                            key={p}
+                            onClick={() => setCurrentPage(p)}
+                            style={{
+                                backgroundColor: currentPage === p ? "#3498db" : "",
+                                color: currentPage === p ? "#fff" : "",
+                                borderRadius: "4px",
+                                padding: "5px 10px",
+                                margin: "0 2px",
+                                border: "1px solid #ccc",
+                                cursor: "pointer"
+                            }}
+                        >
+                            {p}
+                        </button>
+                    ))}
+                    <button onClick={nextPage} disabled={currentPage >= totalPages}>Suivant</button>
+                </div> */}
             </div>
         </div>
     );

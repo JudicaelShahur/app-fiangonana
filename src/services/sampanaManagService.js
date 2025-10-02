@@ -1,10 +1,10 @@
 import api from "../api";
 
 /* Liste toutes les associations SampanaManag avec pagination */
-export const listeSampanaManags = async (page = 1, perPage = 10) => {
+export const listeSampanaManags = async (page = 1, perPage = 10, search = "") => {
   try {
     const res = await api.get("/sampana-manags", {
-      params: { page, per_page: perPage },
+      params: { page, per_page: perPage,search },
     });
     return res.data; // { results: {...}, message: ... }
   } catch (error) {

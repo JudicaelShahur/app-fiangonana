@@ -9,7 +9,7 @@ import {
 import { afficherToastSuccès, afficherToastErreur, getBackendMessage } from "../utils/toast.js";
 import { listeMpinos } from "../services/mpinoService.js";
 import { listeKartie } from "../services/kartieService.js";
-
+import debounce from "lodash.debounce";
 export const useChefKartie = () => {
   const { modal, openModal, closeModal, isOpen } = useModal();
 
@@ -57,19 +57,49 @@ export const useChefKartie = () => {
     const [mpinos, setMpinos] = useState([]);
     const [karties, setKarties] = useState([]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const resMpino = await listeMpinos();
-                setMpinos(resMpino.results?.data || []);
-                const resFiang = await listeKartie();
-                setKarties(resFiang.results?.data || []);
-            } catch (error) {
-                afficherToastErreur(getBackendMessage(error));
-            }
-        };
-        fetchData();
-    }, []);
+  // --- Async loaders ---
+  const loadMpinos = debounce(async (inputValue, callback) => {
+    try {
+      const res = await listeMpinos(1, 10, inputValue);
+      const options = res.results?.data?.map((mp) => ({
+        value: mp.id,
+        label: `${mp.nom} ${mp.prenom}`,
+      })) || [];
+      console.log("ity lery1", options)
+
+      // Mitahiry ny mpinos efa nalaina
+      setMpinos((prev) => {
+        const ids = new Set(prev.map(p => p.id));
+        const newMpinos = res.results?.data?.filter(p => !ids.has(p.id)) || [];
+        return [...prev, ...newMpinos];
+      });
+
+      callback(options);
+    } catch {
+      callback([]);
+    }
+  }, 500);
+  const loadKarties = debounce(async (inputValue, callback) => {
+    try {
+      const res = await listeKartie(1,inputValue); 
+      const options = res.results?.data?.map((k) => ({
+        value: k.id,
+        label: `${k.nom_kar}-${k.fiang_nom}`,
+      })) || [];
+      console.log("ity lery",options)
+
+      setKarties(prev => {
+        const ids = new Set(prev.map(p => p.id));
+        const newKarties = res.results?.data?.filter(k => !ids.has(k.id)) || [];
+        return [...prev, ...newKarties];
+      });
+
+      callback(options);
+    } catch {
+      callback([]);
+    }
+  }, 500);
+
   // --- Form Handlers ---
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -167,7 +197,9 @@ export const useChefKartie = () => {
     getPagesArray,
     loading,
     mpinos,
+    loadMpinos,
     karties,
+    loadKarties,
     setFormData,
     isDebouncing
   };

@@ -1,5 +1,5 @@
 import React from "react";
-import Select from "react-select";
+import AsyncSelect from "react-select/async";
 import "../../styles/SampanaManags.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash, faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -23,118 +23,111 @@ const SampanaManag = () => {
     isOpen,
     closeModal,
     currentPage,
-    setCurrentPage,
-    totalPages,
     getPagesArray,
+    nextPage,
+    prevPage,
+    totalPages,
     loading,
     stats,
     setFormData,
+    loadMpinos,
+    loadSampanas,
+    isDebouncing,
+    sampanas,
     mpinos,
-    sampanas
+    getMpinoLabel,
+    getSampanaLabel,
   } = useSampanaManag();
 
   return (
-      <div className="sampan-manags-container">
-        <header>
-              <div className="sampan-manags-header">
-            <h1>Liste des Associations Mpino ↔ Sampana</h1>
-            <button className="add-btn-sampan-manags" onClick={openAdd}>
-              <FontAwesomeIcon icon={faPlus} /> Associer
-            </button>
-          </div>
-        </header>
-
-        {/* Search bar */}
-          <div className="search-sampan-manags-bar">
-            <div className="search-sampan-manags-input">
-            <i className="fas fa-search search-sampan-manags-icon"></i>
-            <input
-              type="text"
-              placeholder="Rechercher par sampana ou mpino..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
+    <div className="sampan-manags-container">
+      <header>
+        <div className="sampan-manags-header">
+          <h1>Liste des Associations Mpino ↔ Sampana</h1>
+          <button className="add-btn-sampan-manags" onClick={openAdd}>
+            <FontAwesomeIcon icon={faPlus} /> Associer
+          </button>
         </div>
+      </header>
 
-        {/* Table */}
-          <div className="table-sampan-manags-container">
-          <table className="sampan-manags-table">
-            <thead>
+      {/* Search bar */}
+      <div className="search-sampan-manags-bar">
+        <div className="search-sampan-manags-input">
+          <i className="fas fa-search search-sampan-manags-icon"></i>
+          <input
+            type="text"
+            placeholder="Rechercher par sampana ou mpino..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          {isDebouncing && <div className="small-loader"></div>}
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="table-sampan-manags-container">
+        <table className="sampan-manags-table">
+          <thead>
+            <tr>
+              <th>Nom Sampana</th>
+              <th>Nom Mpino</th>
+              <th>Date d’association</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
               <tr>
-                <th>Nom Sampana</th>
-                <th>Nom Mpino</th>
-                <th>Date d’association</th>
-                <th>Actions</th>
+                <td colSpan="4" style={{ textAlign: "center", padding: "20px" }}>
+                  <div className="loader"></div>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan="4" style={{ textAlign: "center", padding: "20px" }}>
-                    <div className="loader"></div>
+            ) : filtered.length > 0 ? (
+              filtered.map((item) => (
+                <tr key={item.id}>
+                  <td data-label="Nom Sampana">{item.sampana?.nom_samp}</td>
+                  <td data-label="Nom Mpino">
+                    {item.mpino ? `${item.mpino.nom} ${item.mpino.prenom}` : "-"}
+                  </td>
+                  <td data-label="Date d’association">
+                    {item.created_at ? new Date(item.created_at).toLocaleDateString() : "-"}
+                  </td>
+                  <td data-label="Actions" className="action-btn-sampan-manags">
+                    <button className="btn-sampan-manags" onClick={() => openEdit(item)}>
+                      <FontAwesomeIcon icon={faEdit} />
+                    </button>
+                    <button className="btn-sampan-manags btn-danger" onClick={() => openDelete(item)}>
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
                   </td>
                 </tr>
-              ) : filtered.length > 0 ? (
-                filtered.map((SampanaManag) => (
-                    <tr key={SampanaManag.id}>
-                        <td data-label="Nom Sampana">{SampanaManag.sampana?.nom_samp}</td>
-                        <td data-label="Nom Mpino">
-                            {SampanaManag.mpino
-                                ? `${SampanaManag.mpino.nom} ${SampanaManag.mpino.prenom}`
-                                : "-"}
-                        </td>
-                        <td data-label="Date d’association">
-                            {SampanaManag.created_at
-                                ? new Date(SampanaManag.created_at).toLocaleDateString()
-                                : "-"}
-                        </td>
-                        <td data-label="Actions" className="action-btn-sampan-manags">
-                            <button className="btn-sampan-manags" onClick={() => openEdit(SampanaManag)}>
-                                <FontAwesomeIcon icon={faEdit} />
-                            </button>
-                            <button
-                                className="btn-sampan-manags btn-danger"
-                                onClick={() => openDelete(SampanaManag)}
-                            >
-                                <FontAwesomeIcon icon={faTrash} />
-                            </button>
-                        </td>
-                    </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" style={{ textAlign: "center", padding: "20px" }}>
+                  Aucun résultat trouvé pour "{searchTerm}"
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
 
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="4" style={{ textAlign: "center", padding: "20px" }}>
-                    Aucun résultat trouvé pour "{searchTerm}"
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-
-          {/* Pagination */}
-          <div className="pagination">
-            <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage <= 1}>
-              Précédent
+        {/* Pagination */}
+        <div className="pagination">
+          <button onClick={prevPage} disabled={currentPage <= 1}>
+            Précédent
+          </button>
+          {getPagesArray().map((page) => (
+            <button key={page} onClick={() => setFormData((p) => p + page)} className={currentPage === page ? "active" : ""}>
+              {page}
             </button>
-            {getPagesArray().map((page) => (
-              <button
-                key={page}
-                onClick={() => setCurrentPage(page)}
-                className={currentPage === page ? "active" : ""}
-              >
-                {page}
-              </button>
-            ))}
-            <button
-              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-              disabled={currentPage >= totalPages}
-            >
-              Suivant
-            </button>
-          </div>
+          ))}
+          <button onClick={nextPage} disabled={currentPage >= totalPages}>
+            Suivant
+          </button>
         </div>
+      </div>
+
       {/* Modal ajout / édition */}
       {(isOpen("add") || isOpen("edit")) && (
         <div className="modal-sampan-manags-overlay">
@@ -146,50 +139,58 @@ const SampanaManag = () => {
               </button>
             </div>
             <div className="modal-sampan-manags-body">
+              {/* Sampana */}
               <div className="form-sampan-manags-group">
                 <label>Nom Sampana</label>
-                <Select
-                    placeholder="Rechercher un Mpino..."
-                    options={sampanas.map((sampana) => ({
-                        value: sampana.id,
-                        label: `${sampana.nom_samp}`,
-                        }))}
-                        value={
-                        sampanas.map((sampana) => ({ value: sampana.id, label: `${sampana.nom_samp}` }))
-                            .find((opt) => opt.value === Number(formData.sampana_id)) || null
-                            }onChange={(selected) =>setFormData((prev) => ({
-                                          ...prev,
-                                          sampana_id: selected ? selected.value.toString() : "",
-                                      }))
-                                  }
-                                  isSearchable
-                    /> 
+                <AsyncSelect
+                  cacheOptions
+                  loadOptions={loadSampanas}
+                  defaultOptions
+                  placeholder="Rechercher un Sampana..."
+                  value={
+                    formData.sampana_id
+                      ? (() => {
+                        const s = sampanas.find((s) => s.id === Number(formData.sampana_id));
+                        return s ? { value: s.id, label: s.nom_samp } : { value: Number(formData.sampana_id), label: "Chargement..." };
+                      })()
+                      : null
+                  }
+                  onChange={(selected) =>
+                    setFormData((prev) => ({ ...prev, sampana_id: selected ? selected.value.toString() : "" }))
+                  }
+                />
               </div>
+
+              {/* Mpino */}
               <div className="form-sampan-manags-group">
                 <label>Nom Mpino</label>
-                 <Select
-                    placeholder="Rechercher un Mpino..."
-                    options={mpinos.map((mp) => ({
-                        value: mp.id,
-                         label: `${mp.nom} ${mp.prenom}`,
-                        }))}
-                        value={
-                        mpinos.map((mp) => ({ value: mp.id, label: `${mp.nom} ${mp.prenom}` }))
-                            .find((opt) => opt.value === Number(formData.mpino_id)) || null
-                            }onChange={(selected) =>setFormData((prev) => ({
-                                          ...prev,
-                                          mpino_id: selected ? selected.value.toString() : "",
-                                      }))
-                                  }
-                                  isSearchable
-                    />                            
+                <AsyncSelect
+                  cacheOptions
+                  loadOptions={loadMpinos}
+                  defaultOptions
+                  placeholder="Rechercher un Mpino..."
+                  value={
+                    formData.mpino_id
+                      ? (() => {
+                        const m = mpinos.find((m) => m.id === Number(formData.mpino_id));
+                        return m ? { value: m.id, label: `${m.nom} ${m.prenom}` } : { value: Number(formData.mpino_id), label: "Chargement..." };
+                      })()
+                      : null
+                  }
+                  onChange={(selected) =>
+                    setFormData((prev) => ({ ...prev, mpino_id: selected ? selected.value.toString() : "" }))
+                  }
+                />
               </div>
             </div>
             <div className="modal-sampan-manags-footer">
               <button className="cancel-sampan-manags-btn" onClick={closeModal}>
                 Annuler
               </button>
-              <button className="save-sampan-manags-btn" onClick={isOpen("add") ? addHandler : editHandler}>
+              <button
+                className="save-sampan-manags-btn"
+                onClick={isOpen("add") ? addHandler : editHandler}
+              >
                 {isOpen("add") ? "Associer" : "Enregistrer"}
               </button>
             </div>

@@ -5,6 +5,7 @@ import "../../styles/Fahatongavana.css";
 import ConfirmDeleteModal from "../../utils/ConfirmDeleteModal";
 import { FiUsers, FiCheckCircle, FiDollarSign, FiShoppingBag } from "react-icons/fi";
 import MpinoScanner from "../Gestion/MpinoScanner";
+import AsyncSelect from "react-select/async";
 const Fahatongavana = () => {
     const {
         filteredPresences,
@@ -22,7 +23,6 @@ const Fahatongavana = () => {
         isOpen,
         openModal,
         closeModal,
-        searchMpino,
         filteredMpinos,
         selectMpino,
         handleSearchMpino,
@@ -35,7 +35,12 @@ const Fahatongavana = () => {
         totalPaid,
         totalAmount,
         volas,
-        isDebouncing
+        loadVolas,
+        isDebouncing,
+        loadMpinos,
+        setFormData,
+        mpinos,
+        setCurrentPage
     } = useFahatongavana();
 
     return (
@@ -156,7 +161,7 @@ const Fahatongavana = () => {
                             <button
                                 key={p}
                                 className={p === currentPage ? "active" : ""}
-                                onClick={() => nextPage(p)}
+                                onClick={() => setCurrentPage(p)}
                             >
                                 {p}
                             </button>
@@ -179,24 +184,28 @@ const Fahatongavana = () => {
                         <form className="modalFahatongavana-form" onSubmit={handleSubmit}>
                             <div className="formFahatongavana-group">
                                 <label>ID Mpino *</label>
-                                <input
-                                    type="text"
-                                    name="mpino_id"
-                                    value={searchMpino}
-                                    onChange={handleSearchMpino}
-                                    required
-                                    placeholder="F.L.M"
+                                <AsyncSelect
+                                    cacheOptions
+                                    loadOptions={loadMpinos}
+                                    defaultOptions
+                                    placeholder="Rechercher un Mpino..."
+                                    value={
+                                        formData.mpino_id
+                                            ? (() => {
+                                                const m = mpinos.find(m => m.id.toString() === formData.mpino_id || m.id_unique === formData.mpino_id);
+                                                return m
+                                                    ? { value: m.id, label: `${m.id_unique} - ${m.nom} ${m.prenom}` }
+                                                    : { value: formData.mpino_id, label: "Chargement..." };
+                                            })()
+                                            : null
+                                    }
+
+                                    onChange={(selected) =>
+                                        setFormData(prev => ({ ...prev, mpino_id: selected ? selected.value.toString() : "" }))
+                                    }
                                 />
-                                {filteredMpinos.length > 0 && (
-                                    <ul className="autocomplete-list">
-                                        {filteredMpinos.map(m => (
-                                            <li key={m.id_unique} onClick={() => selectMpino(m)}>
-                                                {m.id_unique} - {m.nom} {m.prenom}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </div>  
+
+                            </div>
                             
 
                             <div className="formFahatongavana-group checkbox-group">
@@ -214,21 +223,27 @@ const Fahatongavana = () => {
                             {formData.has_paid && (
                                 <div className="formFahatongavana-group">
                                     <label>Vola *</label>
-                                    <select
-                                        name="amount"
-                                        value={formData.amount || ""}
-                                        onChange={handleInputChange}
-                                        required
-                                    >
-                                        <option value="">-- Misafidiana vola --</option>
-                                        {volas.map(v => (
-                                            <option key={v.id} value={v.id}>
-                                                {v.montant.toLocaleString()} Ar - {v.desc_vola}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    <AsyncSelect
+                                        cacheOptions
+                                        loadOptions={loadVolas}
+                                        defaultOptions
+                                        placeholder="Misafidiana vola..."
+                                        value={
+                                            formData.amount
+                                                ? (() => {
+                                                    const v = volas.find(v => v.id === Number(formData.amount));
+                                                    return v ? { value: v.id, label: `${v.montant.toLocaleString()} Ar - ${v.desc_vola}` }
+                                                        : { value: Number(formData.amount), label: "Chargement..." };
+                                                })()
+                                                : null
+                                        }
+                                        onChange={selected =>
+                                            setFormData(prev => ({ ...prev, amount: selected ? selected.value.toString() : "" }))
+                                        }
+                                    />
                                 </div>
                             )}
+
                             {/* Scanner QR code */}
                             <div className="scanner-section">
                                 {!formData.showScanner ? (

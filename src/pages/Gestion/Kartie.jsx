@@ -5,7 +5,7 @@ import { faEdit, faTrash, faTimes, faPlus } from "@fortawesome/free-solid-svg-ic
 import { FaSearch } from "react-icons/fa";
 import ConfirmDeleteModal from "../../utils/ConfirmDeleteModal.jsx";
 import { useKartie } from "../../hooks/useKartie.js";
-
+import AsyncSelect from "react-select/async";
 const Kartie = () => {
   const {
     filteredKartie,
@@ -28,7 +28,9 @@ const Kartie = () => {
     totalPages,
     getPagesArray,
     loading,
-    isDebouncing
+    isDebouncing,
+    loadFiangonanas,
+    setFormData
   } = useKartie();
 
   return (
@@ -52,7 +54,7 @@ const Kartie = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            {isDebouncing && <div className="small-loader"></div>}
+            {isDebouncing && <div className="smallKartie-loader"></div>}
           </div>
           <button className="filterKartie-btn">
             <i className="fas fa-filter"></i> Filtrer
@@ -84,14 +86,30 @@ const Kartie = () => {
                     <td data-label="Description">{k.desc_kar}</td>
                     <td data-label="Fiangonana">{k.fiang_nom}</td>
                     <td data-label="Photo">
-                      {k.fiang_pho ? (
-                        <img
-                          src={JSON.parse(k.fiang_pho).url}
-                          alt={k.fiang_nom}
-                          style={{ width: "30px", height: "30px", objectFit: "cover", borderRadius: "4px" }}
-                        />
-                      ) : "-"}
+                      {k.fiang_pho ? (() => {
+                        try {
+                          
+                          const parsed = JSON.parse(k.fiang_pho);
+                          return (
+                            <img
+                              src={parsed.url.startsWith("http") ? parsed.url : `${import.meta.env.VITE_API_BASE_URL}${parsed.url}`}
+                              alt={k.fiang_nom}
+                              style={{ width: "30px", height: "30px", objectFit: "cover", borderRadius: "4px" }}
+                            />
+                          );
+                        } catch {
+                          // Si ce n'est pas un JSON -> c'est probablement déjà une URL
+                          return (
+                            <img
+                              src={k.fiang_pho.startsWith("http") ? k.fiang_pho : `${import.meta.env.VITE_API_BASE_URL}${k.fiang_pho}`}
+                              alt={k.fiang_nom}
+                              style={{ width: "30px", height: "30px", objectFit: "cover", borderRadius: "4px" }}
+                            />
+                          );
+                        }
+                      })() : "-"}
                     </td>
+
                     <td data-label="Actions" className="action-btn-kartie">
                       <button className="btnKartie" onClick={() => openEdit(k)}>
                         <FontAwesomeIcon icon={faEdit} />
@@ -179,12 +197,19 @@ const Kartie = () => {
               </div>
               <div className="formKartie-group">
                 <label>Fiangonana</label>
-                <select name="fiang_id" value={formData.fiang_id} onChange={handleInputChange}>
-                  <option value="">-- Sélectionner --</option>
-                  {fiangonanas.map(f => (
-                    <option key={f.id} value={f.id.toString()}>{f.fiang_nom}</option>
-                  ))}
-                </select>
+                <AsyncSelect
+                  cacheOptions
+                  loadOptions={loadFiangonanas}
+                  defaultOptions
+                  placeholder="Rechercher une Fiangonana..."
+                  value={formData.fiang_id ? (() => {
+                    const f = fiangonanas.find(f => f.id === Number(formData.fiang_id));
+                    return f ? { value: f.id, label: f.fiang_nom } : { value: Number(formData.fiang_id), label: "Chargement..." };
+                  })() : null}
+                  onChange={(selected) =>
+                    setFormData(prev => ({ ...prev, fiang_id: selected ? selected.value.toString() : "" }))
+                  }
+                />
               </div>
             </div>
             <div className="modalKartie-footer">

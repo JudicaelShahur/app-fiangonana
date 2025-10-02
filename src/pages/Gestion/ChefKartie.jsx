@@ -1,5 +1,5 @@
 import React from "react";
-import Select from "react-select";
+import AsyncSelect from "react-select/async";
 import "../../styles/ChefKartie.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash, faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -31,7 +31,9 @@ const ChefKartie = () => {
         getPagesArray,
         loading,
         mpinos,
+        loadMpinos,
         karties,
+        loadKarties,
         setFormData,
         isDebouncing
     } = useChefKartie();
@@ -57,7 +59,7 @@ const ChefKartie = () => {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                        {isDebouncing && <div className="small-loader"></div>}
+                        {isDebouncing && <div className="smallKartie-loader"></div>}
                     </div>
                     <button className="filterChefKartie-btn">
                         <i className="fas fa-filter"></i> Filtrer
@@ -147,49 +149,42 @@ const ChefKartie = () => {
                                 <div className="formChefKartie-group">
                                     <div className="form-mpitondra-group">
                                         <label>Mpino</label>
-                                        <Select
+                                        <AsyncSelect
+                                            cacheOptions
+                                            loadOptions={loadMpinos}
+                                            defaultOptions
                                             placeholder="Rechercher un Mpino..."
-                                            options={mpinos.map((mp) => ({
-                                                value: mp.id,
-                                                label: `${mp.nom} ${mp.prenom}`,
-                                            }))}
                                             value={
-                                                mpinos
-                                                    .map((mp) => ({ value: mp.id, label: `${mp.nom} ${mp.prenom}` }))
-                                                    .find((opt) => opt.value === Number(formData.id_mpin)) || null
+                                                formData.id_mpin
+                                                    ? (() => {
+                                                        const m = mpinos.find((m) => m.id === Number(formData.id_mpin));
+                                                        return m ? { value: m.id, label: `${m.nom} ${m.prenom}` } : { value: Number(formData.id_mpin), label: "Chargement..." };
+                                                    })()
+                                                    : null
                                             }
                                             onChange={(selected) =>
-                                                setFormData((prev) => ({
-                                                    ...prev,
-                                                    id_mpin: selected ? selected.value.toString() : "",
-                                                }))
+                                                setFormData((prev) => ({ ...prev, id_mpin: selected ? selected.value.toString() : "" }))
                                             }
-                                            isSearchable
                                         />
                                     </div>
                                 </div>
                                 <div className="formChefKartie-group">
                                     <label>Kartie *</label>
-                                    <Select
-                                        placeholder="Rechercher un Mpino..."
-                                        options={karties.map((k) => ({
-                                            value: k.id,
-                                            label: `${k.nom_kar}-${k.fiang_nom}`,
-                                        }))}
-                                        value={
-                                            karties
-                                                .map((k) => ({ value: k.id, label: `${k.nom_kar}-${k.fiang_nom}` }))
-                                                .find((opt) => opt.value === Number(formData.id_kar)) || null
+                                    <AsyncSelect
+                                        cacheOptions
+                                        loadOptions={loadKarties}
+                                        defaultOptions
+                                        placeholder="Rechercher un Kartie..."
+                                        value={formData.id_kar ? (() => {
+                                            const k = karties.find(k => k.id === Number(formData.id_kar));
+                                            return k ? { value: k.id, label: `${k.nom_kar}-${k.fiang_nom}` } : { value: Number(formData.id_kar), label: "Chargement..." };
+                                        })() : null}
+                                        onChange={selected =>
+                                            setFormData(prev => ({ ...prev, id_kar: selected ? selected.value.toString() : "" }))
                                         }
-                                        onChange={(selected) =>
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                id_kar: selected ? selected.value.toString() : "",
-                                            }))
-                                        }
-                                        isSearchable
                                     />
                                 </div>
+
                                 <div className="formChefKartie-group">
                                     <label>Année Kar *</label>
                                     <input type="number" name="annee_kar" value={formData.annee_kar} onChange={handleInputChange} required />

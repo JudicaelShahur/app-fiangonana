@@ -1,5 +1,5 @@
 import React from "react";
-import Select from "react-select";
+import AsyncSelect from "react-select/async";
 import "../../styles/Mpitondra.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash, faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -30,6 +30,8 @@ const Mpitondra = () => {
         loading,
         fiangonanas,
         mpinos,
+        loadMpinos,
+        loadFiangonanas,
         setFormData,
         isDebouncing
     } = useMpitondra();
@@ -55,8 +57,11 @@ const Mpitondra = () => {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                        {isDebouncing && <div className="small-loader"></div>}
+                        {isDebouncing && <div className="small-mpitondra-loader"></div>}
                     </div>
+                    <button className="filter-mpitondra-btn">
+                        <i className="fas fa-filter"></i> Filtrer
+                    </button>
                 </div>
 
                 {/* Tableau */}
@@ -169,25 +174,24 @@ const Mpitondra = () => {
                         <div className="modal-mpitondra-body">
                            <div className="form-mpitondra-group">
                                 <label>Mpino</label>
-                                <Select
+                                <AsyncSelect
+                                    cacheOptions
+                                    loadOptions={loadMpinos}
+                                    defaultOptions
                                     placeholder="Rechercher un Mpino..."
-                                    options={mpinos.map((mp) => ({
-                                        value: mp.id,
-                                        label: `${mp.nom} ${mp.prenom}`,
-                                    }))}
                                     value={
-                                        mpinos
-                                            .map((mp) => ({ value: mp.id, label: `${mp.nom} ${mp.prenom}` }))
-                                            .find((opt) => opt.value === Number(formData.id_mpin)) || null
+                                        formData.id_mpin
+                                            ? (() => {
+                                                const m = mpinos.find((m) => m.id === Number(formData.id_mpin));
+                                                return m ? { value: m.id, label: `${m.nom} ${m.prenom}` } : { value: Number(formData.id_mpin), label: "Chargement..." };
+                                            })()
+                                            : null
                                     }
                                     onChange={(selected) =>
-                                        setFormData((prev) => ({
-                                            ...prev,
-                                            id_mpin: selected ? selected.value.toString() : "",
-                                        }))
+                                        setFormData((prev) => ({ ...prev, id_mpin: selected ? selected.value.toString() : "" }))
                                     }
-                                    isSearchable
                                 />
+                            
                             </div>
 
                             <div className="form-mpitondra-group">
@@ -222,19 +226,21 @@ const Mpitondra = () => {
                             </div>
                             <div className="form-mpitondra-group">
                                 <label>Fiangonana</label>
-                                <select
-                                    name="id_fiang"
-                                    value={formData.id_fiang}
-                                    onChange={handleInputChange}
-                                >
-                                    <option value="">-- Sélectionner une Fiangonana --</option>
-                                    {fiangonanas.map((f) => (
-                                        <option key={f.id} value={f.id}>
-                                            {f.fiang_nom}
-                                        </option>
-                                    ))}
-                                </select>
+                                <AsyncSelect
+                                    cacheOptions
+                                    loadOptions={loadFiangonanas}
+                                    defaultOptions
+                                    placeholder="Rechercher une Fiangonana..."
+                                    value={formData.id_fiang ? (() => {
+                                        const f = fiangonanas.find(f => f.id === Number(formData.id_fiang));
+                                        return f ? { value: f.id, label: f.fiang_nom } : { value: Number(formData.id_fiang), label: "Chargement..." };
+                                    })() : null}
+                                    onChange={(selected) =>
+                                        setFormData(prev => ({ ...prev, id_fiang: selected ? selected.value.toString() : "" }))
+                                    }
+                                />
                             </div>
+
                         </div>
                         <div className="modal-mpitondra-footer">
                             <button className="cancel-mpitondra-btn" onClick={closeModal}>

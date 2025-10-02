@@ -140,7 +140,7 @@
 
 .dashboard-card-value {
     bottom: 20px;
-    right: 20px;
+    right: 60px;
     font-size: 1.5rem;
     color: var(--accent-color);
 }
@@ -275,7 +275,109 @@
 .dashboard-activity-item[data-action-type="Suppression"] .activity-header em {
     color: #c92636;
 }
+.searchDashboard-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding: 15px;
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    flex-wrap: wrap;
+    gap: 55px;
+}
+.searchDashboard-input {
+    position: relative;
+    flex-grow: 1;
+}
 
+.searchDashboard-input .searchDashboard-icon {
+    position: absolute;
+    top: 49%;
+    left: 15px;
+    transform: translateY(-50%);
+    color: var(--secondary-color);
+    font-size: 1rem;
+    pointer-events: none;
+}
+.smallDashboard-loader {
+    position: absolute;
+    right: -20px;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ccc;
+    border-top-color: #333;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    top: 30%;
+
+}
+
+.searchDashboard-input input {
+    width: 100%;
+    padding: 14px 0px 15px 35px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.searchDashboard-input input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 10px rgba(52, 152, 219, 0.15);
+}
+
+.filterDashboard-btn {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 16px 20px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.filterDashboard-btn:hover {
+    background-color: var(--hover-color);
+    transform: translateY(-2px);
+}
+.paginationDashboard {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0;
+
+}
+
+.paginationDashboard button {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 10px 14px;
+    border-radius: var(--border-radius);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.paginationDashboard button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.paginationDashboard button:hover:not(:disabled) {
+    background-color: var(--primary-color);
+    color: white;
+}
 
 @media (max-width: 992px) {
     .dashboard-container {
@@ -312,5 +414,18 @@
   .activity-date {
     text-align: left;
   }
+   .searchDashboard-bar {
+       flex-direction: row;
+       gap: 50px;
+   }
+
+   .searchDashboard-input {
+       flex: 1;
+   }
+
+   .filterDashboard-btn {
+       flex-shrink: 0;
+       padding: 15px 15px;
+   }
 
 }

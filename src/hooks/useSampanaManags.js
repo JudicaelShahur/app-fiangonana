@@ -10,37 +10,40 @@ import {
 import { afficherToastSuccès, afficherToastErreur, getBackendMessage } from "../utils/toast.js";
 import { listeMpinos } from "../services/mpinoService.js";
 import { listeSampanas } from "../services/sampanaService.js";
+import debounce from "lodash.debounce";
 
 export const useSampanaManag = () => {
   const { modal, openModal, closeModal, isOpen } = useModal();
 
-  // --- Pagination ---
-  const [currentPage, setCurrentPage] = useState(() => {
-    const saved = localStorage.getItem("sampanaManagPage");
-    return saved ? Number(saved) : 1;
-  });
-  useEffect(() => {
-    localStorage.setItem("sampanaManagPage", currentPage);
-  }, [currentPage]);
-
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
-  // --- States ---
   const [sampanaManags, setSampanaManags] = useState([]);
-  const [stats, setStats] = useState([]); // pour countMpinos
+  const [stats, setStats] = useState([]);
   const [formData, setFormData] = useState({ sampana_id: "", mpino_id: "" });
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
   const [loading, setLoading] = useState(false);
+  const [isDebouncing, setIsDebouncing] = useState(false);
+
+  // --- Debounce recherche ---
+  useEffect(() => {
+    setCurrentPage(1);
+    setIsDebouncing(true);
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setIsDebouncing(false);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
 
   // --- Fetch SampanaManags ---
-  const fetchSampanaManags = async (page = 1) => {
+  const fetchSampanaManags = async (page = 1, search = "") => {
     try {
       setLoading(true);
-      const res = await listeSampanaManags(page);
-        console.log("donne sampana", res);
-      const data = Array.isArray(res.results.data) ? res.results.data : [];
+      const res = await listeSampanaManags(page, search);
+      const data = Array.isArray(res.results?.data) ? res.results.data : [];
       setSampanaManags(data);
-      setTotalPages(res.results.last_page || 1);
+      setTotalPages(res.results?.last_page || 1);
     } catch (error) {
       afficherToastErreur(getBackendMessage(error));
     } finally {
@@ -59,29 +62,56 @@ export const useSampanaManag = () => {
   };
 
   useEffect(() => {
-    fetchSampanaManags(currentPage);
+    fetchSampanaManags(currentPage, debouncedSearch);
     fetchStats();
-  }, [currentPage]);
+  }, [currentPage, debouncedSearch]);
 
-    const [mpinos, setMpinos] = useState([]);
-    const [sampanas, setSampanas] = useState([]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const resMpino = await listeMpinos();
-                console.log('donne mpino', resMpino);
-                setMpinos(resMpino.results?.data || []);
+  const [mpinos, setMpinos] = useState([]);
+  const [sampanas, setSampanas] = useState([]);
 
-                const resFiang = await listeSampanas();
-                console.log('donne sampana', resFiang);
-                setSampanas(resFiang.results?.data || []);
-            } catch (error) {
-                afficherToastErreur(getBackendMessage(error));
-            }
-        };
-        fetchData();
-    }, []);
+  // --- Async loaders ---
+  const loadMpinos = debounce(async (inputValue, callback) => {
+    try {
+      const res = await listeMpinos(1, 10, inputValue);
+      const options = res.results?.data?.map((mp) => ({
+        value: mp.id,
+        label: `${mp.nom} ${mp.prenom}`,
+      })) || [];
+
+      // Mitahiry ny mpinos efa nalaina
+      setMpinos((prev) => {
+        const ids = new Set(prev.map(p => p.id));
+        const newMpinos = res.results?.data?.filter(p => !ids.has(p.id)) || [];
+        return [...prev, ...newMpinos];
+      });
+
+      callback(options);
+    } catch {
+      callback([]);
+    }
+  }, 500);
+  const loadSampanas = debounce(async (inputValue, callback) => {
+    try {
+      const res = await listeSampanas(1, 10, inputValue);
+      const options = res.results?.data?.map((s) => ({
+        value: s.id,
+        label: s.nom_samp,
+      })) || [];
+
+      setSampanas((prev) => {
+        const ids = new Set(prev.map(p => p.id));
+        const newSampanas = res.results?.data?.filter(p => !ids.has(p.id)) || [];
+        return [...prev, ...newSampanas];
+      });
+
+      callback(options);
+    } catch {
+      callback([]);
+    }
+  }, 500);
+
+
   // --- Handlers ---
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -128,35 +158,39 @@ export const useSampanaManag = () => {
   };
 
   const openEdit = (item) => {
-    openModal("edit", item);
     setFormData({
       sampana_id: item.sampana_id?.toString() || "",
       mpino_id: item.mpino_id?.toString() || "",
     });
+    openModal("edit", item);
   };
 
- const openDelete = (item) => {
-  openModal("delete", {
-    id: item.id,
-    mpinoNom: `${item.mpino?.nom || ""} ${item.mpino?.prenom || ""}`.trim(),
-    sampanaNom: item.sampana?.nom_samp || "",
-  });
-};
-
+  const openDelete = (item) => {
+    openModal("delete", {
+      id: item.id,
+      mpinoNom: `${item.mpino?.nom || ""} ${item.mpino?.prenom || ""}`.trim(),
+      sampanaNom: item.sampana?.nom_samp || "",
+    });
+  };
 
   // --- Pagination utils ---
   const nextPage = () => currentPage < totalPages && setCurrentPage((p) => p + 1);
   const prevPage = () => currentPage > 1 && setCurrentPage((p) => p - 1);
   const getPagesArray = () => Array.from({ length: totalPages }, (_, i) => i + 1);
 
-  // --- Filtrage simple ---
-  const filtered = sampanaManags.filter(
-  (s) =>
-    (s.sampana?.nom_samp || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (s.mpino?.nom || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (s.mpino?.prenom || "").toLowerCase().includes(searchTerm.toLowerCase())
-);
+  // --- Filtrage client-side simple ---
+  const normalize = (str) =>
+    str ? str.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
 
+  const filtered = sampanaManags.filter((s) => {
+    const search = normalize(debouncedSearch);
+    return (
+      normalize(s.sampana?.nom_samp).includes(search) ||
+      normalize(s.mpino?.nom).includes(search) ||
+      normalize(s.mpino?.prenom).includes(search) ||
+      normalize(new Date(s.created_at).toLocaleString()).includes(search)
+    );
+  });
 
   return {
     sampanaManags,
@@ -183,6 +217,9 @@ export const useSampanaManag = () => {
     getPagesArray,
     loading,
     setFormData,
+    loadMpinos,
+    loadSampanas,
+    isDebouncing,
     mpinos,
     sampanas
   };

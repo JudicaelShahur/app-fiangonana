@@ -3,7 +3,8 @@ import useModal from "./useModal.js";
 import {listeMpitondra,ajoutMpitondra,modifierMpitondra,supprimerMpitondra,} from "../services/mpitondraService.js";
 import {afficherToastSuccès,afficherToastErreur,getBackendMessage,} from "../utils/toast.js";
 import { listeMpinos } from "../services/mpinoService";
-import {listeFiangonana} from "../services/fiangonanaService";
+import { listeFiangonana } from "../services/fiangonanaService";
+import debounce from "lodash.debounce";
 export const useMpitondra = () => {
     const { modal, openModal, closeModal, isOpen } = useModal();
 
@@ -54,25 +55,51 @@ export const useMpitondra = () => {
         fetchMpitondra(currentPage,debouncedSearch);
     }, [currentPage, debouncedSearch]);
 
-    const [mpinos, setMpinos] = useState([]);
+  
     const [fiangonanas, setFiangonanas] = useState([]);
+    const [mpinos, setMpinos] = useState([]);
+    // --- Async loaders ---
+    const loadMpinos = debounce(async (inputValue, callback) => {
+        try {
+            const res = await listeMpinos(1, 10, inputValue);
+            const options = res.results?.data?.map((mp) => ({
+                value: mp.id,
+                label: `${mp.nom} ${mp.prenom}`,
+            })) || [];
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const resMpino = await listeMpinos();
-                console.log('donne mpino', resMpino);
-                setMpinos(resMpino.results?.data || []);
+            // Mitahiry ny mpinos efa nalaina
+            setMpinos((prev) => {
+                const ids = new Set(prev.map(p => p.id));
+                const newMpinos = res.results?.data?.filter(p => !ids.has(p.id)) || [];
+                return [...prev, ...newMpinos];
+            });
 
-                const resFiang = await listeFiangonana();
-                console.log('donne fiangonana', resFiang);
-                setFiangonanas(resFiang.results?.data || []);
-            } catch (error) {
-                afficherToastErreur(getBackendMessage(error));
-            }
-        };
-        fetchData();
-    }, []);
+            callback(options);
+        } catch {
+            callback([]);
+        }
+    }, 500);
+
+    const loadFiangonanas = debounce(async (inputValue, callback) => {
+        try {
+            const res = await listeFiangonana(1, 10, inputValue); // Raha ny API-nao azo atao search
+            const options = res.results?.data?.map(f => ({
+                value: f.id,
+                label: f.fiang_nom,
+            })) || [];
+
+            // Mitahiry efa nalaina
+            setFiangonanas(prev => {
+                const ids = new Set(prev.map(p => p.id));
+                const newFiang = res.results?.data?.filter(f => !ids.has(f.id)) || [];
+                return [...prev, ...newFiang];
+            });
+
+            callback(options);
+        } catch {
+            callback([]);
+        }
+    }, 500);
 
     // --- Form Handlers ---
     const handleInputChange = (e) => {
@@ -191,6 +218,8 @@ export const useMpitondra = () => {
         loading,
         fiangonanas,
         mpinos,
+        loadMpinos,
+        loadFiangonanas,
         setFormData,
         isDebouncing
     };

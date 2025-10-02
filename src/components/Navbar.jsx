@@ -8,6 +8,7 @@ import useGererUser from "../hooks/useGererUser";
 import { useTheme } from "../context/ThemeContext";
 import logoflm from "../assets/flmLogo.png";
 import "./../styles/Navbar.css";
+import { confirm } from "../utils/ConfirmLogoutModal";
 
 export default function Navbar() {
     const [menuActive, setMenuActive] = useState(false);
@@ -120,7 +121,14 @@ export default function Navbar() {
                 )}
 
                 <li className="navbar-item">
-                    <a onClick={logout} className="navbar-link">
+                    <a
+                        onClick={async () => {
+                            const ok = await confirm("Voulez-vous vraiment vous déconnecter ?");
+                            if (ok) logout();
+                        }}
+                        className="navbar-link"
+                        style={{ cursor: "pointer" }}
+                    >
                         <FaSignOutAlt /> Déconnexion
                     </a>
                 </li>

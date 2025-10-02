@@ -42,10 +42,24 @@ const useFiangonana = () => {
     return () => clearTimeout(handler);
   }, [fiangonanaTerm]);
 
-  // Persist current page
-  useEffect(() => {
-    localStorage.setItem("currentFiangonanaPage", currentPage);
-  }, [currentPage]);
+  const parsePhoto = (pho) => {
+    if (!pho) return "";
+    try {
+      // Cas 1: c'est une string JSON
+      if (typeof pho === "string") {
+        const parsed = JSON.parse(pho);
+        return BASE_URL + parsed.url;
+      }
+      // Cas 2: c'est déjà un objet (grâce à $casts dans Laravel)
+      if (typeof pho === "object" && pho.url) {
+        return BASE_URL + pho.url;
+      }
+      return "";
+    } catch (e) {
+      console.error("Erreur parsing photo:", e);
+      return "";
+    }
+  };
 
   // Fetch fiangonanas
   const fetchFiangonanas = async (page = 1, search = "") => {
@@ -56,7 +70,7 @@ const useFiangonana = () => {
       setFiangonanas(data.map(f => ({
         id: f.id,
         name: f.fiang_nom,
-        photo: f.fiang_pho ? JSON.parse(f.fiang_pho).url : "",
+        photo: parsePhoto(f.fiang_pho),
         email: f.fiang_mail,
         phone: f.fiang_num,
         admin: f.admin_nom || "",
@@ -93,7 +107,7 @@ const useFiangonana = () => {
         const newFiangonana = {
           id: response.id,
           name: response.fiang_nom,
-          photo: response.fiang_pho ? JSON.parse(response.fiang_pho).url : "",
+          photo: parsePhoto(response.fiang_pho),
           email: response.fiang_mail,
           phone: response.fiang_num,
           admin: response.admin_nom || "",
@@ -106,7 +120,7 @@ const useFiangonana = () => {
         const updated = {
           id: response.id,
           name: response.fiang_nom,
-          photo: response.fiang_pho ? JSON.parse(response.fiang_pho).url : "",
+          photo: parsePhoto(response.fiang_pho),
           email: response.fiang_mail,
           phone: response.fiang_num,
           admin: response.admin_nom || "",

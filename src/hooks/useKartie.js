@@ -5,18 +5,15 @@ import {
   ajoutKartie,
   modifierKartie,
   supprimerKartie,
-  listeFiangonanas
 } from "../services/kartieService.js";
+import { listeFiangonana } from "../services/fiangonanaService.js";
+import debounce from "lodash.debounce";
 import { afficherToastSuccès, afficherToastErreur, getBackendMessage } from "../utils/toast.js";
-
 export const useKartie = () => {
   const { modal, openModal, closeModal, isOpen } = useModal();
 
   // --- Current page persistent ---
-  const [currentPage, setCurrentPage] = useState(() => {
-    const savedPage = localStorage.getItem("currentPage");
-    return savedPage ? Number(savedPage) : 1;
-  });
+  const [currentPage, setCurrentPage] = useState(() => {});
 
   useEffect(() => {
     localStorage.setItem("currentPage", currentPage);
@@ -58,22 +55,34 @@ export const useKartie = () => {
     }
   };
 
-  // --- Fetch Fiangonanas ---
-  const fetchFiangonanas = async () => {
-    try {
-      const fList = await listeFiangonanas();
-      setFiangonanas(Array.isArray(fList) ? fList : []);
-    } catch (error) {
-      afficherToastErreur(getBackendMessage(error));
-    }
-  };
-
   // --- Effet principal ---
   useEffect(() => {
     fetchKartie(currentPage, debouncedSearch);
-    fetchFiangonanas();
   }, [currentPage, debouncedSearch]);
 
+  // --- Fetch Fiangonanas ---
+  const loadFiangonanas = debounce(async (inputValue, callback) => {
+    try {
+      const res = await listeFiangonana(1, 10, inputValue); // Raha ny API-nao azo atao search
+      const options = res.results?.data?.map(f => ({
+        value: f.id,
+        label: f.fiang_nom,
+      })) || [];
+
+      // Mitahiry efa nalaina
+      setFiangonanas(prev => {
+        const ids = new Set(prev.map(p => p.id));
+        const newFiang = res.results?.data?.filter(f => !ids.has(f.id)) || [];
+        return [...prev, ...newFiang];
+      });
+
+      callback(options);
+    } catch {
+      callback([]);
+    }
+  }, 500);
+
+ 
   // --- Form Handlers ---
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -178,6 +187,8 @@ export const useKartie = () => {
     nextPage,
     prevPage,
     getPagesArray,
-    loading
+    loadFiangonanas,
+    loading,
+    setFormData
   };
 };

@@ -103,6 +103,11 @@
     font-size: 1rem;
     box-sizing: border-box;
 }
+.searchMpino-input input:focus{
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 10px rgba(52, 152, 219, 0.15);
+}
 
 .searchMpino-stats {
     color: var(--secondary-color);
@@ -498,7 +503,6 @@
 
     .mpino-grid {
         grid-template-columns: 1fr;
-        /* Une colonne */
         gap: 1rem;
     }
 

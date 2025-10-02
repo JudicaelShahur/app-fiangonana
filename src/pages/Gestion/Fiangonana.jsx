@@ -49,8 +49,11 @@ const Fiangonana = () => {
             value={fiangonanaTerm}
             onChange={handleSearch}
           />
-          {isDebouncing && <div className="small-loader"></div>}
+          {isDebouncing && <div className="smallFiangonana-loader"></div>}
         </div>
+        <button className="filterFiangonana-btn">
+          <i className="fas fa-filter"></i> Filtrer
+        </button>
       </div>
 
       <div className="fiangonana-list">

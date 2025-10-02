@@ -12,7 +12,7 @@ import {
   getBackendMessage,
 } from "../utils/toast.js";
 import { listeMpinos } from "../services/mpinoService.js";
-
+import debounce from "lodash.debounce";
 export const useKomity = () => {
   const { modal, openModal, closeModal, isOpen } = useModal();
 
@@ -55,20 +55,33 @@ export const useKomity = () => {
     }
   };
 
-  // --- Fetch Mpinos ---
-  const fetchMpinos = async () => {
-    try {
-      const resMpino = await listeMpinos();
-      setMpinos(resMpino.results?.data || []);
-    } catch (error) {
-      afficherToastErreur(getBackendMessage(error));
-    }
-  };
-
   useEffect(() => {
     fetchKomities(currentPage, debouncedSearch);
-    fetchMpinos();
+
   }, [currentPage, debouncedSearch]);
+
+  // --- Async loaders ---
+  const loadMpinos = debounce(async (inputValue, callback) => {
+    try {
+      const res = await listeMpinos(1, 10, inputValue);
+      const options = res.results?.data?.map((mp) => ({
+        value: mp.id,
+        label: `${mp.nom} ${mp.prenom}`,
+      })) || [];
+
+      // Mitahiry ny mpinos efa nalaina
+      setMpinos((prev) => {
+        const ids = new Set(prev.map(p => p.id));
+        const newMpinos = res.results?.data?.filter(p => !ids.has(p.id)) || [];
+        return [...prev, ...newMpinos];
+      });
+
+      callback(options);
+    } catch {
+      callback([]);
+    }
+  }, 500);
+
 
   // --- Form Handlers ---
   const handleInputChange = (e) => {
@@ -169,6 +182,7 @@ export const useKomity = () => {
     deleteKomityHandler,
     loading,
     mpinos,
+    loadMpinos,
     setFormData,
     currentPage,
     setCurrentPage,
