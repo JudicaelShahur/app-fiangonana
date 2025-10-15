@@ -60,8 +60,11 @@ const SampanaManag = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          {isDebouncing && <div className="small-loader"></div>}
+          {isDebouncing && <div className="small-sampan-manags-loader"></div>}
         </div>
+        <button className="filter-sampan-manags-btn">
+          <i className="fas fa-filter"></i> Filtrer
+        </button>
       </div>
 
       {/* Table */}

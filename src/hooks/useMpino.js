@@ -1,12 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import useModal from "./useModal";
 import {
   listeMpinos,
   ajoutMpino,
   modifierMpino,
   supprimerMpino,
-  telechargerPdfMpino
+  telechargerPdfMpino,
+  importerMpinos
 } from "../services/mpinoService";
+import { listeFiangonana } from "../services/fiangonanaService";
 import { listeKartie } from "../services/kartieService";
 import { afficherToastSuccès, afficherToastErreur } from "../utils/toast";
 import debounce from "lodash.debounce";
@@ -14,13 +16,24 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const useMpino = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [perPage] = useState(10);
+  const [perPage] = useState(15);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
   const [mpinoList, setMpinoList] = useState([]);
+  const [file, setFile] = useState(null);
+  const [isImporting, setIsImporting] = useState(false);
+  const fileInputRef = useRef(null);
   const [kartieList, setKartieList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  //  Filtres
+  const [fiangonanaList, setFiangonanaList] = useState([]);
+  const [selectedFiangonana, setSelectedFiangonana] = useState(null);
+  const [selectedSexe, setSelectedSexe] = useState("");
+  const [selectedAdresse, setSelectedAdresse] = useState("");
+  const [selectedMpandray, setSelectedMpandray] = useState(null);
+  const [selectedManambady, setSelectedManambady] = useState(null);
+
   const [formData, setFormData] = useState({
     nom_mpin: "",
     prenom_mpin: "",
@@ -59,12 +72,35 @@ export const useMpino = () => {
     return () => clearTimeout(handler);
   }, [searchTerm]);
 
+  useEffect(() => {
+    const fetchFiangonana = async () => {
+      try {
+        const res = await listeFiangonana(1, 100);
+        setFiangonanaList(res.results?.data || []);
+        console.log("ity donne fiangonana", res);
+      } catch (error) {
+        console.error("Erreur lors du chargement des Fiangonana :", error);
+      }
+    };
+    fetchFiangonana();
+  }, []);
+
   // Charger Mpino + Kartie
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await listeMpinos(currentPage, perPage, debouncedSearch);
+        const res = await listeMpinos({
+          page: currentPage,
+          per_page: perPage,
+          search: debouncedSearch,
+          fiangonana_id: selectedFiangonana,
+          sexe: selectedSexe,
+          adresse: selectedAdresse,
+          mpandray: selectedMpandray,
+          manambady: selectedManambady,
+        });
+
         const list = res.results?.data.map(mpino => {
           let photoObj = null;
           try { photoObj = mpino.photo ? JSON.parse(mpino.photo) : null; } catch { }
@@ -72,6 +108,7 @@ export const useMpino = () => {
           try { qrCodeObj = mpino.qrcode ? JSON.parse(mpino.qrcode) : null; } catch { }
           return { ...mpino, photo: photoObj, qrcode: qrCodeObj };
         });
+
         setMpinoList(list);
         setTotalPages(res.results?.last_page || 1);
       } catch (error) {
@@ -82,8 +119,19 @@ export const useMpino = () => {
         setLoading(false);
       }
     };
+
     fetchData();
-  }, [currentPage, perPage, debouncedSearch]);
+  }, [
+    currentPage,
+    perPage,
+    debouncedSearch,
+    selectedFiangonana,
+    selectedSexe,
+    selectedAdresse,
+    selectedMpandray,
+    selectedManambady,
+  ]);
+
 
   const [karties, setKarties] = useState([]);
   const loadKarties = debounce(async (inputValue, callback) => {
@@ -129,8 +177,6 @@ export const useMpino = () => {
       normalize(mpino.kartie_nom || mpino.kartie || "").includes(search) 
     );
   });
-
-
 
   //  Inputs
   const handleInputChange = (e) => {
@@ -186,6 +232,33 @@ export const useMpino = () => {
       setIsSubmitting(false);
     }
   };
+  const handleImportMpinos = async (file) => {
+    if (!file) {
+      afficherToastErreur("Veuillez sélectionner un fichier à importer.");
+      return;
+    }
+
+    setIsImporting(true);
+    try {
+      const res = await importerMpinos(file);
+      // Si l'API renvoie la liste ou un message de succès
+      afficherToastSuccès(res.message || "Importation réussie !");
+      //Vider le fichier et l'input après succès
+      setFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      // Recharge la liste après importation
+      const newList = await listeMpinos(currentPage, perPage, searchTerm);
+      setMpinoList(newList.results?.data || []);
+    } catch (error) {
+      console.error("Erreur d'importation :", error);
+      afficherToastErreur(error.message || "Erreur lors de l'importation du fichier.");
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
 
   const handleEditMpino = async () => {
     if (!validateForm()) return;
@@ -245,9 +318,9 @@ export const useMpino = () => {
     setFormData({
       nom_mpin: mpino.nom_mpin || mpino.nom || "",
       prenom_mpin: mpino.prenom_mpin || mpino.prenom || "",
-      naiss_mpin: mpino.naiss_mpin || "",
+      naiss_mpin: mpino.naiss_mpin ? mpino.naiss_mpin.slice(0, 10) : "",
       is_vitaBatisa: mpino.is_vitaBatisa || false,
-      date_batisa: mpino.date_batisa || "",
+      date_batisa: mpino.date_batisa ? mpino.date_batisa.slice(0, 10) : "",
       num_mpin: mpino.num_mpin || mpino.numero || "",
       sexe_mpin: mpino.sexe_mpin || mpino.sexe || "",
       talenta_mpin: mpino.talenta_mpin || mpino.talenta || "",
@@ -301,6 +374,11 @@ const downloadFiche = async (mpino) => {
     searchTerm, setSearchTerm, isDebouncing , formData, formErrors, isSubmitting, photoPreview,
     modal, isOpen, handleInputChange, handleFileChange, handleDrop, handleDragOver,
     handleAddMpino, handleEditMpino, handleDeleteMpino, openAdd, openEdit, openDelete,
-    showQrCode, downloadFiche, filteredMpino, closeModal, karties, loadKarties, setFormData
+    showQrCode, downloadFiche, filteredMpino, closeModal, karties, loadKarties, setFormData, handleImportMpinos,
+    isImporting, fileInputRef, selectedFiangonana, setSelectedFiangonana,
+    selectedSexe, setSelectedSexe,
+    selectedAdresse, setSelectedAdresse,
+    selectedMpandray, setSelectedMpandray,
+    selectedManambady, setSelectedManambady, fiangonanaList
   };
 };

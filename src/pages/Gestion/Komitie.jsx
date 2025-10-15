@@ -55,8 +55,11 @@ const Komitie = () => {
           <span className="search-mpitondra-icon">
             <i className="fas fa-search"></i>
           </span>
-          {isDebouncing && <div className="small-loader"></div>}
+          {isDebouncing && <div className="small-komitie-loader"></div>}
         </div>
+        <button className="filter-komitie-btn">
+          <i className="fas fa-filter"></i> Filtrer
+        </button>
       </div>
 
       {/* Table */}

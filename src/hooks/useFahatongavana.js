@@ -9,23 +9,23 @@ import debounce from "lodash.debounce";
 export const useFahatongavana = () => {
     const { modal, openModal, closeModal, isOpen } = useModal();
 
-    // --- Pagination / Data ---
+    // Pagination / Data
     const [presences, setPresences] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // --- Form & Modal ---
+    // Form & Modal
     const [formData, setFormData] = useState({ mpino_id: "", has_paid: false, amount: null });
     const [currentPresence, setCurrentPresence] = useState(null);
 
-    // --- Search / Filter ---
+    // Search / Filter
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedDate, setSelectedDate] = useState(todayLocal());
     const [filteredPresences, setFilteredPresences] = useState([]);
 
-    // --- Mpinos (autocomplete) ---
+    // Mpinos (autocomplete)
     const [mpinos, setMpinos] = useState([]);
     const [searchMpino, setSearchMpino] = useState("");
     const [filteredMpinos, setFilteredMpinos] = useState([]);
@@ -33,7 +33,7 @@ export const useFahatongavana = () => {
 
     const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
     const [isDebouncing, setIsDebouncing] = useState(false);
-    // --- Debounce recherche --- //
+    // Debounce recherche //
     useEffect(() => {
       
         setIsDebouncing(true);
@@ -42,8 +42,8 @@ export const useFahatongavana = () => {
         setIsDebouncing(false);
         }, 1000); return () => clearTimeout(handler);
     }, [searchTerm]);
-    // --- Fetch Presences ---
-    // --- Fetch Presences ---
+    // Fetch Presences
+    // Fetch Presences
     const fetchPresences = async (page = 1, search = "", date = selectedDate) => {
         try {
             setLoading(true);
@@ -75,13 +75,13 @@ export const useFahatongavana = () => {
         }
     };
 
-    // --- Effects ---
+    // Effects
     useEffect(() => {
         fetchPresences(currentPage, debouncedSearch, selectedDate);
         fetchTotals();
     }, [currentPage, debouncedSearch, selectedDate]);
 
-    // --- Fetch Mpinos / Totals ---
+    // Fetch Mpinos / Totals
     const loadMpinos = debounce(async (inputValue, callback) => {
         try {
             const res = await listeMpinos(1, 10, inputValue);
@@ -134,7 +134,7 @@ export const useFahatongavana = () => {
     };
 
 
-    // --- Filtered Presences ---
+    // Filtered Presences
     useEffect(() => {
         const filtered = presences.filter(
             p =>
@@ -149,7 +149,7 @@ export const useFahatongavana = () => {
  
 
 
-    // --- Form Handlers ---
+    // Form Handlers
     const handleInputChange = e => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
@@ -184,12 +184,12 @@ export const useFahatongavana = () => {
         }
     };
 
-    // --- Pagination helpers ---
+    // Pagination helpers
     const nextPage = () => { if (currentPage < totalPages) setCurrentPage(prev => prev + 1); };
     const prevPage = () => { if (currentPage > 1) setCurrentPage(prev => prev - 1); };
     const getPagesArray = () => Array.from({ length: totalPages }, (_, i) => i + 1);
 
-    // --- Stats ---
+    // Stats
     const totalPresent = filteredPresences.filter(p => p.status_presence === "Présent").length;
     const totalPaid = filteredPresences.filter(p => p.status_payment === "Payé").length;
     const totalAmount = filteredPresences.reduce((sum, p) => sum + (p.amount || 0), 0);
@@ -226,7 +226,7 @@ export const useFahatongavana = () => {
         setFormData(prev => ({ ...prev, mpino_id: m.id_unique }));
         setFilteredMpinos([]);
     };
-    // --- Close modal avec reset ---
+    // Close modal avec reset
     const resetForm = () => {
         setFormData({ mpino_id: "", has_paid: false, amount: null });
         setSearchMpino("");

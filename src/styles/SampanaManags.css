@@ -75,7 +75,7 @@
     border-radius: var(--border-radius);
     border: 1px solid var(--border-color);
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 55px;
 }
 
 .search-sampan-manags-input {
@@ -86,7 +86,7 @@
 .search-sampan-manags-input .search-sampan-manags-icon {
     position: absolute;
     top: 50%;
-    right: 15px;
+    left: 15px;
     transform: translateY(-50%);
     color: var(--secondary-color);
     font-size: 1rem;
@@ -95,7 +95,7 @@
 
 .search-sampan-manags-input input {
     width: 100%;
-    padding: 14px 0px 15px 0px;
+    padding: 14px 0px 15px 35px;
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
     background-color: var(--card-bg);
@@ -105,7 +105,7 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
-.search-sampan-manags-input:focus {
+.search-sampan-manags-input input:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 4px 10px rgba(52, 152, 219, 0.15);
@@ -129,7 +129,17 @@
     background-color: var(--hover-color);
     transform: translateY(-2px);
 }
-
+.small-sampan-manags-loader{
+    position: absolute;
+    right: -20px;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ccc;
+    border-top-color: #333;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    top: 30%;
+}
 /* Table */
 .table-sampan-manags-container {
     width: 100%;
@@ -338,8 +348,8 @@
 
     .sampan-manags-table th,
     .sampan-manags-table td {
+        padding: 8px 10px;
         font-size: 0.85rem;
-        padding: 10px;
     }
 
     .add-btn-sampan-manags {
@@ -360,37 +370,41 @@
 /* Very Small Mobile – Transform table to cards */
 @media (max-width: 480px) {
     .sampan-manags-table tr {
-        display: block;
         margin-bottom: 15px;
-        padding: 12px;
-        border-radius: 12px;
-        background-color: var(--card-bg, #fff);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-        border: 1px solid #e9ecef;
+        border-bottom: 2px solid var(--border-color);
+        padding-bottom: 10px;
     }
 
     .sampan-manags-table td {
-        display: flex;
-        flex-direction: column;
         text-align: left;
-        padding: 8px 0;
-        border: none;
+        padding-left: 50%;
         position: relative;
+    }
+    .sampan-manags-table,
+    .sampan-manags-table thead,
+    .sampan-manags-table tbody,
+    .sampan-manags-table th,
+    .sampan-manags-table td,
+    .sampan-manags-table tr {
+        display:block;
+        width: 100%;
     }
 
     .sampan-manags-table td::before {
         content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        width: 45%;
+        padding-right: 10px;
         font-weight: 600;
-        margin-bottom: 4px;
-        position: relative;
-        color: var(--secondary-color, #555);
+        text-align: left;
     }
 
     .sampan-manags-table th {
         display: none;
     }
 
-    .action-btn-sampan-manags td {
-        margin-top: 5px;
+    .action-btn-sampan-manags .btn-sampan-manags {
+        margin: 5px;
     }
 }

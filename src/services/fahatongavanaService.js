@@ -22,6 +22,18 @@ export const getMpinosStatusToday = async () => {
     }
 };
 
+/* Compter les Fahatongavana par Fiangonana pour l'utilisateur connecté */
+export const countFahatongavanaByFiangonana = async (period = "all", month = null, year = null) => {
+    try {
+        const params = { period };// envoie ?period=week, month ou year
+        if (month) params.month = month;
+        if (year) params.year = year;
+        const res = await api.get("/fahatongavana/count", { params });
+        return res.data;
+    } catch (error) {
+        throw error.response?.data || { message: "Erreur lors de la récupération du compteur de Fahatongavana." };
+    }
+};
 
 // Créer un nouveau
 export const ajoutFahatongavana = async (data) => {

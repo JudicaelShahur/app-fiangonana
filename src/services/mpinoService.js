@@ -1,16 +1,21 @@
 import api from "../api";
 
-/* Liste tous les Mpinos avec pagination et recherche */
-export const listeMpinos = async (page = 1, per_page = 10, search = "") => {
+/* Liste tous les Mpinos avec pagination, recherche et filtres */
+export const listeMpinos = async ({page = 1,per_page = 15,search = "",fiangonana_id = null,sexe = "",adresse = "",mpandray = null,manambady = null,}) => {
   try {
-    const res = await api.get("/mpinos", {
-      params: { page, per_page, search } // mandefa search koa
+    const res = await api.get("/mpinos", {params: {page,per_page, search, fiangonana_id, sexe,adresse,mpandray,manambady,
+      },
     });
     return res.data;
   } catch (error) {
-    throw error.response?.data || { message: "Erreur inconnue lors de la récupération des Mpinos." };
+    throw (
+      error.response?.data || {
+        message: "Erreur inconnue lors de la récupération des Mpinos.",
+      }
+    );
   }
 };
+
 
 export const getMpinoById = async (qrObj) => {
   try {
@@ -36,6 +41,28 @@ export const countMpinosByFiangonana = async (period = "all", month = null, year
   }
 };
 
+export const countMpinosVaovaoByFiangonana = async (period = "all", month = null, year = null) => {
+  try {
+    const params = { period }; // envoie ?period=week, month ou year
+    if (month) params.month = month;
+    if (year) params.year = year;
+    const res = await api.get("/mpinos/count-mpino-vaovao", { params });
+    return res.data;
+  } catch (error) {
+    throw error.response?.data || { message: "Erreur lors de la récupération du compteur de Mpinos." };
+  }
+};
+export const countMpinoParKartie = async (period = "all", month = null, year = null) => {
+  try {
+    const params = { period }; // envoie ?period=week, month ou year
+    if (month) params.month = month;
+    if (year) params.year = year;
+    const res = await api.get("/mpinos/count-par-kartie", { params });
+    return res.data;
+  } catch (error) {
+    throw error.response?.data || { message: "Erreur lors de la récupération du compteur de Mpinos." };
+  }
+};
 
 /* Ajouter un Mpino (FormData pour inclure la photo) */
 export const ajoutMpino = async (data) => {
@@ -49,6 +76,24 @@ export const ajoutMpino = async (data) => {
     if (errorData.errors) {
       throw { message: "Erreur de validation", errors: errorData.errors };
     }
+    throw errorData;
+  }
+};
+/* Importer des Mpinos depuis un fichier CSV ou Excel */
+export const importerMpinos = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await api.post("/mpino/import", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return res.data; // success, message, imported_count
+  } catch (error) {
+    const errorData = error.response?.data || { message: "Erreur lors de l'importation des Mpinos." };
     throw errorData;
   }
 };

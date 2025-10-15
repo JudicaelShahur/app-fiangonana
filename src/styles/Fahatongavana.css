@@ -44,15 +44,15 @@
 /* Search */
 .searchFahatongavana-bar {
     display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 25px;
-        padding: 15px;
-        background-color: var(--card-bg);
-        border-radius: var(--border-radius);
-        border: 1px solid var(--border-color);
-        flex-wrap: wrap;
-        gap: 15px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding: 15px;
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    flex-wrap: wrap;
+    gap: 15px;
 }
 .searchFahatongavana-input {
     position: relative;
@@ -69,6 +69,11 @@
     font-size: 1rem;
 }
 
+.searchFahatongavana-input input{
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
 .searchFahatongavana-input svg {
     position: absolute;
     left: 15px;

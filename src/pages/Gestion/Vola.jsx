@@ -45,9 +45,12 @@ const Vola = () => {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                        {isDebouncing && <div className="small-loader"></div>}
+                        {isDebouncing && <div className="small-vola-loader"></div>}
                         <span className="search-vola-icon"><i className="fas fa-search"></i></span>
                     </div>
+                    <button className="filter-vola-btn">
+                        <i className="fas fa-filter"></i> Filtrer
+                    </button>
                 </div>
 
                 <div className="table-vola-container">

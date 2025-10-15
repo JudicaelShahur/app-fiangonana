@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FaEdit, FaTrash, FaPlus, FaSearch, FaSync, FaQrcode, FaDownload } from 'react-icons/fa';
 import "../../styles/Mpino.css";
 import ConfirmDeleteModal from "../../utils/ConfirmDeleteModal";
@@ -14,13 +14,20 @@ const Mpino = () => {
         searchTerm, setSearchTerm, isDebouncing, formData, formErrors, isSubmitting, photoPreview,
         modal, isOpen, handleInputChange, handleFileChange, handleDrop, handleDragOver,
         handleAddMpino, handleEditMpino, handleDeleteMpino, openAdd, openEdit, openDelete,
-        showQrCode, downloadFiche, filteredMpino, closeModal, karties, loadKarties, setFormData
+        showQrCode, downloadFiche, filteredMpino, closeModal, karties, loadKarties, setFormData, handleImportMpinos, isImporting, fileInputRef,
+        selectedFiangonana, setSelectedFiangonana,
+        selectedSexe, setSelectedSexe,
+        selectedAdresse, setSelectedAdresse,
+        selectedMpandray, setSelectedMpandray,
+        selectedManambady, setSelectedManambady, fiangonanaList
     } = useMpino();
+    const [file, setFile] = useState(null);
 
     return (
         <div className="mpino-management">
             <div className="pageMpino-header">
                 <h1>Gestion des Mpino</h1>
+
                 <button className="btnMpino btn-primary" onClick={openAdd}>
                     <FaPlus /> Nouveau Mpino
                 </button>
@@ -35,11 +42,52 @@ const Mpino = () => {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
-                    {isDebouncing && <div className="small-loader"></div>}
+                    {isDebouncing && <div className="smallMpino-loader"></div>}
                 </div>
                 <div className="searchMpino-stats">{filteredMpino.length} mpino(s) trouvé(s)</div>
+                <div className="import-section">
+                    <h3>Importer des Mpinos (CSV / Excel)</h3>
+                    <input
+                        type="file"
+                        accept=".csv, .xlsx"
+                        ref={fileInputRef}
+                        onChange={(e) => setFile(e.target.files[0])}
+                    />
+                    <button
+                        onClick={() => handleImportMpinos(file)}
+                        disabled={!file }
+                    >
+                        {isImporting ? " en cours..." : "Importer"}
+                    </button>
+                </div>
             </div>
+            <div className="filters">
+                <select
+                    value={selectedFiangonana || ""}
+                    onChange={e => setSelectedFiangonana(e.target.value || null)}
+                >
+                    <option value="">-- Toutes les Fiangonana --</option>
+                    {fiangonanaList.map(f => (
+                        <option key={f.id} value={f.id}>{f.fiang_nom}</option>
+                    ))}
+                </select>
+                <select value={selectedSexe} onChange={e => setSelectedSexe(e.target.value)}>
+                    <option value="">-- Sexe --</option>
+                    <option value="M">Homme</option>
+                    <option value="F">Femme</option>
+                </select>
+                <select value={selectedMpandray ?? ""} onChange={e => setSelectedMpandray(e.target.value || null)}>
+                    <option value="">-- Mpandray ? --</option>
+                    <option value="1">Oui</option>
+                    <option value="0">Non</option>
+                </select>
 
+                <select value={selectedManambady ?? ""} onChange={e => setSelectedManambady(e.target.value || null)}>
+                    <option value="">-- Manambady ? --</option>
+                    <option value="1">Oui</option>
+                    <option value="0">Non</option>
+                </select>
+            </div>
             <div className="mpino-grid">
                 {loading ? (
                     <div className="loading">
@@ -71,11 +119,35 @@ const Mpino = () => {
                             </div>
 
                             <div className="cardMpino-actions">
-                                <button className="btnMpino-icon" onClick={() => showQrCode(mpino)}><FaQrcode /></button>
-                                <button className="btnMpino-icon" onClick={() => downloadFiche(mpino)}><FaDownload /></button>
-                                <button className="btnMpino-icon" onClick={() => openEdit(mpino)}><FaEdit /></button>
-                                <button className="btnMpino-icon btn-danger" onClick={() => openDelete(mpino)}><FaTrash /></button>
+                                <div className="btnMpino-icon-wrapper">
+                                    <button className="btnMpino-icon" onClick={() => showQrCode(mpino)}>
+                                        <FaQrcode />
+                                    </button>
+                                    <span className="tooltip">QR Code</span>
+                                </div>
+
+                                <div className="btnMpino-icon-wrapper">
+                                    <button className="btnMpino-icon" onClick={() => downloadFiche(mpino)}>
+                                        <FaDownload />
+                                    </button>
+                                    <span className="tooltip">Télécharger</span>
+                                </div>
+
+                                <div className="btnMpino-icon-wrapper">
+                                    <button className="btnMpino-icon" onClick={() => openEdit(mpino)}>
+                                        <FaEdit />
+                                    </button>
+                                    <span className="tooltip">Modifier</span>
+                                </div>
+
+                                <div className="btnMpino-icon-wrapper">
+                                    <button className="btnMpino-icon btn-danger" onClick={() => openDelete(mpino)}>
+                                        <FaTrash />
+                                    </button>
+                                    <span className="tooltip">Supprimer</span>
+                                </div>
                             </div>
+
                         </div>
                     ))
                 ) : (
@@ -92,15 +164,36 @@ const Mpino = () => {
                     Précédent
                 </button>
 
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                    <button
-                        key={page}
-                        onClick={() => setCurrentPage(page)}
-                        className={currentPage === page ? 'active' : ''}
-                    >
-                        {page}
-                    </button>
-                ))}
+                {/* Bouton 1 */}
+                {currentPage > 3 && (
+                    <>
+                        <button onClick={() => setCurrentPage(1)}>1</button>
+                        <span className="dots">...</span>
+                    </>
+                )}
+
+                {/* Fenêtre autour de la page actuelle */}
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                    .filter(page => page >= currentPage - 2 && page <= currentPage + 2)
+                    .map(page => (
+                        <button
+                            key={page}
+                            onClick={() => setCurrentPage(page)}
+                            className={currentPage === page ? 'active' : ''}
+                        >
+                            {page}
+                        </button>
+                    ))}
+
+                {/* Dernière page */}
+                {currentPage < totalPages - 2 && (
+                    <>
+                        <span className="dots">...</span>
+                        <button onClick={() => setCurrentPage(totalPages)}>
+                            {totalPages}
+                        </button>
+                    </>
+                )}
 
                 <button
                     onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}

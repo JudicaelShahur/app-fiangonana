@@ -64,7 +64,7 @@ const Sidebar = () => {
                     <li className="menu-item"><Link to="/vola" className="menu-link"><FaCoins /> Vola</Link></li>
                     <li className="menu-item"><Link to="/komitie" className="menu-link"><FaUsers /> Komitie</Link></li>
                     <li className="menu-item"><Link to="/sampana" className="menu-link"><FaSitemap /> Sampana</Link></li>
-                    <li className="menu-item"><Link to="/sampanamanaga" className="menu-link"><FaSitemap /> Sampana Managa</Link></li>
+                    <li className="menu-item"><Link to="/sampanamanaga" className="menu-link"><FaSitemap /> Sampana Manager</Link></li>
                     <li className="menu-title">Administration</li>
                     <li className="menu-item"><Link to="/utilisateur" className="menu-link"><FaUserCog /> Utilisateurs</Link></li>
                     <li className="menu-item"><Link to="aide_support" className="menu-link"><FaQuestionCircle /> Aide & Support</Link></li>

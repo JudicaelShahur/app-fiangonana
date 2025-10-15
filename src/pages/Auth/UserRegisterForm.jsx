@@ -137,7 +137,7 @@ const UserRegisterForm = ({
               <option value="katekiste">Katekiste</option>
               <option value="pasteur">pasteur</option>
               <option value="membre">Membre</option>
-              <option value="déconne">Déconne</option>
+              <option value="deconne">Déconne</option>
             </select>
             <i className="fas fa-user-tag inputUser-icon"></i>
           </div></div>
