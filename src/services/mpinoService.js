@@ -15,6 +15,31 @@ export const listeMpinos = async ({page = 1,per_page = 15,search = "",fiangonana
     );
   }
 };
+/* Télécharger la Qrcode d'un Count ou Stats Mpino */
+export const telechargerQrcodeMpino = async (filters = {}) => {
+  try {
+    const res = await api.get(`/stats-mpinos/download-qrcode`, {
+      params: filters,
+      responseType: "blob", // 🔥 obligatoire pour récupérer un fichier image
+    });
+
+    //  Déclenche le téléchargement du fichier côté navigateur
+    const blob = new Blob([res.data], { type: "image/png" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "stats_mpino_qrcode.png"; // nom du fichier
+    a.click();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error(error);
+    throw {
+      message:
+        error.response?.data?.message ||
+        "Erreur lors du téléchargement du QR code Stats Mpino.",
+    };
+  }
+};
 
 
 export const getMpinoById = async (qrObj) => {

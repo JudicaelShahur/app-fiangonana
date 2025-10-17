@@ -313,6 +313,24 @@
     top: 30%;
 
 }
+.smallDashboar-loader {
+    position: absolute;
+    right: 15px;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ccc;
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spinMpino 0.6s linear infinite;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+@keyframes spinMpino {
+    to {
+        transform: translateY(-50%) rotate(360deg);
+    }
+}
 
 .searchDashboard-input input {
     width: 100%;

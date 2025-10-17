@@ -76,7 +76,7 @@ const Dashboard = () => {
 
                         <div className="dashboard-card-value">
                             {loadingStats ? (
-                                <div className="small-loader"></div> 
+                                <div className="smallDashboar-loader"></div> 
                             ) : (
                                 stat.value
                             )}
@@ -109,9 +109,7 @@ const Dashboard = () => {
             <div className="dashboard-recent-activities">
                 <h2>Activités récentes</h2>
                 {loadingActivities ? (
-                    
                         <div className="loader"></div>
-                   
                 ) : filteredActivities.length === 0 ? (
                     <p>Aucune activité trouvée</p>
                 ) : (

@@ -10,10 +10,15 @@ const Statistique = () => {
     statsData,
     chartData,
     // isLoading,
+    selectedYear,
+    setSelectedYear,
+    selectedMonth,
+    setSelectedMonth,
     activePeriod,
     setActivePeriod,
     viewMode,
     setViewMode,
+    downloadQrCodeStats
   } = useStatistique();
 
   const chartOptions = {
@@ -39,11 +44,13 @@ const Statistique = () => {
     },
   };
 
-  const tableData = [
-    { id: 1, karite: "Karite A", isaMpino: 75, mpitandrina: "Judicael Shahur", daty: "15/07/2023" },
-    { id: 2, karite: "Karite B", isaMpino: 90, mpitandrina: "Marie Daniel", daty: "22/06/2023" },
-    { id: 3, karite: "Karite C", isaMpino: 60, mpitandrina: "Martin Lutherien", daty: "30/07/2023" },
-  ];
+  const tableData = statsData.mpinoParKartie?.map((item, index) => ({
+    id: item.id,
+    karite: item.nom_kar,
+    isaMpino: item.total_mpino,
+    percentage: item.percentage,
+    daty: new Date().toLocaleDateString(), 
+  })) || [];
 
 //   if (isLoading) {
 //     return (
@@ -57,7 +64,6 @@ const Statistique = () => {
   return (
     <div className="statistics-container">
       <h1>Statistiques des Mpino sy Fahatongavana</h1>
-
       {/* Filtres */}
       <div className="stats-controls">
         <div className="period-selector">
@@ -83,8 +89,55 @@ const Statistique = () => {
               {v === "charts" ? "Graphiques" : "Tableau"}
             </button>
           ))}
+
+        <div className="dashboard-view-toggle">
+          {/* Sélecteur Mois : affiché SEULEMENT si activePeriod = "month" */}
+          {activePeriod === "month" && (
+            <>
+              <select
+               className={`view-btn ${viewMode === 'charts' ? 'active' : ''}`}
+                value={selectedMonth || ""}
+                onChange={(e) => setSelectedMonth(e.target.value ? parseInt(e.target.value) : null)}
+              >
+                {[...Array(12).keys()].map(m => (
+                  <option key={m + 1} value={m + 1}>
+                    {new Date(0, m).toLocaleString('fr-FR', { month: 'long' })}
+                  </option>
+                ))}
+              </select>
+            </>
+            )}
+            {/* Sélecteur Année : toujours affiché */}
+            <select
+              className={`view-btn ${viewMode === 'charts' ? 'active' : ''}`}
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+            >
+              {Array.from({ length: 50 }, (_, i) => new Date().getFullYear() - i).map(y => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
+          </div>
+          {/* Bouton téléchargement QR Code */}
+          <button
+            className="btn-download-qrcode"
+            onClick={() => downloadQrCodeStats()}
+            style={{
+              backgroundColor: "#4CAF50",
+              color: "#fff",
+              padding: "8px 12px",
+              borderRadius: "8px",
+              border: "none",
+              cursor: "pointer",
+              fontWeight: "bold",
+            }}
+          >
+            Télécharger QR Code Stats
+          </button>
         </div>
+       
       </div>
+
 
       {/* Cartes */}
       <div className="stats-grid">

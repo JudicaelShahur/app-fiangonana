@@ -7,10 +7,10 @@ const TableSection = ({ tableData }) => (
       <table className="data-table">
         <thead>
           <tr>
-            <th>Karite</th>
-            <th>Isan'ny Mpino</th>
-            <th>Mpitandrina</th>
-            <th>Daty</th>
+            <th>Kartie</th>
+            <th>Effectif Mpino</th>
+            <th>Pourcentage</th>
+            {/* <th>Date</th> */}
           </tr>
         </thead>
         <tbody>
@@ -18,8 +18,8 @@ const TableSection = ({ tableData }) => (
             <tr key={item.id}>
               <td>{item.karite}</td>
               <td>{item.isaMpino}</td>
-              <td>{item.mpitandrina}</td>
-              <td>{item.daty}</td>
+              <td>{item.percentage} %</td>
+              {/* <td>{item.daty }</td> */}
             </tr>
           ))}
         </tbody>

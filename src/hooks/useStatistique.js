@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { countFahatongavanaByFiangonana } from "../services/fahatongavanaService";
-import { countMpinosByFiangonana, countMpinosVaovaoByFiangonana, countMpinoParKartie } from "../services/mpinoService";
+import { countMpinosByFiangonana, countMpinosVaovaoByFiangonana, countMpinoParKartie, telechargerQrcodeMpino } from "../services/mpinoService";
 
 export default function useStatistique() {
   const [statsData, setStatsData] = useState({
@@ -15,6 +15,8 @@ export default function useStatistique() {
 
   const [chartData, setChartData] = useState({});
   const [activePeriod, setActivePeriod] = useState("month");
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [viewMode, setViewMode] = useState("charts");
 
   const monthNames = [
@@ -25,7 +27,8 @@ export default function useStatistique() {
   //  MPINO PAR KARTIE 
   const fetchMpinoParKartieData = async () => {
     try {
-      const res = await countMpinoParKartie(activePeriod); // week, month, year, all
+      const res = await countMpinoParKartie(activePeriod, selectedMonth, selectedYear); // week, month, year, all
+    
       setStatsData(prev => ({
         ...prev,
         mpinoParKartie: res.results || [],
@@ -59,7 +62,7 @@ export default function useStatistique() {
   //  TOTAL MPINO 
   const fetchNombreMembres = async () => {
     try {
-      const res = await countMpinosByFiangonana();
+      const res = await countMpinosByFiangonana(activePeriod, selectedMonth, selectedYear);
       const stats = res?.stats_globaux || {};
       const totalMpino = res?.total_mpinos || 0;
       const totalMandray = stats.mpandray || 0;
@@ -120,11 +123,24 @@ export default function useStatistique() {
       console.error("Erreur récupération mpino:", err);
     }
   };
+  const downloadQrCodeStats = async () => {
+    try {
+      await telechargerQrcodeMpino({
+        period: activePeriod,
+        month: selectedMonth,
+        year: selectedYear,
+      });
+    } catch (error) {
+      console.error("Erreur QR Code:", error);
+      alert(error.message);
+    }
+  };
+
 
   //  MPINO VAOVAO 
   const fetchMpinoVaovao = async () => {
     try {
-      const res = await countMpinosVaovaoByFiangonana(activePeriod);
+      const res = await countMpinosVaovaoByFiangonana(activePeriod, selectedMonth, selectedYear);
       setStatsData(prev => ({
         ...prev,
         mpinoVaovao: res.total_mpino_vaovao || 0,
@@ -138,7 +154,7 @@ export default function useStatistique() {
   //  FAHATONGAVANA 
   const loadStats = async () => {
     try {
-      const response = await countFahatongavanaByFiangonana(activePeriod);
+      const response = await countFahatongavanaByFiangonana(activePeriod, selectedMonth, selectedYear);
 
       if (response.results?.type === "par_fiangonana") {
         const fiangStats = response.results.results;
@@ -210,14 +226,17 @@ export default function useStatistique() {
     fetchNombreMembres();
     fetchMpinoVaovao();
     fetchMpinoParKartieData(); 
-  }, [activePeriod]);
+  }, [activePeriod, selectedMonth, selectedYear]);
 
   return {
     statsData,
     chartData,
     activePeriod,
     setActivePeriod,
+    selectedMonth, setSelectedMonth,
+    selectedYear, setSelectedYear,
     viewMode,
     setViewMode,
+    downloadQrCodeStats,
   };
 }
